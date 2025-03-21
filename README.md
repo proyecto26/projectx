@@ -10,7 +10,7 @@
 
 > **ProjectX** is a comprehensive full-stack template designed to simplify the development of scalable and resilient applications using **React** and **Temporal**. By integrating Temporal's advanced workflow orchestration with React's dynamic frontend framework, ProjectX enables developers to build applications with durable executions and seamless communication between services.
 
-## Notable Links 🤓
+## Why Temporal? 🤔
 
 ```sh
 ████████╗███████╗███╗   ███╗██████╗  ██████╗ ██████╗  █████╗ ██╗     
@@ -20,21 +20,6 @@
    ██║   ███████╗██║ ╚═╝ ██║██║     ╚██████╔╝██║  ██║██║  ██║███████╗
    ╚═╝   ╚══════╝╚═╝     ╚═╝╚═╝      ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝
 ``` 
-
-- [Get started with Temporal and TypeScript](https://github.com/temporalio/sdk-typescript)
-- [Workflow Messages - TypeScript SDK](https://docs.temporal.io/develop/typescript/message-passing)
-
-### Public Courses
-
-- [Temporal 101 with TypeScript](https://temporal.talentlms.com/catalog/info/id:135)
-- [Temporal 102: Exploring Durable Execution with TypeScript](https://temporal.talentlms.com/catalog/info/id:165)
-- [Versioning Workflows with TypeScript](https://temporal.talentlms.com/catalog/info/id:171)
-- [Interacting with Workflows with TypeScript](https://temporal.talentlms.com/catalog/info/id:207)
-- [Securing Temporal Applications with TypeScript](https://temporal.talentlms.com/catalog/info/id:211)
-- [Introduction to Temporal Cloud](https://temporal.talentlms.com/catalog/info/id:144)
-- [Crafting an Error Handling Strategy with TypeScript](https://temporal.talentlms.com/catalog/info/id:244)
-
-## Why Temporal? 🤔
 
 ### Challenges of Maintaining State in Distributed Systems
 
@@ -216,6 +201,21 @@ docker-compose up -d
 # Remove services and volumes
 docker-compose down --volumes
 ```
+
+## Notable Links 🤓
+
+- [Get started with Temporal and TypeScript](https://github.com/temporalio/sdk-typescript)
+- [Workflow Messages - TypeScript SDK](https://docs.temporal.io/develop/typescript/message-passing)
+
+### Public Courses
+
+- [Temporal 101 with TypeScript](https://temporal.talentlms.com/catalog/info/id:135)
+- [Temporal 102: Exploring Durable Execution with TypeScript](https://temporal.talentlms.com/catalog/info/id:165)
+- [Versioning Workflows with TypeScript](https://temporal.talentlms.com/catalog/info/id:171)
+- [Interacting with Workflows with TypeScript](https://temporal.talentlms.com/catalog/info/id:207)
+- [Securing Temporal Applications with TypeScript](https://temporal.talentlms.com/catalog/info/id:211)
+- [Introduction to Temporal Cloud](https://temporal.talentlms.com/catalog/info/id:144)
+- [Crafting an Error Handling Strategy with TypeScript](https://temporal.talentlms.com/catalog/info/id:244)
 
 ## Payment Providers
 
