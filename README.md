@@ -12,7 +12,7 @@
 
 ## Why Temporal? 🤔
 
-<pre align="center">
+<pre align="center" role="img" aria-label="ASCII Temporal">
 ████████╗███████╗███╗   ███╗██████╗  ██████╗ ██████╗  █████╗ ██╗     
 ╚══██╔══╝██╔════╝████╗ ████║██╔══██╗██╔═══██╗██╔══██╗██╔══██╗██║     
    ██║   █████╗  ██╔████╔██║██████╔╝██║   ██║██████╔╝███████║██║     
@@ -246,10 +246,10 @@ Please let us know your contributions! 🙏
 ## Happy coding 💯
 Made with ❤️
 
-<pre>
+<pre role="img" aria-label="ASCII Made with Temporal">
 ╔╦╗╔═╗╔╦╗╔═╗╔═╗╦═╗╔═╗╦   <img width="150px" src="https://avatars0.githubusercontent.com/u/28855608?s=200&v=4" align="right">
  ║ ║╣ ║║║╠═╝║ ║╠╦╝╠═╣║  
- ╩ ╚═╝╩ ╩╩  ╚═╝╩╚═╩ ╩╩═╝
+ ╩ ╚═╝╩ ╩╩  ╚═╝╩╚═╩ ╩╩═╝⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 </pre>
 
 
