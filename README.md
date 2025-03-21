@@ -44,11 +44,11 @@
 - Concurrency Control
 - Security
 
-**Temporal** is introduced here as a **Workflow Orchestration** tool for managing long-running operations **(durable execution)**, humans in the loop and system lifecycle **(state management, guaranteed completion with compensations and uniqueness)**. 
-You can use **Temporal** today for implementing a sequence of steps/actions in certain order for your business processes **(workflows)**, 
-not only for communication between services **(Microservices Orchestration)** but also for **Monolith** apps. 
-**Workflows** can react to async and external events **(signals, updates)**, aggregating data and then doing some actions **(activities)** with exponential retries **(retry policy)** and run for extended periods **(heartbeat)** if needed, then you can check the state of these executions at any time **(queries)**.
-Additionally, workflows support scheduled and time-based executions with configurable delays for recurring business logic **(scheduling)**.
+**Temporal** is introduced here as a **Workflow Orchestration** tool for managing long-running operations **(durable execution)**, human-in-the-loop and system lifecycle **(state management, guaranteed completion with compensations and uniqueness)**. 
+You can use **Temporal** today to implement sequences of steps/actions in a specific order for your business processes **(workflows)**, 
+not only for communication between services **(Microservices Orchestration)** but also within **Monolithic** apps. 
+**Workflows** can react to asynchronous and external events **(signals, updates)**, aggregate data and perform actions **(activities)** with exponential retries **(retry policy)** and run for extended periods **(heartbeat)** if needed, then you can check the state of these executions at any time **(queries)**.
+Additionally, workflows support scheduled and time-based executions with configurable delays to handle recurring business logic **(scheduling)**.
 
 ### Use Cases
 
