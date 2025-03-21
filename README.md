@@ -52,9 +52,6 @@ Additionally, workflows support scheduled and time-based executions with configu
 - [Docker Compose](https://docs.docker.com/compose/install)
 - [Node.js LTS Version](https://nodejs.org)
 - [Git](https://git-scm.com/downloads)
-- Code editor: 
-  - [VSCode](https://code.visualstudio.com/)
-  - [Cursor](https://www.cursor.com/)
 
 ### Quick Setup 🛠️
 
