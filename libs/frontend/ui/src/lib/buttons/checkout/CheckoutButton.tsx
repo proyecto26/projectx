@@ -1,4 +1,4 @@
-import { useNavigate } from '@remix-run/react';
+import { useNavigate } from 'react-router';
 import { useCart } from 'react-use-cart';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,7 +9,6 @@ export function CheckoutButton() {
   const { isEmpty } = useCart();
   const navigate = useNavigate();
   const handleCheckout = () => {
-    alert(isEmpty);
     if (isEmpty) {
       toast.error(
         'Your cart is empty, please add items to your cart before proceeding to checkout.'

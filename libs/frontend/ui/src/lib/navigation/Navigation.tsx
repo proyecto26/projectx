@@ -1,4 +1,4 @@
-import { Link, useLocation } from '@remix-run/react';
+import { Link, useLocation } from 'react-router';
 import { HTMLAttributes } from 'react';
 
 import { classnames } from '../../utils';

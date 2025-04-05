@@ -15,10 +15,15 @@ import { AuthUser } from '../user';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(configService: ConfigService) {
+    const secretOrKey = configService.get<string>('app.jwtSecret');
+    if (!secretOrKey) {
+      throw new Error('JWT secret is not defined');
+    }
+    
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get('app.jwtSecret'),
+      secretOrKey,
     });
   }
 

@@ -1,6 +1,6 @@
 import { EnvelopeIcon } from '@heroicons/react/24/outline';
 import { classnames } from '@projectx/ui';
-import { useFetcher } from '@remix-run/react';
+import { useFetcher } from 'react-router';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import OtpInput from 'react-otp-input';

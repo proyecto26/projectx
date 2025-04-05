@@ -9,9 +9,37 @@ export default meta;
 type Story = StoryObj<typeof Button>;
 
 export const Primary: Story = {
-  render: (args) => (
-    <div className="flex h-40 w-full flex-row items-center justify-center gap-x-10 bg-medium">
-      <Button {...args}>Hello World</Button>
+  render: () => (
+    <div className="p-4 bg-white">
+      <h2 className="text-xl font-bold mb-4">Primary Button</h2>
+      <Button variant="primary">Primary Button</Button>
+    </div>
+  ),
+};
+
+export const Secondary: Story = {
+  render: () => (
+    <div className="p-4 bg-white">
+      <h2 className="text-xl font-bold mb-4">Secondary Button</h2>
+      <Button variant="secondary">Secondary Button</Button>
+    </div>
+  ),
+};
+
+export const Accent: Story = {
+  render: () => (
+    <div className="p-4 bg-white">
+      <h2 className="text-xl font-bold mb-4">Accent Button</h2>
+      <Button variant="accent">Accent Button</Button>
+    </div>
+  ),
+};
+
+export const Ghost: Story = {
+  render: () => (
+    <div className="p-4 bg-white">
+      <h2 className="text-xl font-bold mb-4">Ghost Button</h2>
+      <Button variant="ghost">Ghost Button</Button>
     </div>
   ),
 };

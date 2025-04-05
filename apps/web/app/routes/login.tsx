@@ -1,14 +1,14 @@
 import { AuthResponseDto } from '@projectx/models';
-import { ActionFunctionArgs, redirect } from '@remix-run/node';
+import { redirect } from 'react-router';
 import axios from 'axios';
-import _ from 'lodash';
+import isInteger from 'lodash/isInteger';
 
 import { authAPIUrl } from '~/config/app.config.server';
 import { csrf } from '~/cookies/session.server';
 import { logger } from '~/services/logger.server';
 import { LoginPage } from '~/pages/LoginPage';
-import PageLayout from '~/pages/PageLayout';
 import { getAuthSession } from '~/cookies/auth.server';
+import { Route } from './+types/login';
 
 enum FormIntents {
   LOGIN = 'login',
@@ -17,7 +17,7 @@ enum FormIntents {
 
 const AUTH_API = `${authAPIUrl}/auth`;
 
-export const action = async ({ request }: ActionFunctionArgs) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   const formData = await request.clone().formData();
   await csrf.validate(formData, request.headers);
   const email = formData.get('email');
@@ -34,7 +34,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
   } else if (intent === FormIntents.VERIFY_CODE) {
     const code = formData.get('code');
-    if (!_.isInteger(Number(code))) {
+    if (!isInteger(Number(code))) {
       return { error: 'Invalid code', ok: false };
     }
     try {
@@ -62,12 +62,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function Index() {
   return (
-    <PageLayout
-      title="ProjectX"
-      containerClassName="test flex justify-center items-center"
-      className="bg-gradient-to-b from-purple-600 to-indigo-700 dark:from-gray-900 dark:to-gray-800"
-    >
-      <LoginPage />
-    </PageLayout>
+    <LoginPage />
   );
 }

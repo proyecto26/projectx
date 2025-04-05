@@ -32,7 +32,7 @@ import { ActivitiesModule } from './activities/activities.module';
     EmailModule,
     WorkflowsModule.registerAsync({
       imports: [ActivitiesModule],
-      useFactory: async (activitiesService: ActivitiesService) => ({
+      useFactory: (activitiesService: ActivitiesService) => ({
         activitiesService,
         workflowsPath: path.join(__dirname, '/workflows'),
       }),

@@ -8,6 +8,6 @@ const meta: Meta<typeof Footer> = {
 export default meta;
 type Story = StoryObj<typeof Footer>;
 
-export const Primary = {
+export const Primary: Story = {
   args: {},
 };

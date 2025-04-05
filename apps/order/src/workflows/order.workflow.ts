@@ -49,11 +49,9 @@ export enum OrderStatus {
   Failed = 'Failed',
 }
 
-const initialState: OrderStatusResponseDto = {
+const initialState: Partial<OrderStatusResponseDto> = {
   status: OrderStatus.Pending,
-  orderId: undefined,
   referenceId: '',
-  clientSecret: undefined,
 };
 
 export async function createOrder(
@@ -62,10 +60,10 @@ export async function createOrder(
 ): Promise<void> {
   state.referenceId = data.order.referenceId;
   // Define references to child workflows
-  let processPaymentWorkflow: ChildWorkflowHandle<typeof processPayment>;
+  let processPaymentWorkflow: ChildWorkflowHandle<typeof processPayment> | undefined;
 
   // Attach queries, signals and updates
-  setHandler(getOrderStateQuery, () => state);
+  setHandler(getOrderStateQuery, () => state as OrderStatusResponseDto);
   setHandler(cancelWorkflowSignal, () => {
     log.info('Requesting order cancellation');
     if (!state?.orderId) {
@@ -88,8 +86,10 @@ export async function createOrder(
     const { order, clientSecret } = await createOrderActivity(data);
     state.orderId = order.id;
     state.referenceId = order.referenceId;
-    state.clientSecret = clientSecret;
-    return state;
+    if (clientSecret) {
+      state.clientSecret = clientSecret;
+    }
+    return state as OrderStatusResponseDto;
   });
 
   // Wait the order to be ready to be processed
@@ -104,7 +104,7 @@ export async function createOrder(
     const processPaymentResult = await processPaymentWorkflow.result();
     if (processPaymentResult.status !== OrderProcessPaymentStatus.SUCCESS) {
       // Report payment failure before throwing the error
-      await reportPaymentFailed(state.orderId);
+      await reportPaymentFailed(state.orderId as number);
       state.status = OrderStatus.Failed;
       throw ApplicationFailure.nonRetryable(
         OrderWorkflowNonRetryableErrors.UNKNOWN_ERROR,
@@ -113,7 +113,7 @@ export async function createOrder(
     }
     processPaymentWorkflow = undefined;
     state.status = OrderStatus.Confirmed;
-    await reportPaymentConfirmed(state.orderId);
+    await reportPaymentConfirmed(state.orderId as number);
   }
 
   // TODO: Second step - Ship the order

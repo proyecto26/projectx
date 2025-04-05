@@ -1,9 +1,9 @@
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType } from 'react';
 import { CartProvider } from 'react-use-cart';
 
 const CART_ID = 'shopping-cart';
 
-export function withCartProvider<T extends PropsWithChildren>(
+export function withCartProvider<T extends object>(
   WrappedComponent: ComponentType<T>,
 ): ComponentType<T> {
   return function (props: T) {

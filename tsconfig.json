@@ -1,0 +1,40 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [],
+  "references": [
+    {
+      "path": "./apps/auth"
+    },
+    {
+      "path": "./apps/order"
+    },
+    {
+      "path": "./apps/product"
+    },
+    {
+      "path": "./apps/web"
+    },
+    {
+      "path": "./libs/backend/workflows"
+    },
+    {
+      "path": "./libs/backend/payment"
+    },
+    {
+      "path": "./libs/backend/email"
+    },
+    {
+      "path": "./libs/frontend/ui"
+    },
+    {
+      "path": "./libs/backend/db"
+    },
+    {
+      "path": "./libs/models"
+    },
+    {
+      "path": "./libs/backend/core"
+    }
+  ]
+}

@@ -4,12 +4,12 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useState, type ComponentType, type PropsWithChildren } from 'react';
+import { useState, type ComponentType } from 'react';
 import { createPortal } from 'react-dom';
 import { ClientOnly } from 'remix-utils/client-only';
-import { useDehydratedState } from 'use-dehydrated-state';
+import { useDehydratedState } from '~/hooks/useDehydratedState';
 
-export function withQueryClientProvider<T extends PropsWithChildren>(
+export function withQueryClientProvider<T extends object>(
   WrappedComponent: ComponentType<T>
 ): ComponentType<T> {
   return function (props: T) {

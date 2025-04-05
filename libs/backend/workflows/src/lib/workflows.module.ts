@@ -7,7 +7,7 @@ import { WORKER_OPTIONS_TOKEN } from './constants';
 
 interface WorkerModuleAsyncOptions<T> {
   imports?: Array<Type<unknown> | DynamicModule | Promise<DynamicModule>>;
-  useFactory: (...args: unknown[]) => Promise<WorkerServiceOptions<T>>;
+  useFactory: ((...args: unknown[]) => Promise<WorkerServiceOptions<T>>) | ((arg: T) => Promise<WorkerServiceOptions<T>> | WorkerServiceOptions<T>);
   inject?: Array<Type<unknown> | string | symbol>;
 }
 
@@ -23,13 +23,8 @@ export class WorkflowsModule {
     const asyncProviders: Provider[] = [
       {
         provide: WORKER_OPTIONS_TOKEN,
-        useFactory: async (...args: unknown[]) => {
-          const { workflowsPath, activitiesService } = await options.useFactory(
-            ...args
-          );
-          return { activitiesService, workflowsPath };
-        },
-        inject: [...(options.inject || [])],
+        useFactory: options.useFactory,
+        inject: options.inject || [],
       },
     ];
 

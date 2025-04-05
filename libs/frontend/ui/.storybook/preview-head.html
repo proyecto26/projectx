@@ -1,0 +1,37 @@
+<script>
+  // Prevent issues with duplicate hot reload modules
+  if (window.__vite_plugin_react_preamble_installed__ === undefined) {
+    window.__vite_plugin_react_preamble_installed__ = true;
+  }
+</script>
+
+<!-- Load Tailwind and DaisyUI directly from CDN for testing -->
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@3/dist/tailwind.min.css" rel="stylesheet" type="text/css" />
+<link href="https://cdn.jsdelivr.net/npm/daisyui@4/dist/full.min.css" rel="stylesheet" type="text/css" />
+
+<!-- Also try to load local styles -->
+<link rel="stylesheet" href="../styles/index.css" />
+
+<style>
+  /* Additional global styles for Storybook */
+  body {
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  /* Force some basic Tailwind classes to be visible */
+  .btn {
+    @apply font-bold py-2 px-4 rounded;
+  }
+  .btn-primary {
+    @apply bg-blue-500 text-white;
+  }
+  .btn-primary:hover {
+    @apply bg-blue-700;
+  }
+  .btn-secondary {
+    @apply bg-gray-500 text-white;
+  }
+  .btn-secondary:hover {
+    @apply bg-gray-700;
+  }
+</style> 

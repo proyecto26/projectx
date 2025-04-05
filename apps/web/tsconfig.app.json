@@ -1,13 +1,42 @@
 {
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "outDir": "./dist",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "types": ["@react-router/node", "vite/client", "node"],
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "rootDir": ".",
+    "rootDirs": [".", "./.react-router/types"],
+    "tsBuildInfoFile": "./dist/tsconfig.app.tsbuildinfo",
+    "paths": {
+      "~/*": ["./app/*"],
+      "@projectx/models": ["../../libs/models/src/index.ts"],
+      "@projectx/email": ["../../libs/backend/email/src/index.ts"],
+      "@projectx/ui": ["../../libs/frontend/ui/src/index.ts"],
+      "@projectx/core": ["../../libs/backend/core/src/index.ts"],
+      "@projectx/db": ["../../libs/backend/db/src/index.ts"]
+    },
+    "allowSyntheticDefaultImports": true,
+    "module": "ESNext"
+  },
   "include": [
-    "remix.env.d.ts",
     "app/**/*.ts",
     "app/**/*.tsx",
     "app/**/*.js",
-    "app/**/*.jsx"
+    "app/**/*.jsx",
+    "**/.server/**/*.ts",
+    "**/.server/**/*.tsx",
+    "**/.client/**/*.ts",
+    "**/.client/**/*.tsx",
+    ".react-router/types/**/*"
   ],
   "exclude": [
+    "dist",
     "tests/**/*.spec.ts",
     "tests/**/*.test.ts",
     "tests/**/*.spec.tsx",
@@ -19,14 +48,20 @@
     "vite.config.ts",
     "vite.config.mts",
     "vitest.config.ts",
-    "vitest.config.mts",
-    "src/**/*.test.ts",
-    "src/**/*.spec.ts",
-    "src/**/*.test.tsx",
-    "src/**/*.spec.tsx",
-    "src/**/*.test.js",
-    "src/**/*.spec.js",
-    "src/**/*.test.jsx",
-    "src/**/*.spec.jsx"
+    "vitest.config.mts"
+  ],
+  "references": [
+    {
+      "path": "../../libs/backend/core/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/backend/email/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/frontend/ui/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/models/tsconfig.lib.json"
+    }
   ]
 }

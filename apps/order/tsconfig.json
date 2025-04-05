@@ -4,13 +4,28 @@
   "include": [],
   "references": [
     {
+      "path": "../../libs/backend/workflows"
+    },
+    {
+      "path": "../../libs/backend/db"
+    },
+    {
+      "path": "../../libs/models"
+    },
+    {
+      "path": "../../libs/backend/payment"
+    },
+    {
+      "path": "../../libs/backend/core"
+    },
+    {
+      "path": "../../libs/backend/email"
+    },
+    {
       "path": "./tsconfig.app.json"
     },
     {
       "path": "./tsconfig.spec.json"
     }
-  ],
-  "compilerOptions": {
-    "esModuleInterop": true
-  }
+  ]
 }

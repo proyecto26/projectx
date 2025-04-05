@@ -1,9 +1,9 @@
 import { UserDto } from '@projectx/models';
-import { createCookieSessionStorage, redirect } from '@remix-run/node';
+import { createCookieSessionStorage, redirect } from 'react-router';
 import { plainToInstance } from 'class-transformer';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
-import { sessionSecret } from '~/config/app.config.server';
+import { sessionSecret } from '../config/app.config.server';
 
 const authStorage = createCookieSessionStorage({
   cookie: {
@@ -27,7 +27,7 @@ export async function getAuthSession(request: Request) {
   return {
     getAuthUser: () => {
       const user = session.get(USER_KEY);
-      return _.isEmpty(user)
+      return isEmpty(user)
         ? undefined
         : plainToInstance(UserDto, _.isObject(user) ? user : JSON.parse(user), {
             excludeExtraneousValues: true,

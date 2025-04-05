@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { capitalize } from 'lodash';
+import capitalize from 'lodash/capitalize';
 
 export function setupAppSwagger(app: INestApplication): void {
   const configService = app.get(ConfigService);

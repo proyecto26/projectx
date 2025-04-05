@@ -14,7 +14,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { AuthUser, JwtAuthGuard, AuthenticatedUser } from '@projectx/core';
+import { type AuthUser, JwtAuthGuard, AuthenticatedUser } from '@projectx/core';
 import { UserDto, UserStatus } from '@projectx/models';
 
 import { UserService } from './user.service';

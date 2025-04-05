@@ -66,16 +66,6 @@ npm add -D @tailwindcss/aspect-ratio @tailwindcss/forms @tailwindcss/line-clamp 
 ...
 ```
 
-- Import the `TailwindCSS` preset from the app:
-```ts
-import uiTailwindConfig from '../../libs/frontend/ui/tailwind.config.ts';
-
-export default {
-  ...
-  presets: [uiTailwindConfig],
-} satisfies Config;
-```
-
 - Install dependencies for UX:
 ```sh
 npm i -D daisyui@latest @types/md5
@@ -99,7 +89,7 @@ npm add remix-utils crypto-js
 
 - Install dependencies for http queries/requests with ssr support
 ```sh
-npm add @tanstack/react-query use-dehydrated-state immer
+npm add @tanstack/react-query immer
 npm add -D @tanstack/react-query-devtools 
 ```
 

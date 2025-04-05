@@ -12,7 +12,7 @@ export default defineConfig({
   plugins: [
     react(),
     nxViteTsPaths(),
-    nxCopyAssetsPlugin(['*.md', 'tailwind.config.ts', 'styles/**/*']),
+    nxCopyAssetsPlugin(['*.md', 'styles/**/*']),
     dts({
       entryRoot: 'src',
       tsconfigPath: path.join(__dirname, 'tsconfig.lib.json'),
@@ -32,13 +32,13 @@ export default defineConfig({
       transformMixedEsModules: true,
     },
     lib: {
-      name: 'ui',
+      name: '@projectx/ui',
       // Could also be a dictionary or array of multiple entry points.
       entry: 'src/index.ts',
       fileName: 'index',
       // Change this to the formats you want to support.
       // Don't forget to update your package.json as well.
-      formats: ['es', 'cjs'],
+      formats: ['es' as const],
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.
@@ -49,6 +49,17 @@ export default defineConfig({
         'react/jsx-runtime',
         'tailwindcss',
       ],
+    },
+  },
+  test: {
+    watch: false,
+    globals: true,
+    environment: 'jsdom',
+    include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    reporters: ['default'],
+    coverage: {
+      reportsDirectory: './test-output/vitest/coverage',
+      provider: 'v8' as const,
     },
   },
 });

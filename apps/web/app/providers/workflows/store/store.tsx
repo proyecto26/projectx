@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 
 import { initialState, reducer } from './reducer';
-import { StoreReducer, ContextProps } from './types';
+import { ContextProps } from './types';
 
 export const GlobalContext = createContext<ContextProps>(
   [initialState, () => null] as ContextProps,
@@ -19,7 +19,7 @@ export type StoreProviderProps = PropsWithChildren;
 export const StoreProvider: React.FC<StoreProviderProps> = ({
   children,
 }) => {
-  const [state, dispatch] = useReducer<StoreReducer>(reducer, {
+  const [state, dispatch] = useReducer(reducer, {
     ...initialState,
   });
 

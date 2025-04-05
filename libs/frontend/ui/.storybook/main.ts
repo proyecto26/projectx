@@ -1,6 +1,5 @@
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import type { StorybookConfig } from '@storybook/react-vite';
-import react from '@vitejs/plugin-react';
 import { mergeConfig } from 'vite';
 
 const config: StorybookConfig = {
@@ -10,11 +9,24 @@ const config: StorybookConfig = {
     name: '@storybook/react-vite',
     options: {},
   },
-  staticDirs: ['../../../../apps/web/public'],
-  viteFinal: async (config) =>
-    mergeConfig(config, {
-      plugins: [react(), nxViteTsPaths()],
-    }),
+  staticDirs: [
+    '../../../../apps/web/public',
+    '../styles', // Add styles directory to static dirs
+  ],
+  viteFinal: async (config) => {
+    return mergeConfig(config, {
+      // Add paths plugin to support Nx aliases
+      plugins: [nxViteTsPaths()],
+      // Force CSS processing
+      css: {
+        devSourcemap: true
+      },
+      // Ensure dependencies are included
+      optimizeDeps: {
+        include: ['react', 'react-dom'],
+      }
+    });
+  },
 };
 
 export default config;

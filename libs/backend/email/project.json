@@ -1,9 +1,0 @@
-{
-  "name": "email",
-  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/backend/email/src",
-  "projectType": "library",
-  "tags": [],
-  "// targets": "to see all targets run: nx show project email --web",
-  "targets": {}
-}

@@ -1,6 +1,6 @@
-import type { MetaFunction } from '@remix-run/node';
+import type { MetaFunction } from 'react-router';
+
 import { ProductDetail } from '~/pages/ProductDetail';
-import PageLayout from '~/pages/PageLayout';
 
 export const meta: MetaFunction = () => {
   return [
@@ -11,8 +11,6 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-    <PageLayout title="ProjectX">
-      <ProductDetail />
-    </PageLayout>
+    <ProductDetail />
   );
 }

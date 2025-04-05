@@ -5,7 +5,7 @@
     "production": [
       "default",
       "!{projectRoot}/.eslintrc.json",
-      "!{projectRoot}/eslint.config.js",
+      "!{projectRoot}/eslint.config.mjs",
       "!{projectRoot}/**/*.stories.@(js|jsx|ts|tsx|mdx)",
       "!{projectRoot}/.storybook/**/*",
       "!{projectRoot}/tsconfig.storybook.json",
@@ -18,27 +18,43 @@
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
   "neverConnectToCloud": true,
+  "cli": {
+    "warnings": {
+      "missingTypeScript": false,
+      "vite-plugin-checker": false
+    }
+  },
   "plugins": [
     {
-      "plugin": "@nx/remix/plugin",
+      "plugin": "@nx/js/typescript",
       "options": {
-        "startTargetName": "start",
+        "typecheck": {
+          "targetName": "typecheck"
+        },
+        "build": {
+          "targetName": "build",
+          "configName": "tsconfig.lib.json",
+          "buildDepsName": "build-deps",
+          "watchDepsName": "watch-deps"
+        }
+      }
+    },
+    {
+      "plugin": "@nx/react/router-plugin",
+      "options": {
         "buildTargetName": "build",
         "devTargetName": "dev",
-        "typecheckTargetName": "typecheck",
-        "serveStaticTargetName": "serve-static"
-      }
+        "startTargetName": "start",
+        "watchDepsTargetName": "watch-deps",
+        "buildDepsTargetName": "build-deps",
+        "typecheckTargetName": "typecheck"
+      },
+      "include": ["apps/web/**/*"]
     },
     {
       "plugin": "@nx/eslint/plugin",
       "options": {
         "targetName": "lint"
-      }
-    },
-    {
-      "plugin": "@nx/rollup/plugin",
-      "options": {
-        "buildTargetName": "build"
       }
     },
     {
@@ -48,7 +64,8 @@
         "buildStorybookTargetName": "build-storybook",
         "testStorybookTargetName": "test-storybook",
         "staticStorybookTargetName": "static-storybook"
-      }
+      },
+      "include": ["libs/frontend/**/*"]
     },
     {
       "plugin": "@nx/vite/plugin",
@@ -56,10 +73,14 @@
         "buildTargetName": "build",
         "testTargetName": "test",
         "serveTargetName": "serve",
+        "devTargetName": "dev",
         "previewTargetName": "preview",
         "serveStaticTargetName": "serve-static",
-        "typecheckTargetName": "typecheck"
-      }
+        "typecheckTargetName": "typecheck",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
+      },
+      "include": ["apps/web/**/*"]
     },
     {
       "plugin": "@nx/webpack/plugin",
@@ -67,7 +88,8 @@
         "buildTargetName": "build",
         "serveTargetName": "serve",
         "previewTargetName": "preview"
-      }
+      },
+      "exclude": ["apps/web/**/*"]
     },
     {
       "plugin": "@nx/jest/plugin",
@@ -77,24 +99,47 @@
       "exclude": [
         "apps/auth-e2e/**/*",
         "apps/order-e2e/**/*",
-        "apps/product-e2e/**/*"
+        "apps/product-e2e/**/*",
+        "temp-appb-e2e/**/*"
       ]
+    },
+    {
+      "plugin": "@nx/playwright/plugin",
+      "options": {
+        "targetName": "e2e"
+      }
     }
   ],
   "targetDefaults": {
-    "@nx/remix:build": {
+    "build-storybook": {
+      "cache": true
+    },
+    "test": {
+      "dependsOn": ["^build"]
+    },
+    "e2e-ci--**/*": {
+      "dependsOn": ["^build"]
+    },
+    "@nx/js:tsc": {
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
-    },
-    "build-storybook": {
-      "cache": true
     }
   },
   "generators": {
     "@nx/react": {
       "library": {
-        "unitTestRunner": "none"
+        "style": "tailwind",
+        "linter": "eslint"
+      },
+      "application": {
+        "babel": true,
+        "style": "tailwind",
+        "linter": "eslint",
+        "bundler": "vite"
+      },
+      "component": {
+        "style": "tailwind"
       }
     }
   }

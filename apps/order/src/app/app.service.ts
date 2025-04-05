@@ -34,12 +34,29 @@ import { createOrder } from '../workflows/order.workflow';
 @Injectable()
 export class AppService {
   private readonly logger = new Logger(AppService.name);
-
+  private readonly taskQueue: string;
   constructor(
     private readonly configService: ConfigService,
     private readonly clientService: ClientService,
     private readonly stripeService: StripeService
-  ) {}
+  ) {
+    const taskQueue = this.configService.get<string>('temporal.taskQueue');
+    if (!taskQueue) {
+      throw new Error('Task queue not found');
+    }
+    this.taskQueue = taskQueue;
+  }
+
+  getWorkflowClient() {
+    const workflowClient = this.clientService.client?.workflow;
+    if (!workflowClient) {
+      throw new HttpException(
+        'The workflow client was not initialized correctly',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+    return workflowClient;
+  }
 
   getWorkflowIdByReferenceId(referenceId: string) {
     return `order-${referenceId}`;
@@ -47,7 +64,6 @@ export class AppService {
 
   async createOrder(user: AuthUser, orderDto: CreateOrderDto) {
     this.logger.log(`createOrder(${user.email}) - creating order`);
-    const taskQueue = this.configService.get<string>('temporal.taskQueue');
     try {
       // Start workflow with order data
       const workflowData: OrderWorkflowData = {
@@ -60,7 +76,7 @@ export class AppService {
         {
           workflowId: this.getWorkflowIdByReferenceId(orderDto.referenceId),
           args: [workflowData],
-          taskQueue,
+          taskQueue: this.taskQueue,
           workflowIdConflictPolicy: WorkflowIdConflictPolicy.FAIL,
           searchAttributes: {
             UserId: [user.id],
@@ -70,7 +86,7 @@ export class AppService {
       );
 
       const state =
-        await this.clientService.client?.workflow.executeUpdateWithStart(
+        await this.getWorkflowClient().executeUpdateWithStart(
           createOrderUpdate,
           {
             startWorkflowOperation,
@@ -109,7 +125,7 @@ export class AppService {
     const workflowId = this.getWorkflowIdByReferenceId(referenceId);
 
     const description = await getWorkflowDescription(
-      this.clientService.client?.workflow,
+      this.getWorkflowClient(),
       workflowId
     );
 
@@ -121,7 +137,7 @@ export class AppService {
       throw new HttpException('Order has expired', HttpStatus.GONE);
     }
 
-    const handle = this.clientService.client?.workflow.getHandle(workflowId);
+    const handle = this.getWorkflowClient().getHandle(workflowId);
     const state = await handle.query(getOrderStateQuery);
     return state;
   }
@@ -129,7 +145,7 @@ export class AppService {
   async cancelOrder(referenceId: string) {
     this.logger.log(`cancelOrder(${referenceId}) - cancelling order`);
     const workflowId = this.getWorkflowIdByReferenceId(referenceId);
-    const handle = this.clientService.client?.workflow.getHandle(workflowId);
+    const handle = this.getWorkflowClient().getHandle(workflowId);
     await handle.signal(cancelWorkflowSignal);
   }
 
@@ -163,7 +179,7 @@ export class AppService {
 
       // Get workflow handle
       const workflowId = this.getWorkflowIdByReferenceId(referenceId);
-      const handle = this.clientService.client?.workflow.getHandle(workflowId);
+      const handle = this.getWorkflowClient().getHandle(workflowId);
 
       // Convert Stripe event to PaymentWebhookEvent
       const webhookEvent: PaymentWebhookEvent = {
@@ -188,7 +204,7 @@ export class AppService {
       // Return true to indicate the webhook was received
       return { received: true };
     } catch (err) {
-      this.logger.error(`handleWebhook(${signature}) - Webhook Error: ${err.message}`);
+      this.logger.error(`handleWebhook(${signature}) - Webhook Error: ${err}`);
       throw new BadRequestException('Webhook Error', {
         cause: err,
       });

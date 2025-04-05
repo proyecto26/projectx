@@ -55,6 +55,11 @@ export async function loginUserWorkflow(
   setHandler(
     verifyLoginCodeUpdate,
     async (code) => {
+      if (!state.code) {
+        throw ApplicationFailure.nonRetryable(
+          'Login code not found',
+        );
+      }
       const user = await verifyLoginCode(data.email, code, state.code);
       if (user) {
         state.user = user;

@@ -1,16 +1,16 @@
-import { createRemixStub } from '@remix-run/testing';
+import { createRoutesStub } from 'react-router';
 import { render, screen, waitFor } from '@testing-library/react';
-import Index from '../../app/routes/_index';
+import App from '../../app/app';
 
 test('renders loader data', async () => {
-  const RemixStub = createRemixStub([
+  const ReactRouterStub = createRoutesStub([
     {
       path: '/',
-      Component: Index,
+      Component: App,
     },
   ]);
 
-  render(<RemixStub />);
+  render(<ReactRouterStub />);
 
   await waitFor(() => screen.findByText('Hello there,'));
 });

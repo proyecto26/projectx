@@ -1,4 +1,4 @@
-import { NavLink } from '@remix-run/react';
+import { NavLink } from 'react-router';
 import React, { type PropsWithChildren, useState } from 'react';
 
 import { NavigationSection } from '../navigation';

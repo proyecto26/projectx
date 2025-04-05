@@ -1,19 +1,22 @@
 {
-  "compileOnSave": false,
   "compilerOptions": {
-    "rootDir": ".",
-    "sourceMap": true,
-    "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
+    "composite": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
     "importHelpers": true,
-    "target": "es2017",
-    "module": "esnext",
-    "lib": ["es2020", "dom"],
+    "isolatedModules": true,
+    "lib": ["es2022"],
+    "module": "es2022",
+    "moduleDetection": "force",
+    "moduleResolution": "node",
+    "noEmitOnError": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
     "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
-    "incremental": true,
+    "strict": true,
+    "target": "es2022",
     "baseUrl": ".",
     "paths": {
       "@projectx/core": ["libs/backend/core/src/index.ts"],
@@ -23,7 +26,8 @@
       "@projectx/payment": ["libs/backend/payment/src/index.ts"],
       "@projectx/ui": ["libs/frontend/ui/src/index.ts"],
       "@projectx/workflows": ["libs/backend/workflows/src/index.ts"]
-    }
-  },
-  "exclude": ["node_modules", "tmp"]
+    },
+    "sourceMap": true,
+    "skipDefaultLibCheck": true
+  }
 }

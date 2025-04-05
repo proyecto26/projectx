@@ -1,29 +1,37 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc",
+    "outDir": "./out-tsc/vitest",
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
     "types": [
       "vitest/globals",
       "vitest/importMeta",
       "vite/client",
       "node",
-      "vitest"
-    ]
+      "vitest",
+      "@nx/react/typings/cssmodule.d.ts",
+      "@nx/react/typings/image.d.ts"
+    ],
+    "jsx": "react-jsx",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
   },
   "include": [
     "vite.config.ts",
+    "vite.config.mts",
     "vitest.config.ts",
-    "app/**/*.ts",
-    "app/**/*.tsx",
-    "app/**/*.js",
-    "app/**/*.jsx",
-    "tests/**/*.spec.ts",
-    "tests/**/*.test.ts",
-    "tests/**/*.spec.tsx",
-    "tests/**/*.test.tsx",
-    "tests/**/*.spec.js",
-    "tests/**/*.test.js",
-    "tests/**/*.spec.jsx",
-    "tests/**/*.test.jsx"
-  ]
+    "vitest.config.mts",
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.tsx",
+    "src/**/*.spec.tsx",
+    "src/**/*.test.js",
+    "src/**/*.spec.js",
+    "src/**/*.test.jsx",
+    "src/**/*.spec.jsx",
+    "src/**/*.d.ts",
+    ".react-router/types/**/*"
+  ],
+  "files": []
 }

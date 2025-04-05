@@ -1,41 +1,37 @@
 import type { UserDto } from '@projectx/models';
-import type {
-  MetaFunction,
-  LinksFunction,
-  LoaderFunction,
-  LoaderFunctionArgs,
-} from '@remix-run/node';
+
 import {
-  isRouteErrorResponse,
-  json,
+  data,
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
+  type MetaFunction,
+  type LinksFunction,
+  useRouteLoaderData,
+  isRouteErrorResponse,
   useRouteError,
-} from '@remix-run/react';
-import { PropsWithChildren } from 'react';
+} from 'react-router';
 import { AuthenticityTokenProvider } from 'remix-utils/csrf/react';
-import { ToastContainer } from 'react-toastify';
 
-import { getEnv } from '~/config/env.server';
-import { csrf } from '~/cookies/session.server';
-import twStyles from '~/tailwind.css';
-import {
-  withQueryClientProvider,
-  withCartProvider,
-  withAuthProvider,
-  withStoreProvider,
-  useWorkflows,
-} from '~/providers';
-import { getAuthSession } from '~/cookies/auth.server';
+import '../styles.css';
 import { THEME } from './constants';
+import { AppNav } from './app-nav';
+import { useWorkflows, withAuthProvider, withCartProvider, withQueryClientProvider, withStoreProvider } from './providers';
+import { ToastContainer } from 'react-toastify';
+import { getEnv } from './config/env.server';
+import { csrf } from './cookies/session.server';
+import { getAuthSession } from './cookies/auth.server';
+import { Route } from './+types/root';
+
+export const meta: MetaFunction = () => [
+  {
+    title: 'ProjectX App',
+  },
+];
 
 export const links: LinksFunction = () => [
-  { rel: 'stylesheet', href: twStyles },
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
   {
     rel: 'preconnect',
@@ -48,22 +44,7 @@ export const links: LinksFunction = () => [
   },
 ];
 
-export const meta: MetaFunction = () => [
-  {
-    title: 'ProjectX App',
-  },
-];
-
-type LoaderData = {
-  theme: string;
-  user?: UserDto;
-  csrfToken: string;
-  accessToken?: string;
-  isAuthenticated: boolean;
-  ENV: ReturnType<typeof getEnv>;
-};
-
-export const loader: LoaderFunction = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
   const [csrfToken, cookieHeader] = await csrf.commitToken();
   const theme = request.headers.get('Cookie')?.includes('theme=dark')
     ? THEME.DARK
@@ -71,7 +52,7 @@ export const loader: LoaderFunction = async ({ request }: LoaderFunctionArgs) =>
   const { getAuthUser, getAuthAccessToken } = await getAuthSession(request);
   const accessToken = getAuthAccessToken();
   const user = getAuthUser();
-  return json<LoaderData>(
+  return data(
     {
       user,
       theme,
@@ -82,61 +63,79 @@ export const loader: LoaderFunction = async ({ request }: LoaderFunctionArgs) =>
     },
     {
       headers: {
-        'Set-Cookie': cookieHeader as string,
+        ...(cookieHeader ? { 'Set-Cookie': cookieHeader } : {}),
       },
     }
   );
 };
 
-export type AppProps = PropsWithChildren<
-  Omit<LoaderData, 'isAuthenticated'>
->;
-function App({ csrfToken, theme, user, accessToken, ENV }: AppProps) {
-  // Connect Temporal workflows to your app
-  useWorkflows({ accessToken: accessToken as string, email: user?.email as string });
-
+export function Layout({ children }: { children: React.ReactNode }) {
+  const data = useRouteLoaderData<typeof loader>('root');
+  const { theme } = data ?? {};
   return (
-    <AuthenticityTokenProvider token={csrfToken}>
-      <html lang="en" data-theme={theme}>
-        <head>
-          <meta charSet="utf-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <meta
-            name="color-scheme"
-            content={theme === THEME.DARK ? 'dark light' : 'light dark'}
-          />
-          <Meta />
-          <Links />
-        </head>
-        <body>
-          <ToastContainer />
+    <html lang="en" data-theme={theme}>
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+          name="color-scheme"
+          content={theme === THEME.DARK ? 'dark light' : 'light dark'}
+        />
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <AppNav />
+        {children}
+        <ToastContainer />
+        {ENV && (
           <script
             suppressHydrationWarning
             dangerouslySetInnerHTML={{
               __html: String.raw`
-                  window.ENV = ${JSON.stringify(ENV)};
-                `,
+                window.ENV = ${JSON.stringify(ENV)};
+              `,
             }}
           />
-          <Outlet />
-          <ScrollRestoration />
-          <Scripts />
-          <LiveReload />
-        </body>
-      </html>
+        )}
+        <ScrollRestoration />
+        <Scripts />
+      </body>
+    </html>
+  );
+}
+
+type AppProps = {
+  csrfToken: string;
+  theme: string;
+  user: UserDto;
+  accessToken: string;
+  ENV: ReturnType<typeof getEnv>;
+};
+
+function App({ csrfToken, theme, user, accessToken, ENV }: AppProps) {
+  // Connect Temporal workflows to your app
+  useWorkflows({ accessToken, email: user?.email });
+
+  return (
+    <AuthenticityTokenProvider token={csrfToken}>
+      <Outlet />
     </AuthenticityTokenProvider>
   );
 }
 
-const AppWithProviders = withQueryClientProvider(withStoreProvider(
-  withAuthProvider(withCartProvider(App))
-));
-/**
- * This is the root component of the app. It is used to wrap the app with the providers.
- */
-export default function () {
-  const { user, ...props } = useLoaderData<LoaderData>();
-  return <AppWithProviders {...props} user={user as unknown as UserDto} />;
+// Compose providers in the correct order
+const AppWithProviders = withQueryClientProvider(
+  withStoreProvider(
+    withAuthProvider(
+      withCartProvider(App)
+    )
+  )
+);
+
+export default function ({ loaderData }: Route.ComponentProps) {
+  const { user, ...props } = loaderData;
+  return <AppWithProviders {...props} user={user} />;
 }
 
 export const ErrorBoundary = () => {

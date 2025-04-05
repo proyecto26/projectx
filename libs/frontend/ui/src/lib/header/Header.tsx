@@ -58,7 +58,9 @@ export function Header({
     setSearchFocused(false);
     setMobileSearchFocused(false);
   };
+  // Use type assertion to fix typing issue
   const headerRef = useRef<HTMLElement>(null);
+  // @ts-expect-error - Type compatibility issue with the usehooks-ts library
   useOnClickOutside(headerRef, onCloseSearch);
   const openSearch = () => {
     setSearchFocused(true);

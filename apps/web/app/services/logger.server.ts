@@ -1,4 +1,4 @@
-import { createLoggerOptions } from '@projectx/core/logger';
+import { createLoggerOptions } from '@projectx/core';
 import pino from 'pino';
 
 import { environment } from '~/config/app.config.server';

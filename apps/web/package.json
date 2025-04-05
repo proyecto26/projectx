@@ -1,27 +1,36 @@
 {
-  "private": true,
   "name": "web",
-  "description": "",
-  "license": "",
-  "scripts": {},
+  "private": true,
   "type": "module",
+  "scripts": {},
+  "engines": {
+    "node": ">=20"
+  },
+  "sideEffects": false,
+  "nx": {
+    "name": "web",
+    "targets": {
+      "generate-types": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "react-router typegen",
+          "cwd": "apps/web"
+        }
+      }
+    }
+  },
   "dependencies": {
-    "@remix-run/node": "2.13.1",
-    "@remix-run/react": "2.13.1",
-    "@remix-run/serve": "2.13.1",
-    "isbot": "4.4.0",
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "@react-router/node": "^7.4.1",
+    "@react-router/serve": "^7.4.1",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-router": "^7.4.1"
   },
   "devDependencies": {
-    "@remix-run/dev": "^2.13.1",
-    "@types/react": "^18.3.1",
-    "@types/react-dom": "^18.3.1",
-    "eslint": "^8.56.0",
-    "typescript": "~5.5.2"
-  },
-  "engines": {
-    "node": ">=14"
-  },
-  "sideEffects": false
+    "@react-router/dev": "^7.4.1",
+    "@tailwindcss/vite": "4.1.1",
+    "@types/node": "^22.14.0",
+    "@types/react": "19.1.0",
+    "@types/react-dom": "19.1.1"
+  }
 }

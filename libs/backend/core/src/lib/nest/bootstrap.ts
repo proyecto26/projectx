@@ -1,9 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
-import { NestApplicationOptions, ValidationPipe } from '@nestjs/common';
+import { NestApplicationOptions, ValidationPipe, Type } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { Environment } from '@projectx/models';
-import { json, urlencoded } from 'body-parser';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 
 import { setupAppSecurity } from '../security';
@@ -11,7 +10,7 @@ import { setupAppSwagger } from '../swagger';
 
 const TRUSTED_IPS = ['127.0.0.1'];
 
-type NestFactoryCreate = [module: object, options?: NestApplicationOptions];
+type NestFactoryCreate = [module: Type<unknown>, options?: NestApplicationOptions];
 
 export async function bootstrapApp<T extends NestExpressApplication>(
   ...params: NestFactoryCreate
@@ -69,7 +68,7 @@ export async function bootstrapApp<T extends NestExpressApplication>(
   }
 
   try {
-    logger.log(`Starting app on port ${port}`);
+    logger.debug(`Starting app on port ${port}, env: ${env}`);
     await app.listen(port, '0.0.0.0');
     logger.log(`🚀 Application is running on port ${port}`);
   } catch (error) {

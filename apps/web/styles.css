@@ -1,0 +1,12 @@
+/* You can add global styles to this file, and also import other style files */
+@import '../../libs/frontend/ui/styles/index.css';
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+  -webkit-appearance: none;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}

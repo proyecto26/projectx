@@ -4,12 +4,12 @@ export type ButtonProps = ComponentProps<'button'> & {
   variant?: 'primary' | 'secondary' | 'accent' | 'ghost';
 };
 
-export const Button: React.FC<ButtonProps> = ({
+export const Button = ({
   children,
   variant = 'primary',
   className = '',
   ...props
-}) => {
+}: ButtonProps) => {
   const baseStyles = 'btn';
   const variantStyles = {
     primary: 'btn-primary',

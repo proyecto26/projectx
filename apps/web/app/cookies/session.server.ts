@@ -1,4 +1,4 @@
-import { createCookie, createCookieSessionStorage } from '@remix-run/node';
+import { createCookie, createCookieSessionStorage } from 'react-router';
 import { CSRF } from "remix-utils/csrf/server";
 
 import { sessionSecret } from "~/config/app.config.server";

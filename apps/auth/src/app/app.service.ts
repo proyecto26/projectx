@@ -15,15 +15,33 @@ import { loginUserWorkflow } from '../workflows';
 @Injectable()
 export class AppService {
   readonly logger = new Logger(AppService.name);
+  private readonly taskQueue: string;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly clientService: ClientService,
     private readonly authService: AuthService
-  ) {}
+  ) {
+    const taskQueue = this.configService.get<string>('temporal.taskQueue');
+    if (!taskQueue) {
+      throw new Error('Task queue not found');
+    }
+    this.taskQueue = taskQueue;
+  }
 
   getWorkflowIdByEmail(email: string) {
     return `login-${email}`;
+  }
+
+  getWorkflowClient() {
+    const workflowClient = this.clientService.client?.workflow;
+    if (!workflowClient) {
+      throw new HttpException(
+        'The workflow client was not initialized correctly',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+    return workflowClient;
   }
 
   /**
@@ -33,11 +51,10 @@ export class AppService {
    */
   async login(body: AuthLoginDto) {
     this.logger.log(`sendLoginEmail(${body.email}) - sending email`);
-    const taskQueue = this.configService.get<string>('temporal.taskQueue');
     try {
-      await this.clientService.client?.workflow.start(loginUserWorkflow, {
+      await this.getWorkflowClient().start(loginUserWorkflow, {
         args: [body],
-        taskQueue,
+        taskQueue: this.taskQueue,
         workflowId: this.getWorkflowIdByEmail(body.email),
         searchAttributes: {
           Email: [body.email],
@@ -72,7 +89,7 @@ export class AppService {
     const workflowId = this.getWorkflowIdByEmail(body.email);
 
     const description = await getWorkflowDescription(
-      this.clientService.client?.workflow,
+      this.getWorkflowClient(),
       workflowId
     );
     const isLoginRunning = isWorkflowRunning(description);
@@ -81,7 +98,7 @@ export class AppService {
       throw new HttpException('The code has expired', HttpStatus.BAD_REQUEST);
     }
 
-    const handle = this.clientService.client?.workflow.getHandle(workflowId);
+    const handle = this.getWorkflowClient().getHandle(workflowId);
     const result = await handle.executeUpdate(verifyLoginCodeUpdate, {
       args: [body.code],
     });

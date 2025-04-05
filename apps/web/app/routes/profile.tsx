@@ -1,7 +1,6 @@
-import type { LoaderFunction, MetaFunction } from '@remix-run/node';
+import type { LoaderFunction, MetaFunction } from 'react-router';
 
 import { getAccessTokenOrRedirect } from '~/cookies/auth.server';
-import PageLayout from '~/pages/PageLayout';
 import { ProfilePage } from '~/pages/Profile';
 
 export const meta: MetaFunction = () => {
@@ -22,8 +21,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function Index() {
   return (
-    <PageLayout title="Profile">
-      <ProfilePage />
-    </PageLayout>
+    <ProfilePage />
   );
 }

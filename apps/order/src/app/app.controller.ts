@@ -10,7 +10,8 @@ import {
   HttpCode,
   Delete,
   Req,
-  RawBodyRequest,
+  type RawBodyRequest,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -21,7 +22,7 @@ import {
   ApiHeader,
   ApiResponse,
 } from '@nestjs/swagger';
-import { AuthenticatedUser, AuthUser, JwtAuthGuard } from '@projectx/core';
+import { AuthenticatedUser, type AuthUser, JwtAuthGuard } from '@projectx/core';
 import { CreateOrderDto, OrderStatusResponseDto } from '@projectx/models';
 
 import { AppService } from './app.service';
@@ -39,7 +40,7 @@ export class AppController {
   @Post()
   async createOrder(
     @AuthenticatedUser() userDto: AuthUser,
-    @Body() orderDto: CreateOrderDto
+    @Body() orderDto: CreateOrderDto,
   ) {
     return this.appService.createOrder(userDto, orderDto);
   }
@@ -78,7 +79,8 @@ export class AppController {
 
   @ApiOperation({
     summary: 'Handle Stripe webhook events',
-    description: 'Endpoint for receiving webhook events from Stripe for payment processing',
+    description:
+      'Endpoint for receiving webhook events from Stripe for payment processing',
   })
   @ApiHeader({
     name: 'stripe-signature',
@@ -97,9 +99,12 @@ export class AppController {
   @Post('/webhook')
   async handleStripeWebhook(
     @Req() request: RawBodyRequest<Request>,
-    @Headers('stripe-signature') signature: string
+    @Headers('stripe-signature') signature: string,
   ) {
     // Validate and process the webhook
+    if (!request.rawBody) {
+      throw new BadRequestException('Request body is empty');
+    }
     return this.appService.handleWebhook(request.rawBody, signature);
   }
 }

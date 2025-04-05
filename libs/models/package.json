@@ -1,0 +1,42 @@
+{
+  "name": "@projectx/models",
+  "version": "0.0.1",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "development": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo"
+  ],
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "nx": {
+    "targets": {
+      "build": {
+        "executor": "@nx/js:tsc",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "options": {
+          "outputPath": "dist/libs/models",
+          "tsConfig": "libs/models/tsconfig.lib.json",
+          "packageJson": "libs/models/package.json",
+          "main": "libs/models/src/index.ts",
+          "assets": [
+            "libs/models/*.md"
+          ]
+        }
+      }
+    }
+  }
+}

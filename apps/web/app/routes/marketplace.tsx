@@ -1,12 +1,11 @@
 import { ProductDto } from '@projectx/models';
-import type { MetaFunction } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
 import axios from 'axios';
+import type { MetaFunction } from 'react-router';
+import type { Route } from './+types/marketplace';
 
 import { productAPIUrl } from '~/config/app.config.server';
 import { useProducts } from '~/hooks/useProducts';
 import { MarketplacePage } from '~/pages/MarketplacePage';
-import PageLayout from '~/pages/PageLayout';
 
 export const meta: MetaFunction = () => {
   return [
@@ -37,18 +36,16 @@ export const loader = async () => {
   }
 }
 
-export default function Index() {
-  const { products: initialProducts } = useLoaderData<typeof loader>();
+export default function Index({ loaderData }: Route.ComponentProps) {
+  const { products: initialProducts } = loaderData;
   const { data: products } = useProducts({
-    initialData: initialProducts?.map(product => ({
+    initialData: initialProducts?.map((product: ProductDto) => ({
       ...product,
       createdAt: new Date(product.createdAt),
       updatedAt: new Date(product.updatedAt)
     })) as ProductDto[],
   });
   return (
-    <PageLayout title="ProjectX">
-      <MarketplacePage products={products?.pages ? products?.pages[0] : []} />
-    </PageLayout>
+    <MarketplacePage products={products?.pages ? products?.pages[0] : []} />
   );
 }

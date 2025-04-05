@@ -14,12 +14,14 @@ x-service-common: &service-common
       condition: service_started
   environment:
     - NX_DISABLE_DB=true
+    - NX_SKIP_NX_CACHE=true  # Skip Nx cache to avoid conflicts
   build:
     context: .
     dockerfile: Dockerfile
   volumes:
     - .:/app
     - /app/libs/frontend
+    - /app/apps/web
     - /app/node_modules
 
 services:
