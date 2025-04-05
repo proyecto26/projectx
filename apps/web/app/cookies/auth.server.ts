@@ -2,6 +2,7 @@ import { UserDto } from '@projectx/models';
 import { createCookieSessionStorage, redirect } from 'react-router';
 import { plainToInstance } from 'class-transformer';
 import isEmpty from 'lodash/isEmpty';
+import isObject from 'lodash/isObject';
 
 import { sessionSecret } from '../config/app.config.server';
 
@@ -29,7 +30,7 @@ export async function getAuthSession(request: Request) {
       const user = session.get(USER_KEY);
       return isEmpty(user)
         ? undefined
-        : plainToInstance(UserDto, _.isObject(user) ? user : JSON.parse(user), {
+        : plainToInstance(UserDto, isObject(user) ? user : JSON.parse(user), {
             excludeExtraneousValues: true,
           }) as unknown as UserDto;
     },
