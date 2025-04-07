@@ -24,6 +24,9 @@
       "vite-plugin-checker": false
     }
   },
+  "sync": {
+    "applyChanges": true
+  },
   "plugins": [
     {
       "plugin": "@nx/js/typescript",

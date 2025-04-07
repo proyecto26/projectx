@@ -2,6 +2,10 @@
   "mcpServers": {
     "nx-mcp": {
       "url": "http://localhost:9774/sse"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"]
     }
   }
 }

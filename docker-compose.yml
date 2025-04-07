@@ -13,16 +13,34 @@ x-service-common: &service-common
     temporal:
       condition: service_started
   environment:
-    - NX_DISABLE_DB=true
     - NX_SKIP_NX_CACHE=true  # Skip Nx cache to avoid conflicts
+    # Enable file system polling for better file watching in Docker
+    - WATCHPACK_POLLING=true
+    - CHOKIDAR_USEPOLLING=true
+    - CHOKIDAR_INTERVAL=500  # Faster interval for detecting changes
+    # Debugging and verbose logging
+    - NX_VERBOSE_LOGGING=true
+    - DEBUG=nx*
+    - FORCE_COLOR=1
+    # Do not use NX daemon when resetting in container
+    - NX_DAEMON=false
+    # Use container-specific directory for cache
+    - NX_CACHE_DIRECTORY=/app/.nx-cache
+    # Enable Webpack Hot Module Replacement
+    - WEBPACK_WATCH=true
+    - WEBPACK_DEV_SERVER_LIVE_RELOAD=true
+    - NODE_ENV=development
   build:
     context: .
     dockerfile: Dockerfile
   volumes:
-    - .:/app
-    - /app/libs/frontend
-    - /app/apps/web
+    # Mount the entire project directory to ensure all files are visible in the container
+    - .:/app:delegated
+    # These are anonymous volumes to prevent node_modules from being overwritten by host
     - /app/node_modules
+    # Frontend files that should not be watched (speeds up the container)
+    - /app/apps/web
+    - /app/libs/frontend
 
 services:
   db:
@@ -123,12 +141,15 @@ services:
       bash -c "
       npm run prisma:generate &&
       npm run prisma:migrate &&
+      rm -rf /app/.nx-cache &&
+      rm -rf /app/dist/apps/auth &&
       npx nx reset &&
       npm run dev:auth
       "
     ports:
       - "${AUTH_PORT:-8081}:${AUTH_PORT:-8081}"
       - "9229:9229"
+    restart: unless-stopped
 
   order:
     <<: *service-common
@@ -137,12 +158,15 @@ services:
       bash -c "
       npm run prisma:generate &&
       npm run prisma:migrate &&
+      rm -rf /app/.nx-cache &&
+      rm -rf /app/dist/apps/order &&
       npx nx reset &&
       npm run dev:order
       "
     ports:
       - "${ORDER_PORT:-8082}:${ORDER_PORT:-8082}"
       - "9230:9230"
+    restart: unless-stopped
 
   product:
     <<: *service-common
@@ -152,12 +176,15 @@ services:
       npm run prisma:generate &&
       npm run prisma:migrate &&
       npm run prisma:seed &&
+      rm -rf /app/.nx-cache &&
+      rm -rf /app/dist/apps/product &&
       npx nx reset &&
       npm run dev:product
       "
     ports:
       - "${PRODUCT_PORT:-8083}:${PRODUCT_PORT:-8083}"
       - "9231:9231"
+    restart: unless-stopped
 
   ngrok-order:
     image: ngrok/ngrok:latest

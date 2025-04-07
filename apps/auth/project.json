@@ -19,7 +19,7 @@
           "apps/auth/src/assets",
           "apps/auth/src/workflows"
         ],
-        "isolatedConfig": true,
+        "poll": 500,
         "webpackConfig": "apps/auth/webpack.config.js"
       },
       "configurations": {
@@ -35,8 +35,15 @@
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "auth:build",
-        "runBuildTargetDependencies": false
+        "buildTarget": "auth:build:development",
+        "watch": true,
+        "waitUntilTargets": [
+          "@projectx/core:build",
+          "@projectx/db:build",
+          "@projectx/models:build",
+          "@projectx/email:build",
+          "@projectx/workflows:build"
+        ]
       },
       "configurations": {
         "development": {

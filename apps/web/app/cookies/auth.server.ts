@@ -8,7 +8,7 @@ import { sessionSecret } from '../config/app.config.server';
 
 const authStorage = createCookieSessionStorage({
   cookie: {
-    name: '__login',
+    name: '__auth',
     secure: process.env.NODE_ENV !== 'development',
     secrets: [sessionSecret],
     sameSite: 'lax',

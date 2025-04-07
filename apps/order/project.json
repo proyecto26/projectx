@@ -19,7 +19,7 @@
           "apps/order/src/assets",
           "apps/order/src/workflows"
         ],
-        "isolatedConfig": true,
+        "poll": 500,
         "webpackConfig": "apps/order/webpack.config.js"
       },
       "configurations": {
@@ -35,8 +35,16 @@
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "order:build",
-        "runBuildTargetDependencies": false
+        "buildTarget": "order:build:development",
+        "watch": true,
+        "waitUntilTargets": [
+          "@projectx/core:build",
+          "@projectx/db:build",
+          "@projectx/models:build",
+          "@projectx/email:build",
+          "@projectx/payment:build",
+          "@projectx/workflows:build"
+        ]
       },
       "configurations": {
         "development": {

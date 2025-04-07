@@ -18,7 +18,7 @@
         "assets": [
           "apps/product/src/assets"
         ],
-        "isolatedConfig": true,
+        "poll": 500,
         "webpackConfig": "apps/product/webpack.config.js"
       },
       "configurations": {
@@ -35,8 +35,13 @@
       "defaultConfiguration": "development",
       "dependsOn": ["build"],
       "options": {
-        "buildTarget": "product:build",
-        "runBuildTargetDependencies": false
+        "buildTarget": "product:build:development",
+        "watch": true,
+        "waitUntilTargets": [
+          "@projectx/core:build",
+          "@projectx/db:build",
+          "@projectx/models:build"
+        ]
       },
       "configurations": {
         "development": {
