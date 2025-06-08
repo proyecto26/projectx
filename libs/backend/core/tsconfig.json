@@ -2,7 +2,6 @@
   "extends": "../../../tsconfig.backend.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src",
     "declaration": true,
     "declarationMap": true,
     "tsBuildInfoFile": "dist/.tsbuildinfo"
