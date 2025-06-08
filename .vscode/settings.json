@@ -1,3 +1,4 @@
 {
-    "nxConsole.nxWorkspacePath": "${workspaceFolder}/nx.json"
+    "nxConsole.nxWorkspacePath": "${workspaceFolder}/nx.json",
+    "nxConsole.generateAiAgentRules": true
 }
