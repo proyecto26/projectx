@@ -1,37 +1,31 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    /* Backend/NestJS Specific Options */
+    /* Node.js/NestJS Specific - Official recommendation */
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "target": "ES2021",
     "lib": ["ES2021"],
-    "module": "CommonJS",
-    "moduleResolution": "Node",
     "types": ["node"],
+    
+    /* NestJS Requirements */
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     
-    /* Node.js Environment */
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    
     /* Output Configuration */
+    "outDir": "dist",
     "removeComments": true,
     "preserveConstEnums": true,
     
-    /* Enhanced Strictness for Backend */
+    /* Enhanced Strictness for Backend - Practical settings */
     "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
     "noUnusedLocals": false,
-    "noUnusedParameters": false
-  },
-  "exclude": [
-    "**/node_modules",
-    "**/dist",
-    "**/*.spec.ts",
-    "**/*.test.ts",
-    "**/*.e2e-spec.ts"
-  ]
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  }
 }

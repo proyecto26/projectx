@@ -1,11 +1,10 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    /* Base Options - Essential for all projects */
+    /* Base Options - Following 2024/2025 best practices */
     "incremental": true,
     "target": "ES2022",
     "lib": ["ES2022"],
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
     "allowJs": true,
     "checkJs": false,
     "resolveJsonModule": true,
@@ -24,38 +23,28 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
+    "declaration": false,
+    "removeComments": false,
+    "preserveConstEnums": false,
 
-    /* Error Prevention */
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noPropertyAccessFromIndexSignature": false,
-    "allowUnreachableCode": false,
-    "noErrorTruncation": true,
-
-    /* Decorator Support for NestJS */
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-
-    /* Module Path Mapping */
+    /* Path Mapping - Shared across all projects */
     "baseUrl": ".",
     "paths": {
+      "@projectx/models": ["libs/models/src/index.ts"],
+      "@projectx/models/*": ["libs/models/src/*"],
+      "@projectx/email": ["libs/backend/email/src/index.ts"],
+      "@projectx/email/*": ["libs/backend/email/src/*"],
+      "@projectx/ui": ["libs/frontend/ui/src/index.ts"],
+      "@projectx/ui/*": ["libs/frontend/ui/src/*"],
       "@projectx/core": ["libs/backend/core/src/index.ts"],
       "@projectx/core/*": ["libs/backend/core/src/*"],
       "@projectx/db": ["libs/backend/db/src/index.ts"],
       "@projectx/db/*": ["libs/backend/db/src/*"],
-      "@projectx/email": ["libs/backend/email/src/index.ts"],
-      "@projectx/email/*": ["libs/backend/email/src/*"],
-      "@projectx/models": ["libs/models/src/index.ts"],
-      "@projectx/models/*": ["libs/models/src/*"],
-      "@projectx/payment": ["libs/backend/payment/src/index.ts"],
-      "@projectx/payment/*": ["libs/backend/payment/src/*"],
-      "@projectx/ui": ["libs/frontend/ui/src/index.ts"],
-      "@projectx/ui/*": ["libs/frontend/ui/src/*"],
       "@projectx/workflows": ["libs/backend/workflows/src/index.ts"],
-      "@projectx/workflows/*": ["libs/backend/workflows/src/*"]
+      "@projectx/workflows/*": ["libs/backend/workflows/src/*"],
+      "@projectx/payment": ["libs/backend/payment/src/index.ts"],
+      "@projectx/payment/*": ["libs/backend/payment/src/*"]
     }
   },
-  "exclude": ["**/node_modules", "**/dist", "**/build", "**/*.js", "**/*.map"]
+  "exclude": ["node_modules", "dist", "build", ".next", "coverage"]
 }

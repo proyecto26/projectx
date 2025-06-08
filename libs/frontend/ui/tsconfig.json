@@ -1,8 +1,7 @@
 {
-  "extends": "../../../tsconfig.frontend.json",
+  "extends": "../../../tsconfig.bundler.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src",
     "declaration": true,
     "declarationMap": true,
     "composite": true,

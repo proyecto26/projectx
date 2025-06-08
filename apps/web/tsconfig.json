@@ -1,23 +1,22 @@
 {
-  "extends": "../../tsconfig.frontend.json",
+  "extends": "../../tsconfig.bundler.json",
   "compilerOptions": {
     "noEmit": true,
-    "outDir": "dist",
-    "rootDir": ".",
-    "paths": {
-      "~/*": ["app/*"],
-      "@projectx/models": ["../../libs/models/src/index.ts"],
-      "@projectx/models/*": ["../../libs/models/src/*"],
-      "@projectx/email": ["../../libs/backend/email/src/index.ts"],
-      "@projectx/email/*": ["../../libs/backend/email/src/*"],
-      "@projectx/ui": ["../../libs/frontend/ui/src/index.ts"],
-      "@projectx/ui/*": ["../../libs/frontend/ui/src/*"],
-      "@projectx/core": ["../../libs/backend/core/src/index.ts"],
-      "@projectx/core/*": ["../../libs/backend/core/src/*"],
-      "@projectx/db": ["../../libs/backend/db/src/index.ts"],
-      "@projectx/db/*": ["../../libs/backend/db/src/*"]
-    }
+    "outDir": "dist"
   },
-  "include": ["app/**/*", ".react-router/types/**/*"],
-  "exclude": ["dist", "node_modules", "**/*.spec.ts", "**/*.test.ts"]
+  "include": [
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "app/**/*.js",
+    "app/**/*.jsx",
+    ".react-router/types/**/*"
+  ],
+  "exclude": [
+    "dist",
+    "tests/**/*",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.spec.tsx",
+    "**/*.test.tsx"
+  ]
 }
