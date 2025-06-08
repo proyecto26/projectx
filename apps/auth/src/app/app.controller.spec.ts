@@ -23,7 +23,7 @@ describe('AppController', () => {
     it('should do something', () => {
       const appController = app.get<AppController>(AppController);
       expect(appController.login({ email: 'test@test.com' })).toBeDefined();
-      expect(appService.sendLoginEmail).toHaveBeenCalled();
+      expect(appService.login).toHaveBeenCalled();
     });
   });
 });

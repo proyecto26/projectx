@@ -18,7 +18,6 @@
         "assets": [
           "apps/product/src/assets"
         ],
-        "poll": 500,
         "webpackConfig": "apps/product/webpack.config.js"
       },
       "configurations": {
@@ -26,29 +25,29 @@
           "mode": "development"
         },
         "production": {
-          "mode": "production"
+          "mode": "production",
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
         }
       }
     },
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": ["build"],
       "options": {
-        "buildTarget": "product:build:development",
-        "watch": true,
-        "waitUntilTargets": [
-          "@projectx/core:build",
-          "@projectx/db:build",
-          "@projectx/models:build"
-        ]
+        "buildTarget": "product:build",
+        "runBuildTargetDependencies": false
       },
       "configurations": {
         "development": {
-          "buildTarget": "product:build:development"
+          "buildTarget": "product:build:development",
+          "watch": true,
+          "inspect": true
         },
         "production": {
-          "buildTarget": "product:build:production"
+          "buildTarget": "product:build:production",
+          "watch": false
         }
       }
     }

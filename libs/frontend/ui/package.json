@@ -12,10 +12,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
-    },
-    "./tailwind-config": {
-      "import": "./tailwind.config.mjs",
-      "require": "./tailwind.config.js"
     }
   },
   "files": [

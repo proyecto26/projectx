@@ -19,7 +19,6 @@
           "apps/order/src/assets",
           "apps/order/src/workflows"
         ],
-        "poll": 500,
         "webpackConfig": "apps/order/webpack.config.js"
       },
       "configurations": {
@@ -27,7 +26,10 @@
           "mode": "development"
         },
         "production": {
-          "mode": "production"
+          "mode": "production",
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
         }
       }
     },
@@ -35,23 +37,18 @@
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "order:build:development",
-        "watch": true,
-        "waitUntilTargets": [
-          "@projectx/core:build",
-          "@projectx/db:build",
-          "@projectx/models:build",
-          "@projectx/email:build",
-          "@projectx/payment:build",
-          "@projectx/workflows:build"
-        ]
+        "buildTarget": "order:build",
+        "runBuildTargetDependencies": false
       },
       "configurations": {
         "development": {
-          "buildTarget": "order:build:development"
+          "buildTarget": "order:build:development",
+          "watch": true,
+          "inspect": true
         },
         "production": {
-          "buildTarget": "order:build:production"
+          "buildTarget": "order:build:production",
+          "watch": false
         }
       }
     }

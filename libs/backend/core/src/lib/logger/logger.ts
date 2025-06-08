@@ -10,7 +10,7 @@ export function createLoggerOptions(
 ) {
   const isProduction = environment === Environment.Production;
 
-  return <LoggerOptions>{
+  return {
     level,
     name: serviceName,
     formatters: {
@@ -30,7 +30,8 @@ export function createLoggerOptions(
         }
       : undefined,
     // Generate a correlation ID for each request
-    genReqId: (request: Request) =>
-      request.headers['x-correlation-id'] || uuidv4(),
-  };
+    mixin: (request: Request) => ({
+      correlationId: request.headers['x-correlation-id'] || uuidv4(),
+    }),
+  } as LoggerOptions;
 }

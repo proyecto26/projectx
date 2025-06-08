@@ -18,7 +18,7 @@ export function setupAppSecurity(app: INestApplication): void {
 
   // Enable Cross-origin resource sharing for a list of domains
   app.enableCors({
-    origin: (origin, callback) => {
+    origin: (origin: string, callback: (err: Error | null, allow?: boolean) => void) => {
       if (
         !origin ||
         allowedOrigins.some((allowedOrigin: string) =>

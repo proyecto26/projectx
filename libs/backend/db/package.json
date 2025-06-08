@@ -19,24 +19,5 @@
   ],
   "dependencies": {
     "tslib": "^2.3.0"
-  },
-  "nx": {
-    "targets": {
-      "build": {
-        "executor": "@nx/js:tsc",
-        "outputs": [
-          "{options.outputPath}"
-        ],
-        "options": {
-          "outputPath": "dist/libs/backend/db",
-          "tsConfig": "libs/backend/db/tsconfig.lib.json",
-          "packageJson": "libs/backend/db/package.json",
-          "main": "libs/backend/db/src/index.ts",
-          "assets": [
-            "libs/backend/db/*.md"
-          ]
-        }
-      }
-    }
   }
 }

@@ -131,6 +131,7 @@ export async function bootstrapApp<T extends NestExpressApplication>(
     return app;
   } catch (error) {
     logger?.error(`Failed to start application, error: ${error}`);
+    console.error(`Bootstrap failed: ${error}`);
     throw error;
   }
 }

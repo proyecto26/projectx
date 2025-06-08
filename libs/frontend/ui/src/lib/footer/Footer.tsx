@@ -40,7 +40,7 @@ export const Footer: React.FC<FooterProps> = ({
         </div>
         <div className="mt-8 md:order-1 md:mt-0">
           <div className="text-center text-medium font-medium text-sm lg:text-base">
-            Copyright &copy; {currentYear} ${title}, All rights reserved.
+            Copyright &copy; {currentYear} {title}, All rights reserved.
           </div>
         </div>
       </div>

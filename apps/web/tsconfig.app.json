@@ -10,19 +10,24 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
-    "rootDir": ".",
     "rootDirs": [".", "./.react-router/types"],
     "tsBuildInfoFile": "./dist/tsconfig.app.tsbuildinfo",
     "paths": {
       "~/*": ["./app/*"],
       "@projectx/models": ["../../libs/models/src/index.ts"],
+      "@projectx/models/*": ["../../libs/models/src/*"],
       "@projectx/email": ["../../libs/backend/email/src/index.ts"],
+      "@projectx/email/*": ["../../libs/backend/email/src/*"],
       "@projectx/ui": ["../../libs/frontend/ui/src/index.ts"],
+      "@projectx/ui/*": ["../../libs/frontend/ui/src/*"],
       "@projectx/core": ["../../libs/backend/core/src/index.ts"],
-      "@projectx/db": ["../../libs/backend/db/src/index.ts"]
+      "@projectx/core/*": ["../../libs/backend/core/src/*"],
+      "@projectx/db": ["../../libs/backend/db/src/index.ts"],
+      "@projectx/db/*": ["../../libs/backend/db/src/*"]
     },
     "allowSyntheticDefaultImports": true,
-    "module": "ESNext"
+    "module": "ESNext",
+    "composite": true
   },
   "include": [
     "app/**/*.ts",

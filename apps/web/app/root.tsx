@@ -1,3 +1,4 @@
+import React from 'react';
 import type { UserDto } from '@projectx/models';
 
 import {
@@ -15,7 +16,6 @@ import {
 } from 'react-router';
 import { AuthenticityTokenProvider } from 'remix-utils/csrf/react';
 
-import '../styles.css';
 import { THEME } from './constants';
 import { AppNav } from './app-nav';
 import { useWorkflows, withAuthProvider, withCartProvider, withQueryClientProvider, withStoreProvider } from './providers';
@@ -24,6 +24,7 @@ import { getEnv } from './config/env.server';
 import { csrf } from './cookies/session.server';
 import { getAuthSession } from './cookies/auth.server';
 import { Route } from './+types/root';
+import '../styles.css'; // Import global styles here
 
 export const meta: MetaFunction = () => [
   {
@@ -107,15 +108,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 type AppProps = {
   csrfToken: string;
-  theme: string;
-  user: UserDto;
   accessToken: string;
-  ENV: ReturnType<typeof getEnv>;
+  email?: UserDto['email'];
 };
 
-function App({ csrfToken, theme, user, accessToken, ENV }: AppProps) {
+function App({ csrfToken, email, accessToken }: AppProps) {
   // Connect Temporal workflows to your app
-  useWorkflows({ accessToken, email: user?.email });
+  useWorkflows({ accessToken, email });
 
   return (
     <AuthenticityTokenProvider token={csrfToken}>
@@ -135,7 +134,7 @@ const AppWithProviders = withQueryClientProvider(
 
 export default function ({ loaderData }: Route.ComponentProps) {
   const { user, ...props } = loaderData;
-  return <AppWithProviders {...props} user={user} />;
+  return <AppWithProviders {...props} email={user?.email} />;
 }
 
 export const ErrorBoundary = () => {

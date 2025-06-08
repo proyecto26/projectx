@@ -19,24 +19,5 @@
   ],
   "dependencies": {
     "tslib": "^2.3.0"
-  },
-  "nx": {
-    "targets": {
-      "build": {
-        "executor": "@nx/js:tsc",
-        "outputs": [
-          "{options.outputPath}"
-        ],
-        "options": {
-          "outputPath": "dist/libs/backend/payment",
-          "tsConfig": "libs/backend/payment/tsconfig.lib.json",
-          "packageJson": "libs/backend/payment/package.json",
-          "main": "libs/backend/payment/src/index.ts",
-          "assets": [
-            "libs/backend/payment/*.md"
-          ]
-        }
-      }
-    }
   }
 }

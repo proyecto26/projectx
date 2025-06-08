@@ -1,0 +1,19 @@
+{
+  "name": "workflows",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/backend/workflows/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/backend/workflows",
+        "main": "libs/backend/workflows/src/index.ts",
+        "tsConfig": "libs/backend/workflows/tsconfig.lib.json",
+        "assets": ["libs/backend/workflows/*.md"]
+      }
+    }
+  },
+  "tags": []
+} 

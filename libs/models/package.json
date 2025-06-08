@@ -19,24 +19,5 @@
   ],
   "dependencies": {
     "tslib": "^2.3.0"
-  },
-  "nx": {
-    "targets": {
-      "build": {
-        "executor": "@nx/js:tsc",
-        "outputs": [
-          "{options.outputPath}"
-        ],
-        "options": {
-          "outputPath": "dist/libs/models",
-          "tsConfig": "libs/models/tsconfig.lib.json",
-          "packageJson": "libs/models/package.json",
-          "main": "libs/models/src/index.ts",
-          "assets": [
-            "libs/models/*.md"
-          ]
-        }
-      }
-    }
   }
 }

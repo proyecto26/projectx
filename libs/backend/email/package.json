@@ -19,24 +19,5 @@
   ],
   "dependencies": {
     "tslib": "^2.3.0"
-  },
-  "nx": {
-    "targets": {
-      "build": {
-        "executor": "@nx/js:tsc",
-        "outputs": [
-          "{options.outputPath}"
-        ],
-        "options": {
-          "outputPath": "dist/libs/backend/email",
-          "tsConfig": "libs/backend/email/tsconfig.lib.json",
-          "packageJson": "libs/backend/email/package.json",
-          "main": "libs/backend/email/src/index.ts",
-          "assets": [
-            "libs/backend/email/*.md"
-          ]
-        }
-      }
-    }
   }
 }

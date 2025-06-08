@@ -7,6 +7,7 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY package.json .
 COPY package-lock.json .
+COPY .npmrc .
 
 # Clean npm cache and rebuild node-gyp
 RUN npm cache clean --force

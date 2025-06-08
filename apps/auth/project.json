@@ -19,7 +19,6 @@
           "apps/auth/src/assets",
           "apps/auth/src/workflows"
         ],
-        "poll": 500,
         "webpackConfig": "apps/auth/webpack.config.js"
       },
       "configurations": {
@@ -27,7 +26,10 @@
           "mode": "development"
         },
         "production": {
-          "mode": "production"
+          "mode": "production",
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
         }
       }
     },
@@ -35,22 +37,18 @@
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "auth:build:development",
-        "watch": true,
-        "waitUntilTargets": [
-          "@projectx/core:build",
-          "@projectx/db:build",
-          "@projectx/models:build",
-          "@projectx/email:build",
-          "@projectx/workflows:build"
-        ]
+        "buildTarget": "auth:build",
+        "runBuildTargetDependencies": false
       },
       "configurations": {
         "development": {
-          "buildTarget": "auth:build:development"
+          "buildTarget": "auth:build:development",
+          "watch": true,
+          "inspect": true
         },
         "production": {
-          "buildTarget": "auth:build:production"
+          "buildTarget": "auth:build:production",
+          "watch": false
         }
       }
     }
