@@ -1,13 +1,9 @@
 {
-  "extends": "../../../tsconfig.base.json",
+  "extends": "../../../tsconfig.backend.base.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "rootDir": "src",
-    "outDir": "dist",
-    "tsBuildInfoFile": "dist/tsconfig.lib.tsbuildinfo",
+    "outDir": "../../../dist/out-tsc",
     "emitDeclarationOnly": false,
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
     "forceConsistentCasingInFileNames": true,
     "types": ["node"],
     "target": "es2021",
@@ -17,10 +13,7 @@
     "noFallthroughCasesInSwitch": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "skipLibCheck": true,
-    "paths": {
-      "@projectx/core": ["../../../libs/backend/core/src/index.ts"]
-    }
+    "skipLibCheck": true
   },
   "include": ["src/**/*.ts"],
   "references": [

@@ -1,15 +1,7 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../../tsconfig.backend.base.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "module": "nodenext",
-    "types": ["node"],
-    "rootDir": "src",
-    "moduleResolution": "nodenext",
-    "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "target": "es2021"
+    "outDir": "../../dist/out-tsc"
   },
   "include": ["src/**/*.ts"],
   "exclude": [
