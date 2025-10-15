@@ -1,41 +1,28 @@
 {
-  "files": [],
-  "include": [],
-  "references": [
-    {
-      "path": "../../libs/backend/core"
-    },
-    {
-      "path": "../../libs/backend/email"
-    },
-    {
-      "path": "../../libs/frontend/ui"
-    },
-    {
-      "path": "../../libs/models"
-    },
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.spec.json"
-    }
+  "extends": "../../tsconfig.json",
+  "include": [
+    "**/*",
+    "**/.server/**/*",
+    "**/.client/**/*",
+    ".react-router/types/**/*"
   ],
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "jsx": "react-jsx",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "types": ["node", "vite/client"],
+    "target": "ES2022",
+    "module": "ES2022",
     "moduleResolution": "bundler",
-    "allowJs": false,
+    "jsx": "react-jsx",
+    "rootDirs": [".", "./.react-router/types"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "types": ["vite/client", "vitest", "@react-router/node", "node"],
-    "strict": true,
-    "skipLibCheck": true,
+    "verbatimModuleSyntax": true,
     "noEmit": true,
-    "module": "ESNext",
-    "target": "ESNext",
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "verbatimModuleSyntax": false
+    "skipLibCheck": true,
+    "strict": true
   }
 }

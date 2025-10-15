@@ -1,0 +1,30 @@
+/* Import Tailwind first (per docs) */
+@import "tailwindcss";
+/* Import UI library styles */
+@import "@projectx/ui/styles";
+
+/* Source paths for automatic content detection */
+@source "./src/**/*.{js,jsx,ts,tsx}";
+
+/* Tailwind Configuration */
+@layer theme {
+  :root {
+    --spacing: 0.25rem;
+  }
+}
+
+/* View Transitions API */
+@view-transition {
+  navigation: auto;
+}
+
+/* Remove number input spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}

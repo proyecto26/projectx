@@ -1,31 +1,31 @@
 import {
+  BadRequestException,
   Body,
   Controller,
-  Get,
-  Post,
-  Headers,
-  UseGuards,
-  Param,
-  HttpStatus,
-  HttpCode,
   Delete,
-  Req,
+  Get,
+  Headers,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
   type RawBodyRequest,
-  BadRequestException,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiHeader,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiTags,
-  ApiHeader,
   ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 import { AuthenticatedUser, type AuthUser, JwtAuthGuard } from '@projectx/core';
-import { CreateOrderDto, OrderStatusResponseDto } from '@projectx/models';
+import { type CreateOrderDto, OrderStatusResponseDto } from '@projectx/models';
 
-import { AppService } from './app.service';
+import type { AppService } from './app.service';
 
 @ApiTags('Order')
 @Controller()

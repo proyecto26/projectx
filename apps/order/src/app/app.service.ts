@@ -4,32 +4,32 @@ import {
   HttpStatus,
   Injectable,
   Logger,
-} from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { CreateOrderDto } from '@projectx/models';
+} from "@nestjs/common";
+import type { ConfigService } from "@nestjs/config";
 import {
-  ClientService,
+  type AuthUser,
+  cancelWorkflowSignal,
+  createOrderUpdate,
+  getOrderStateQuery,
+  type OrderWorkflowData,
+  type PaymentWebhookEvent,
+  paymentWebHookEventSignal,
+} from "@projectx/core";
+import type { CreateOrderDto } from "@projectx/models";
+import type { StripeService } from "@projectx/payment";
+import {
+  type ClientService,
   getWorkflowDescription,
   isWorkflowRunning,
   WORKFLOW_TTL,
-} from '@projectx/workflows';
-import { StripeService } from '@projectx/payment';
-import {
-  OrderWorkflowData,
-  paymentWebHookEventSignal,
-  PaymentWebhookEvent,
-  AuthUser,
-  createOrderUpdate,
-  getOrderStateQuery,
-  cancelWorkflowSignal,
-} from '@projectx/core';
+} from "@projectx/workflows";
+import { WithStartWorkflowOperation } from "@temporalio/client";
 import {
   WorkflowExecutionAlreadyStartedError,
   WorkflowIdConflictPolicy,
-} from '@temporalio/common';
-import { WithStartWorkflowOperation } from '@temporalio/client';
+} from "@temporalio/common";
 
-import { createOrder } from '../workflows/order.workflow';
+import { createOrder } from "../workflows/order.workflow";
 
 @Injectable()
 export class AppService {
@@ -38,11 +38,11 @@ export class AppService {
   constructor(
     private readonly configService: ConfigService,
     private readonly clientService: ClientService,
-    private readonly stripeService: StripeService
+    private readonly stripeService: StripeService,
   ) {
-    const taskQueue = this.configService.get<string>('temporal.taskQueue');
+    const taskQueue = this.configService.get<string>("temporal.taskQueue");
     if (!taskQueue) {
-      throw new Error('Task queue not found');
+      throw new Error("Task queue not found");
     }
     this.taskQueue = taskQueue;
   }
@@ -51,8 +51,8 @@ export class AppService {
     const workflowClient = this.clientService.client?.workflow;
     if (!workflowClient) {
       throw new HttpException(
-        'The workflow client was not initialized correctly',
-        HttpStatus.INTERNAL_SERVER_ERROR
+        "The workflow client was not initialized correctly",
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
     return workflowClient;
@@ -82,41 +82,39 @@ export class AppService {
             UserId: [user.id],
             Email: [user.email],
           },
-        }
+        },
       );
 
-      const state =
-        await this.getWorkflowClient().executeUpdateWithStart(
-          createOrderUpdate,
-          {
-            startWorkflowOperation,
-          }
-        );
+      const state = await this.getWorkflowClient().executeUpdateWithStart(
+        createOrderUpdate,
+        {
+          startWorkflowOperation,
+        },
+      );
 
       return {
         orderId: state.orderId,
         referenceId: state.referenceId,
         clientSecret: state.clientSecret,
-        message: 'Order created successfully',
+        message: "Order created successfully",
       };
     } catch (error) {
       if (error instanceof WorkflowExecutionAlreadyStartedError) {
         this.logger.warn(
-          `createOrder(${user.email}) - workflow already started`
+          `createOrder(${user.email}) - workflow already started`,
         );
         throw new HttpException(
-          'Order already in progress',
-          HttpStatus.CONFLICT
-        );
-      } else {
-        this.logger.error(`createOrder(${user.email}) - Error creating order`, error);
-        throw new BadRequestException(
-          'Error creating order',
-          {
-            cause: error,
-          }
+          "Order already in progress",
+          HttpStatus.CONFLICT,
         );
       }
+      this.logger.error(
+        `createOrder(${user.email}) - Error creating order`,
+        error,
+      );
+      throw new BadRequestException("Error creating order", {
+        cause: error,
+      });
     }
   }
 
@@ -126,15 +124,15 @@ export class AppService {
 
     const description = await getWorkflowDescription(
       this.getWorkflowClient(),
-      workflowId
+      workflowId,
     );
 
     if (!isWorkflowRunning(description)) {
-      throw new HttpException('No active order found', HttpStatus.NOT_FOUND);
+      throw new HttpException("No active order found", HttpStatus.NOT_FOUND);
     }
 
     if (Date.now() - description.startTime.getTime() >= WORKFLOW_TTL) {
-      throw new HttpException('Order has expired', HttpStatus.GONE);
+      throw new HttpException("Order has expired", HttpStatus.GONE);
     }
 
     const handle = this.getWorkflowClient().getHandle(workflowId);
@@ -152,27 +150,29 @@ export class AppService {
   async handleWebhook(payload: string | Buffer, signature: string) {
     if (!payload || !signature) {
       this.logger.error(`handleWebhook(${signature}) - No payload received`);
-      throw new BadRequestException('No payload received');
+      throw new BadRequestException("No payload received");
     }
     this.logger.log(`handleWebhook(${signature}) - Processing webhook event`);
     try {
       // Verify and construct the webhook event
       const event = this.stripeService.constructWebhookEvent(
         payload,
-        signature
+        signature,
       );
 
       // Extract payment intent data
       const paymentIntent = this.stripeService.handleWebhookEvent(event);
       if (!paymentIntent?.metadata) {
-        this.logger.error(`handleWebhook(${signature}) - Unhandled event type: ${event.type}`);
+        this.logger.error(
+          `handleWebhook(${signature}) - Unhandled event type: ${event.type}`,
+        );
         return { received: true };
       }
       const { userId, referenceId } = paymentIntent.metadata;
 
       if (!userId || !referenceId) {
         this.logger.error(
-          'Missing userId or referenceId in payment intent metadata'
+          "Missing userId or referenceId in payment intent metadata",
         );
         return { received: true };
       }
@@ -185,7 +185,7 @@ export class AppService {
       const webhookEvent: PaymentWebhookEvent = {
         id: event.id,
         type: event.type,
-        provider: 'Stripe',
+        provider: "Stripe",
         data: {
           id: paymentIntent.id,
           amount: paymentIntent.amount,
@@ -205,7 +205,7 @@ export class AppService {
       return { received: true };
     } catch (err) {
       this.logger.error(`handleWebhook(${signature}) - Webhook Error: ${err}`);
-      throw new BadRequestException('Webhook Error', {
+      throw new BadRequestException("Webhook Error", {
         cause: err,
       });
     }

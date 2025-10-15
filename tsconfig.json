@@ -1,40 +1,28 @@
 {
-  "extends": "./tsconfig.base.json",
-  "compileOnSave": false,
-  "files": [],
-  "references": [
-    {
-      "path": "./apps/auth"
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@projectx/core": ["packages/core/src/index.ts"],
+      "@projectx/core/*": ["packages/core/src/*"],
+      "@projectx/db": ["packages/db/src/index.ts"],
+      "@projectx/db/*": ["packages/db/src/*"],
+      "@projectx/email": ["packages/email/src/index.ts"],
+      "@projectx/email/*": ["packages/email/src/*"],
+      "@projectx/models": ["packages/models/src/index.ts"],
+      "@projectx/models/*": ["packages/models/src/*"],
+      "@projectx/payment": ["packages/payment/src/index.ts"],
+      "@projectx/payment/*": ["packages/payment/src/*"],
+      "@projectx/ui": ["packages/ui/src/index.ts"],
+      "@projectx/ui/*": ["packages/ui/src/*"],
+      "@projectx/ui/styles": ["packages/ui/styles/index.css"],
+      "@projectx/workflows": ["packages/workflows/src/index.ts"],
+      "@projectx/workflows/*": ["packages/workflows/src/*"]
     },
-    {
-      "path": "./apps/order"
-    },
-    {
-      "path": "./apps/product"
-    },
-    {
-      "path": "./apps/web"
-    },
-    {
-      "path": "./libs/backend/workflows"
-    },
-    {
-      "path": "./libs/backend/payment"
-    },
-    {
-      "path": "./libs/backend/email"
-    },
-    {
-      "path": "./libs/frontend/ui"
-    },
-    {
-      "path": "./libs/backend/db"
-    },
-    {
-      "path": "./libs/models"
-    },
-    {
-      "path": "./libs/backend/core"
-    }
-  ]
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "noUncheckedIndexedAccess": true
+  },
+  "include": [],
+  "exclude": ["node_modules", "dist", "build", "out"]
 }

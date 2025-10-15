@@ -1,28 +1,42 @@
 {
-  "extends": "../../tsconfig.backend.base.json",
-  "files": [],
-  "include": [],
-  "references": [
-    {
-      "path": "../../libs/backend/workflows"
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2023",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "paths": {
+      "@projectx/core": ["../../packages/core/dist/index"],
+      "@projectx/core/*": ["../../packages/core/dist/*"],
+      "@projectx/db": ["../../packages/db/dist/index"],
+      "@projectx/db/*": ["../../packages/db/dist/*"],
+      "@projectx/email": ["../../packages/email/dist/index"],
+      "@projectx/email/*": ["../../packages/email/dist/*"],
+      "@projectx/models": ["../../packages/models/dist/index"],
+      "@projectx/models/*": ["../../packages/models/dist/*"],
+      "@projectx/workflows": ["../../packages/workflows/dist/index"],
+      "@projectx/workflows/*": ["../../packages/workflows/dist/*"]
     },
-    {
-      "path": "../../libs/backend/db"
-    },
-    {
-      "path": "../../libs/models"
-    },
-    {
-      "path": "../../libs/backend/core"
-    },
-    {
-      "path": "../../libs/backend/email"
-    },
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.spec.json"
-    }
-  ]
+    "incremental": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "strictBindCallApply": true,
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "noUncheckedIndexedAccess": true,
+    "types": ["node", "express"],
+    "lib": ["ES2021"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }

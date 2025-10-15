@@ -1,0 +1,40 @@
+{
+  "name": "@projectx/db",
+  "version": "0.0.1",
+  "private": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "prebuild": "pnpm run prisma:generate",
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -w -p tsconfig.json",
+    "lint": "biome check .",
+    "test": "echo 'no tests'",
+    "prisma:generate": "pnpm exec prisma generate --schema=./prisma/schema.prisma",
+    "prisma:migrate": "pnpm exec prisma migrate deploy --schema=./prisma/schema.prisma",
+    "prisma:migrate:dev": "pnpm exec prisma migrate dev --schema=./prisma/schema.prisma",
+    "prisma:seed": "pnpm exec prisma db seed --schema=./prisma/schema.prisma"
+  },
+  "dependencies": {
+    "@prisma/client": "6.16.2",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.14.2",
+    "prisma": "6.16.2",
+    "tslib": "^2.3.0",
+    "@projectx/models": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "11.1.6"
+  },
+  "prisma": {
+    "seed": "ts-node --transpile-only --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  }
+}

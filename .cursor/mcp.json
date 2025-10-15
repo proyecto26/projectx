@@ -1,15 +1,14 @@
 {
   "mcpServers": {
-    "nx-mcp": {
-      "url": "http://localhost:9774/sse"
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "chrome-devtools-mcp@latest"
+      ]
     },
     "playwright": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@playwright/mcp@latest",
-        "--vision"
-      ]
+      "args": ["-y", "@playwright/mcp@latest", "--vision"]
     },
     "postgres": {
       "command": "npx",

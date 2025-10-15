@@ -1,0 +1,64 @@
+{
+  "name": "@projectx/core",
+  "version": "0.0.1",
+  "private": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -w -p tsconfig.json",
+    "lint": "biome check .",
+    "test": "echo 'no tests'"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "development": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./logger": "./src/lib/logger/index.ts"
+  },
+  "dependencies": {
+    "@projectx/db": "workspace:*",
+    "@projectx/models": "workspace:*",
+    "@temporalio/workflow": "1.13.1",
+    "bcrypt": "6.0.0",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.14.2",
+    "express": "5.1.0",
+    "express-rate-limit": "8.1.0",
+    "helmet": "8.1.0",
+    "lodash": "4.17.21",
+    "nestjs-pino": "4.4.1",
+    "pino": "9.12.0",
+    "tslib": "^2.3.0",
+    "uuid": "13.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.0",
+    "@types/bcrypt": "5.0.2",
+    "@types/lodash": "4.17.20",
+    "@types/passport-jwt": "4.0.1",
+    "@types/passport-local": "1.0.38",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "11.1.6",
+    "@nestjs/config": "4.0.2",
+    "@nestjs/core": "11.1.6",
+    "@nestjs/jwt": "11.0.0",
+    "@nestjs/passport": "11.0.5",
+    "@nestjs/platform-express": "11.1.6",
+    "@nestjs/swagger": "11.2.0",
+    "@nestjs/terminus": "11.0.0",
+    "passport": "0.7.0",
+    "passport-jwt": "4.0.1",
+    "passport-local": "1.0.0"
+  }
+}

@@ -1,0 +1,57 @@
+:root {
+  --theme-color-primary: #1a73e8; /* Blue 600 */
+  --theme-color-primary-rgb: 26, 115, 232;
+  --theme-color-primary-contrast: #ffffff;
+  --theme-color-primary-contrast-rgb: 255, 255, 255;
+  --theme-color-primary-shade: #1667c1;
+  --theme-color-primary-tint: #4285f4;
+
+  --theme-color-secondary: #5f6368; /* Gray 600 */
+  --theme-color-secondary-rgb: 95, 99, 104;
+  --theme-color-secondary-contrast: #ffffff;
+  --theme-color-secondary-contrast-rgb: 255, 255, 255;
+  --theme-color-secondary-shade: #54575c;
+  --theme-color-secondary-tint: #6e7277;
+
+  --theme-color-tertiary: #34a853; /* Green 600 */
+  --theme-color-tertiary-rgb: 52, 168, 83;
+  --theme-color-tertiary-contrast: #ffffff;
+  --theme-color-tertiary-contrast-rgb: 255, 255, 255;
+  --theme-color-tertiary-shade: #2e9451;
+  --theme-color-tertiary-tint: #5bc074;
+
+  --theme-color-success: #0f9d58; /* Green 700 */
+  --theme-color-success-rgb: 15, 157, 88;
+  --theme-color-success-contrast: #ffffff;
+  --theme-color-success-contrast-rgb: 255, 255, 255;
+  --theme-color-success-shade: #0d874c;
+  --theme-color-success-tint: #33ab70;
+
+  --theme-color-warning: #fbbc05; /* Yellow 600 */
+  --theme-color-warning-rgb: 251, 188, 5;
+  --theme-color-warning-contrast: #000000;
+  --theme-color-warning-contrast-rgb: 0, 0, 0;
+  --theme-color-warning-shade: #daa105;
+  --theme-color-warning-tint: #fcc433;
+
+  --theme-color-danger: #d93025; /* Red 600 */
+  --theme-color-danger-rgb: 217, 48, 37;
+  --theme-color-danger-contrast: #ffffff;
+  --theme-color-danger-contrast-rgb: 255, 255, 255;
+  --theme-color-danger-shade: #bf2b31;
+  --theme-color-danger-tint: #df554c;
+
+  --theme-color-medium: #80868b; /* Gray 500 */
+  --theme-color-medium-rgb: 128, 134, 139;
+  --theme-color-medium-contrast: #000000;
+  --theme-color-medium-contrast-rgb: 0, 0, 0;
+  --theme-color-medium-shade: #6f757a;
+  --theme-color-medium-tint: #91979c;
+
+  --theme-color-light: #f1f3f4; /* Gray 100 */
+  --theme-color-light-rgb: 241, 243, 244;
+  --theme-color-light-contrast: #000000;
+  --theme-color-light-contrast-rgb: 0, 0, 0;
+  --theme-color-light-shade: #dfe1e2;
+  --theme-color-light-tint: #f4f6f7;
+}

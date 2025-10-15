@@ -26,8 +26,8 @@
       "remoteRoot": "/app",
       "localRoot": "${workspaceFolder}",
       "outFiles": [
-        "${workspaceFolder}/dist/apps/auth/**/*.js",
-        "${workspaceFolder}/dist/libs/**/*.js"
+        "${workspaceFolder}/apps/auth/dist/**/*.js",
+        "${workspaceFolder}/packages/**/dist/**/*.js"
       ],
       "resolveSourceMapLocations": [
         "${workspaceFolder}/**",
@@ -51,8 +51,8 @@
       "remoteRoot": "/app",
       "localRoot": "${workspaceFolder}",
       "outFiles": [
-        "${workspaceFolder}/dist/apps/order/**/*.js",
-        "${workspaceFolder}/dist/libs/**/*.js"
+        "${workspaceFolder}/apps/order/dist/**/*.js",
+        "${workspaceFolder}/packages/**/dist/**/*.js"
       ],
       "resolveSourceMapLocations": [
         "${workspaceFolder}/**",
@@ -76,8 +76,8 @@
       "remoteRoot": "/app",
       "localRoot": "${workspaceFolder}",
       "outFiles": [
-        "${workspaceFolder}/dist/apps/product/**/*.js",
-        "${workspaceFolder}/dist/libs/**/*.js"
+        "${workspaceFolder}/apps/product/dist/**/*.js",
+        "${workspaceFolder}/packages/**/dist/**/*.js"
       ],
       "resolveSourceMapLocations": [
         "${workspaceFolder}/**",

@@ -1,0 +1,34 @@
+{
+  "name": "@projectx/workflows",
+  "version": "0.0.1",
+  "private": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -w -p tsconfig.json",
+    "lint": "biome check .",
+    "test": "echo 'no tests'"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0",
+    "@projectx/core": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "11.1.6",
+    "@nestjs/config": "4.0.2",
+    "@temporalio/proto": "1.13.1",
+    "@temporalio/workflow": "1.13.1",
+    "@temporalio/client": "1.13.1",
+    "@temporalio/worker": "1.13.1",
+    "pino": "9.12.0"
+  }
+}

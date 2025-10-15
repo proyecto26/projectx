@@ -1,16 +1,21 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { AuthService, verifyLoginCodeUpdate } from '@projectx/core';
-import { AuthLoginDto, AuthResponseDto, AuthVerifyDto } from '@projectx/models';
+import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
+import type { ConfigService } from "@nestjs/config";
+import type { AuthService } from "@projectx/core";
 import {
-  ClientService,
+  type AuthLoginDto,
+  AuthResponseDto,
+  type AuthVerifyDto,
+} from "@projectx/models";
+import {
+  type ClientService,
   getWorkflowDescription,
   isWorkflowRunning,
-} from '@projectx/workflows';
-import { WorkflowExecutionAlreadyStartedError } from '@temporalio/common';
-import { plainToInstance } from 'class-transformer';
+} from "@projectx/workflows";
+import { WorkflowExecutionAlreadyStartedError } from "@temporalio/common";
+import { plainToInstance } from "class-transformer";
+import { verifyLoginCodeUpdate } from "../../../../packages/core/src/lib/user/workflow.utils";
 
-import { loginUserWorkflow } from '../workflows';
+import { loginUserWorkflow } from "../workflows";
 
 @Injectable()
 export class AppService {
@@ -20,11 +25,11 @@ export class AppService {
   constructor(
     private readonly configService: ConfigService,
     private readonly clientService: ClientService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {
-    const taskQueue = this.configService.get<string>('temporal.taskQueue');
+    const taskQueue = this.configService.get<string>("temporal.taskQueue");
     if (!taskQueue) {
-      throw new Error('Task queue not found');
+      throw new Error("Task queue not found");
     }
     this.taskQueue = taskQueue;
   }
@@ -37,8 +42,8 @@ export class AppService {
     const workflowClient = this.clientService.client?.workflow;
     if (!workflowClient) {
       throw new HttpException(
-        'The workflow client was not initialized correctly',
-        HttpStatus.INTERNAL_SERVER_ERROR
+        "The workflow client was not initialized correctly",
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
     return workflowClient;
@@ -60,22 +65,21 @@ export class AppService {
           Email: [body.email],
         },
       });
-      return { message: 'Login email sent successfully' };
+      return { message: "Login email sent successfully" };
     } catch (error) {
       if (error instanceof WorkflowExecutionAlreadyStartedError) {
         this.logger.log(
-          `sendLoginEmail(${body.email}) - workflow already started`
+          `sendLoginEmail(${body.email}) - workflow already started`,
         );
-        return { message: 'Login email already sent' };
-      } else {
-        throw new HttpException(
-          `Error starting workflow`,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-          {
-            cause: error,
-          }
-        );
+        return { message: "Login email already sent" };
       }
+      throw new HttpException(
+        "Error starting workflow",
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause: error,
+        },
+      );
     }
   }
 
@@ -90,12 +94,12 @@ export class AppService {
 
     const description = await getWorkflowDescription(
       this.getWorkflowClient(),
-      workflowId
+      workflowId,
     );
     const isLoginRunning = isWorkflowRunning(description);
 
     if (!isLoginRunning) {
-      throw new HttpException('The code has expired', HttpStatus.BAD_REQUEST);
+      throw new HttpException("The code has expired", HttpStatus.BAD_REQUEST);
     }
 
     const handle = this.getWorkflowClient().getHandle(workflowId);
@@ -104,8 +108,8 @@ export class AppService {
     });
     if (!result?.user) {
       throw new HttpException(
-        'Invalid verification code',
-        HttpStatus.UNAUTHORIZED
+        "Invalid verification code",
+        HttpStatus.UNAUTHORIZED,
       );
     }
 

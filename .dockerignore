@@ -27,3 +27,6 @@ Thumbs.db
 # Ignore repo files
 libs/frontend
 apps/web
+
+# System Files
+.DS_Store

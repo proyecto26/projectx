@@ -1,39 +1,39 @@
 /* eslint-disable @nx/enforce-module-boundaries */
+
+import { cancelWorkflowSignal } from "@projectx/core";
+import type { OrderStatusResponseDto } from "@projectx/models";
 import {
-  allHandlersFinished,
   ApplicationFailure,
-  ChildWorkflowHandle,
+  allHandlersFinished,
+  type ChildWorkflowHandle,
   condition,
+  log,
   proxyActivities,
   setHandler,
   startChild,
-  log,
-} from '@temporalio/workflow';
-
+} from "@temporalio/workflow";
 // Typescript alias issue while importing files from other libraries from workflows.
 import {
-  OrderProcessPaymentStatus,
-  OrderWorkflowData,
-  OrderWorkflowNonRetryableErrors,
   createOrderUpdate,
   getOrderStateQuery,
   getWorkflowIdByPaymentOrder,
+  OrderProcessPaymentStatus,
+  type OrderWorkflowData,
+  OrderWorkflowNonRetryableErrors,
   paymentWebHookEventSignal,
-} from '../../../../libs/backend/core/src/lib/order/workflow.utils';
-import { cancelWorkflowSignal } from '../../../../libs/backend/core/src/lib/workflows';
-import type { OrderStatusResponseDto } from '../../../../libs/models/src/order/order.dto';
-import type { ActivitiesService } from '../main';
-import { processPayment } from './process-payment.workflow';
+} from "../../../../packages/core/src/lib/order/workflow.utils";
+import type { ActivitiesService } from "../main";
+import { processPayment } from "./process-payment.workflow";
 
 const {
   createOrder: createOrderActivity,
   reportPaymentFailed,
   reportPaymentConfirmed,
 } = proxyActivities<ActivitiesService>({
-  startToCloseTimeout: '5 seconds',
+  startToCloseTimeout: "5 seconds",
   retry: {
-    initialInterval: '2s',
-    maximumInterval: '10s',
+    initialInterval: "2s",
+    maximumInterval: "10s",
     maximumAttempts: 10,
     backoffCoefficient: 1.5,
     nonRetryableErrorTypes: [OrderWorkflowNonRetryableErrors.UNKNOWN_ERROR],
@@ -41,45 +41,47 @@ const {
 });
 
 export enum OrderStatus {
-  Pending = 'Pending',
-  Confirmed = 'Confirmed',
-  Shipped = 'Shipped',
-  Delivered = 'Delivered',
-  Cancelled = 'Cancelled',
-  Failed = 'Failed',
+  Pending = "Pending",
+  Confirmed = "Confirmed",
+  Shipped = "Shipped",
+  Delivered = "Delivered",
+  Cancelled = "Cancelled",
+  Failed = "Failed",
 }
 
 const initialState: Partial<OrderStatusResponseDto> = {
   status: OrderStatus.Pending,
-  referenceId: '',
+  referenceId: "",
 };
 
 export async function createOrder(
   data: OrderWorkflowData,
-  state = initialState
+  state = initialState,
 ): Promise<void> {
   state.referenceId = data.order.referenceId;
   // Define references to child workflows
-  let processPaymentWorkflow: ChildWorkflowHandle<typeof processPayment> | undefined;
+  let processPaymentWorkflow:
+    | ChildWorkflowHandle<typeof processPayment>
+    | undefined;
 
   // Attach queries, signals and updates
   setHandler(getOrderStateQuery, () => state as OrderStatusResponseDto);
   setHandler(cancelWorkflowSignal, () => {
-    log.info('Requesting order cancellation');
+    log.info("Requesting order cancellation");
     if (!state?.orderId) {
       throw ApplicationFailure.nonRetryable(
         OrderWorkflowNonRetryableErrors.CANCELLED,
-        'Order cancelled'
+        "Order cancelled",
       );
     }
     if (processPaymentWorkflow) {
       processPaymentWorkflow.signal(cancelWorkflowSignal);
     } else {
-      log.error('The payment process has already finished, cannot cancel');
+      log.error("The payment process has already finished, cannot cancel");
     }
   });
   setHandler(paymentWebHookEventSignal, (e) =>
-    processPaymentWorkflow?.signal(paymentWebHookEventSignal, e)
+    processPaymentWorkflow?.signal(paymentWebHookEventSignal, e),
   );
   // Create the order and the payment intent with the payment provider
   setHandler(createOrderUpdate, async () => {
@@ -108,7 +110,7 @@ export async function createOrder(
       state.status = OrderStatus.Failed;
       throw ApplicationFailure.nonRetryable(
         OrderWorkflowNonRetryableErrors.UNKNOWN_ERROR,
-        'Payment failed'
+        "Payment failed",
       );
     }
     processPaymentWorkflow = undefined;

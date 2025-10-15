@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
-import { OrderSchemaModule } from '@projectx/db';
-import { PaymentModule } from '@projectx/payment';
+import { Module } from "@nestjs/common";
+import { OrderSchemaModule } from "@projectx/db";
+import { PaymentModule } from "@projectx/payment";
 
-import { OrderService } from './order.service';
+import { OrderService } from "./order.service";
 
 @Module({
   imports: [PaymentModule, OrderSchemaModule],

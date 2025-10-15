@@ -1,6 +1,4 @@
 {
-    "nxConsole.nxWorkspacePath": "${workspaceFolder}/nx.json",
     "typescript.tsdk": "node_modules/typescript/lib",
-    "typescript.enablePromptUseWorkspaceTsdk": true,
-    "nxConsole.generateAiAgentRules": true
+    "typescript.enablePromptUseWorkspaceTsdk": true
 }

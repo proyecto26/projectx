@@ -1,7 +1,7 @@
-import { registerAs } from '@nestjs/config';
+import { registerAs } from "@nestjs/config";
 
-export default registerAs('temporal', () => ({
-  host: process.env['TEMPORAL_HOST'],
-  namespace: process.env['TEMPORAL_NAMESPACE'] || 'default',
-  taskQueue: 'auth',
+export default registerAs("temporal", () => ({
+  host: process.env["TEMPORAL_HOST"],
+  namespace: process.env["TEMPORAL_NAMESPACE"] || "default",
+  taskQueue: "auth",
 }));

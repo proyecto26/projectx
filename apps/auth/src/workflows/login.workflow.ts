@@ -1,31 +1,30 @@
 import {
+  ApplicationFailure,
+  allHandlersFinished,
+  CancellationScope,
   condition,
+  isCancellation,
+  log,
   proxyActivities,
   setHandler,
-  log,
-  isCancellation,
-  CancellationScope,
-  allHandlersFinished,
-  ApplicationFailure,
-} from '@temporalio/workflow';
+} from "@temporalio/workflow";
 
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import {
   getLoginStateQuery,
   LoginWorkflowCodeStatus,
-  LoginWorkflowData,
+  type LoginWorkflowData,
   LoginWorkflowNonRetryableErrors,
-  LoginWorkflowState,
+  type LoginWorkflowState,
   LoginWorkflowStatus,
   verifyLoginCodeUpdate,
-} from '../../../../libs/backend/core/src/lib/user/workflow.utils';
-import type { ActivitiesService } from '../main';
+} from "../../../../packages/core/src/lib/user/workflow.utils";
+import type { ActivitiesService } from "../main";
 
 const { sendLoginEmail } = proxyActivities<ActivitiesService>({
-  startToCloseTimeout: '5 seconds',
+  startToCloseTimeout: "5 seconds",
   retry: {
-    initialInterval: '2s',
-    maximumInterval: '10s',
+    initialInterval: "2s",
+    maximumInterval: "10s",
     maximumAttempts: 10,
     backoffCoefficient: 1.5,
     nonRetryableErrorTypes: [LoginWorkflowNonRetryableErrors.UNKNOWN_ERROR],
@@ -33,10 +32,10 @@ const { sendLoginEmail } = proxyActivities<ActivitiesService>({
 });
 
 const { verifyLoginCode } = proxyActivities<ActivitiesService>({
-  startToCloseTimeout: '5 seconds',
+  startToCloseTimeout: "5 seconds",
   retry: {
-    initialInterval: '2s',
-    maximumInterval: '10s',
+    initialInterval: "2s",
+    maximumInterval: "10s",
     maximumAttempts: 10,
     backoffCoefficient: 2,
     nonRetryableErrorTypes: [LoginWorkflowNonRetryableErrors.UNKNOWN_ERROR],
@@ -44,7 +43,7 @@ const { verifyLoginCode } = proxyActivities<ActivitiesService>({
 });
 
 export async function loginUserWorkflow(
-  data: LoginWorkflowData
+  data: LoginWorkflowData,
 ): Promise<void> {
   const state: LoginWorkflowState = {
     codeStatus: LoginWorkflowCodeStatus.PENDING,
@@ -54,11 +53,9 @@ export async function loginUserWorkflow(
   setHandler(getLoginStateQuery, () => state);
   setHandler(
     verifyLoginCodeUpdate,
-    async (code) => {
+    async (code: number) => {
       if (!state.code) {
-        throw ApplicationFailure.nonRetryable(
-          'Login code not found',
-        );
+        throw ApplicationFailure.nonRetryable("Login code not found");
       }
       const user = await verifyLoginCode(data.email, code, state.code);
       if (user) {
@@ -66,7 +63,7 @@ export async function loginUserWorkflow(
       }
       return { user };
     },
-    { description: 'Validate login code' }
+    { description: "Validate login code" },
   );
 
   try {
@@ -76,8 +73,8 @@ export async function loginUserWorkflow(
     state.codeStatus = LoginWorkflowCodeStatus.SENT;
 
     // Wait for user to verify code (human interaction)
-    await condition(() => !!state.user, '10m')
-    
+    await condition(() => !!state.user, "10m");
+
     // Wait for all handlers to finish before checking the state
     await condition(allHandlersFinished);
     if (state.user) {
@@ -87,7 +84,7 @@ export async function loginUserWorkflow(
       state.status = LoginWorkflowStatus.FAILED;
       log.error(`User login code expired, email: ${data.email}`);
       throw ApplicationFailure.nonRetryable(
-        'User login code expired',
+        "User login code expired",
         LoginWorkflowNonRetryableErrors.LOGIN_CODE_EXPIRED,
       );
     }

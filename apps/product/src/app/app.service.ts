@@ -1,6 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ProductRepositoryService } from '@projectx/db';
-import { ProductDto } from '@projectx/models';
+import { Injectable, Logger } from "@nestjs/common";
+import type { ProductRepositoryService } from "@projectx/db";
+import type { ProductDto } from "@projectx/models";
 
 @Injectable()
 export class AppService {
@@ -13,7 +13,7 @@ export class AppService {
    * @returns Array of ProductDto containing the product information.
    */
   async getProducts(): Promise<ProductDto[]> {
-    this.logger.log('getProducts() - retrieving all products');
+    this.logger.log("getProducts() - retrieving all products");
     return await this.productRepository.findProducts();
   }
 }

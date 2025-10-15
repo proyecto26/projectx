@@ -13,22 +13,17 @@ x-service-common: &service-common
     temporal:
       condition: service_started
   environment:
-    - NX_SKIP_NX_CACHE=true  # Skip Nx cache to avoid conflicts
     # Enable file system polling for better file watching in Docker
     - WATCHPACK_POLLING=true
     - CHOKIDAR_USEPOLLING=true
     - CHOKIDAR_INTERVAL=500  # Faster interval for detecting changes
     # Debugging and verbose logging
-    - NX_VERBOSE_LOGGING=true
-    - DEBUG=nx*
+    - DEBUG=turbo*
     - FORCE_COLOR=1
-    # Do not use NX daemon when resetting in container
-    - NX_DAEMON=false
-    # Use container-specific directory for cache
-    - NX_CACHE_DIRECTORY=/app/.nx-cache
-    # Enable Webpack Hot Module Replacement
-    - WEBPACK_WATCH=true
-    - WEBPACK_DEV_SERVER_LIVE_RELOAD=true
+    # Turborepo cache dir inside the container
+    - TURBO_CACHE_DIR=/app/.turbo
+    # Enable Vite/React Router dev server flags (if needed)
+    - VITE_DEV_SERVER=true
     - NODE_ENV=development
   build:
     context: .
@@ -45,6 +40,7 @@ x-service-common: &service-common
 services:
   db:
     image: postgis/postgis:17-3.5
+    platform: linux/amd64
     container_name: ${COMPOSE_PROJECT_NAME:-projectx}-db
     restart: always
     networks:
@@ -76,6 +72,7 @@ services:
 
   temporal:
     image: temporalio/auto-setup:1.26.2
+    platform: linux/amd64
     container_name: ${COMPOSE_PROJECT_NAME:-projectx}-temporal
     depends_on:
       db:
@@ -98,6 +95,7 @@ services:
 
   temporal-admin-tools:
     image: temporalio/admin-tools:1.26.2-tctl-1.18.1-cli-1.2.0
+    platform: linux/amd64
     container_name: ${COMPOSE_PROJECT_NAME:-projectx}-temporal-admin-tools
     depends_on:
       - temporal
@@ -120,6 +118,7 @@ services:
 
   temporal-ui:
     image: temporalio/ui:2.34.0
+    platform: linux/amd64
     container_name: ${COMPOSE_PROJECT_NAME:-projectx}-temporal-ui
     depends_on:
       - temporal
@@ -139,55 +138,70 @@ services:
     container_name: auth
     command: >
       bash -c "
-      npm run prisma:generate &&
-      npm run prisma:migrate &&
-      rm -rf /app/.nx-cache &&
-      rm -rf /app/dist/apps/auth &&
-      npx nx reset &&
-      npm run dev:auth
+      pnpm install --frozen-lockfile &&
+      pnpm --filter @projectx/db run prisma:generate &&
+      pnpm --filter @projectx/db run prisma:migrate &&
+      rm -rf /app/.turbo &&
+      rm -rf /app/apps/auth/dist &&
+      pnpm --filter @projectx/core build &&
+      pnpm --filter @projectx/db build &&
+      pnpm --filter @projectx/email build &&
+      pnpm --filter @projectx/models build &&
+      pnpm --filter @projectx/workflows build &&
+      cd /app/apps/auth && pnpm start:dev
       "
     ports:
       - "${AUTH_PORT:-8081}:${AUTH_PORT:-8081}"
       - "9229:9229"
-    restart: unless-stopped
+    #restart: unless-stopped
 
   order:
     <<: *service-common
     container_name: order
     command: >
       bash -c "
-      npm run prisma:generate &&
-      npm run prisma:migrate &&
-      rm -rf /app/.nx-cache &&
-      rm -rf /app/dist/apps/order &&
-      npx nx reset &&
-      npm run dev:order
+      pnpm install --frozen-lockfile &&
+      pnpm --filter @projectx/db run prisma:generate &&
+      pnpm --filter @projectx/db run prisma:migrate &&
+      rm -rf /app/.turbo &&
+      rm -rf /app/apps/order/dist &&
+      pnpm --filter @projectx/core build &&
+      pnpm --filter @projectx/db build &&
+      pnpm --filter @projectx/email build &&
+      pnpm --filter @projectx/models build &&
+      pnpm --filter @projectx/payment build &&
+      pnpm --filter @projectx/workflows build &&
+      cd /app/apps/order && pnpm start:dev
       "
     ports:
       - "${ORDER_PORT:-8082}:${ORDER_PORT:-8082}"
       - "9230:9230"
-    restart: unless-stopped
+    #restart: unless-stopped
 
   product:
     <<: *service-common
     container_name: product
     command: >
       bash -c "
-      npm run prisma:generate &&
-      npm run prisma:migrate &&
-      npm run prisma:seed &&
-      rm -rf /app/.nx-cache &&
-      rm -rf /app/dist/apps/product &&
-      npx nx reset &&
-      npm run dev:product
+      pnpm install --frozen-lockfile &&
+      pnpm --filter @projectx/db run prisma:generate &&
+      pnpm --filter @projectx/db run prisma:migrate &&
+      rm -rf /app/.turbo &&
+      rm -rf /app/apps/product/dist &&
+      pnpm --filter @projectx/core build &&
+      pnpm --filter @projectx/db build &&
+      pnpm --filter @projectx/models build &&
+      pnpm --filter @projectx/workflows build &&
+      cd /app/apps/product && pnpm start:dev
       "
     ports:
       - "${PRODUCT_PORT:-8083}:${PRODUCT_PORT:-8083}"
       - "9231:9231"
-    restart: unless-stopped
+    #restart: unless-stopped
 
   ngrok-order:
     image: ngrok/ngrok:latest
+    platform: linux/amd64
     command:
       - "http"
       - "http://host.docker.internal:${ORDER_PORT:-8082}"

@@ -1,15 +1,15 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { OrderWorkflowData } from '@projectx/core';
-import { OrderRepositoryService } from '@projectx/db';
-import { OrderStatus } from '@projectx/models';
-import { StripeService } from '@projectx/payment';
+import { Injectable, Logger } from "@nestjs/common";
+import type { OrderWorkflowData } from "@projectx/core";
+import type { OrderRepositoryService } from "@projectx/db";
+import { OrderStatus } from "@projectx/models";
+import type { StripeService } from "@projectx/payment";
 
 @Injectable()
 export class OrderService {
   readonly logger = new Logger(OrderService.name);
   constructor(
     public readonly stripeService: StripeService,
-    public readonly orderRepositoryService: OrderRepositoryService
+    public readonly orderRepositoryService: OrderRepositoryService,
   ) {}
 
   async createOrder({ user, order }: OrderWorkflowData) {
@@ -23,12 +23,12 @@ export class OrderService {
     // Create payment intent with Stripe
     const paymentIntent = await this.stripeService.createPaymentIntent(
       Math.round(newOrder.totalPrice.toNumber() * 100), // Convert to cents
-      'usd',
+      "usd",
       {
         userId: user.id.toString(),
         referenceId: order.referenceId,
         orderId: String(newOrder.id),
-      }
+      },
     );
 
     return {
@@ -41,7 +41,7 @@ export class OrderService {
     this.logger.log(`reportPaymentFailed(${orderId})`);
     const updatedOrder = await this.orderRepositoryService.updateOrderStatus(
       orderId,
-      OrderStatus.Failed
+      OrderStatus.Failed,
     );
     // TODO: Send email notification to user about payment failure
     return updatedOrder;
@@ -51,7 +51,7 @@ export class OrderService {
     this.logger.log(`reportPaymentConfirmed(${orderId})`);
     const updatedOrder = await this.orderRepositoryService.updateOrderStatus(
       orderId,
-      OrderStatus.Confirmed
+      OrderStatus.Confirmed,
     );
     // TODO: Send email notification to user about payment confirmation
     return updatedOrder;
