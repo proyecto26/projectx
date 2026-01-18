@@ -29,7 +29,7 @@ import { UserModule } from "./user/user.module";
       imports: [ActivitiesModule],
       useFactory: (activitiesService: ActivitiesService) => ({
         activitiesService,
-        workflowsPath: path.join(__dirname, "/workflows"),
+        workflowsPath: path.join(__dirname, "../workflows"),
       }),
       inject: [ActivitiesService],
     }),

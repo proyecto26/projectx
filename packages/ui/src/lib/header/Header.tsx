@@ -144,7 +144,7 @@ export function Header({
               <Menu as="div" className="relative mt-2 ml-3">
                 <div>
                   <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                    <span className="-inset-1.5 absolute" />
+                    <span className="absolute -inset-1.5" />
                     <span className="sr-only">Open user menu</span>
                     <img
                       alt="Avatar"

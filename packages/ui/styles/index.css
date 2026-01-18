@@ -77,4 +77,4 @@
 }
 
 /* Source paths for automatic content detection */
-@source "./src/**/*!(*.stories|*.spec).{ts,tsx,html}";
+@source "../src/**/*!(*.stories|*.spec).{ts,tsx,html}";

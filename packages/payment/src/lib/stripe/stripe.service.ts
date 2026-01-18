@@ -1,9 +1,10 @@
 import {
+  Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
 } from "@nestjs/common";
-import type { ConfigService } from "@nestjs/config";
+import { ConfigService } from "@nestjs/config";
 import Stripe from "stripe";
 
 import type { PaymentConfig } from "../../config";
@@ -13,7 +14,7 @@ export class StripeService {
   private readonly logger = new Logger(StripeService.name);
   private stripe: Stripe;
 
-  constructor(private configService: ConfigService) {
+  constructor(@Inject(ConfigService) private configService: ConfigService) {
     const config = this.configService.get<PaymentConfig>("payment");
     if (!config) {
       throw new InternalServerErrorException(
@@ -33,8 +34,8 @@ export class StripeService {
 
   async createPaymentIntent(
     amount: number,
-    currency = "usd",
     metadata: Record<string, string>,
+    currency = "usd",
   ): Promise<Stripe.PaymentIntent> {
     try {
       return await this.stripe.paymentIntents.create({

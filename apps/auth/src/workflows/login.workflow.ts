@@ -1,4 +1,13 @@
 import {
+  getLoginStateQuery,
+  LoginWorkflowCodeStatus,
+  type LoginWorkflowData,
+  LoginWorkflowNonRetryableErrors,
+  type LoginWorkflowState,
+  LoginWorkflowStatus,
+  verifyLoginCodeUpdate,
+} from "@projectx/core/workflows";
+import {
   ApplicationFailure,
   allHandlersFinished,
   CancellationScope,
@@ -8,16 +17,6 @@ import {
   proxyActivities,
   setHandler,
 } from "@temporalio/workflow";
-
-import {
-  getLoginStateQuery,
-  LoginWorkflowCodeStatus,
-  type LoginWorkflowData,
-  LoginWorkflowNonRetryableErrors,
-  type LoginWorkflowState,
-  LoginWorkflowStatus,
-  verifyLoginCodeUpdate,
-} from "../../../../packages/core/src/lib/user/workflow.utils";
 import type { ActivitiesService } from "../main";
 
 const { sendLoginEmail } = proxyActivities<ActivitiesService>({

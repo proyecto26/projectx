@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "moduleResolution": "node",
+    "moduleResolution": "node10",
     "esModuleInterop": true,
     "isolatedModules": true,
     "removeComments": true,
@@ -11,9 +11,11 @@
     "target": "ES2023",
     "sourceMap": true,
     "outDir": "./dist",
+    "noEmit": false,
     "baseUrl": "./",
     "paths": {
       "@projectx/core": ["../../packages/core/dist/index"],
+      "@projectx/core/workflows": ["../../packages/core/dist/workflows"],
       "@projectx/core/*": ["../../packages/core/dist/*"],
       "@projectx/db": ["../../packages/db/dist/index"],
       "@projectx/db/*": ["../../packages/db/dist/*"],

@@ -30,7 +30,7 @@ export const Footer: React.FC<FooterProps> = ({
               <a
                 key={item.title}
                 href={item.href}
-                className="hover:-translate-y-1 transform text-gray-300 transition duration-200 ease-in-out hover:scale-105 hover:text-white motion-reduce:transition-none motion-reduce:hover:transform-none"
+                className="transform text-gray-300 transition duration-200 ease-in-out hover:-translate-y-1 hover:scale-105 hover:text-white motion-reduce:transition-none motion-reduce:hover:transform-none"
                 aria-label={item.title}
               >
                 {item.icon && (

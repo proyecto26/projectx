@@ -6,7 +6,7 @@ import {
   type OnModuleDestroy,
   type OnModuleInit,
 } from "@nestjs/common";
-import type { ConfigService } from "@nestjs/config";
+import { ConfigService } from "@nestjs/config";
 import { createLoggerOptions } from "@projectx/core";
 import { DefaultLogger, Runtime, Worker } from "@temporalio/worker";
 import pino from "pino";
@@ -28,7 +28,7 @@ export class WorkerService<T extends Record<string, unknown>>
   readonly logger = new Logger(WorkerService.name);
   private worker?: Worker;
   constructor(
-    private readonly configService: ConfigService,
+    @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(WORKER_OPTIONS_TOKEN)
     private readonly workerOptions: WorkerServiceOptions<T>,
   ) {}

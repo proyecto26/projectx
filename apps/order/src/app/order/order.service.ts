@@ -1,14 +1,15 @@
-import { Injectable, Logger } from "@nestjs/common";
-import type { OrderWorkflowData } from "@projectx/core";
-import type { OrderRepositoryService } from "@projectx/db";
-import { OrderStatus } from "@projectx/models";
-import type { StripeService } from "@projectx/payment";
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import type { OrderWorkflowData } from '@projectx/core';
+import { OrderRepositoryService } from '@projectx/db';
+import { OrderStatus } from '@projectx/models';
+import { StripeService } from '@projectx/payment';
 
 @Injectable()
 export class OrderService {
   readonly logger = new Logger(OrderService.name);
   constructor(
-    public readonly stripeService: StripeService,
+    @Inject(StripeService) public readonly stripeService: StripeService,
+    @Inject(OrderRepositoryService)
     public readonly orderRepositoryService: OrderRepositoryService,
   ) {}
 
@@ -23,7 +24,6 @@ export class OrderService {
     // Create payment intent with Stripe
     const paymentIntent = await this.stripeService.createPaymentIntent(
       Math.round(newOrder.totalPrice.toNumber() * 100), // Convert to cents
-      "usd",
       {
         userId: user.id.toString(),
         referenceId: order.referenceId,

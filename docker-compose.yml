@@ -16,15 +16,15 @@ x-service-common: &service-common
     # Enable file system polling for better file watching in Docker
     - WATCHPACK_POLLING=true
     - CHOKIDAR_USEPOLLING=true
-    - CHOKIDAR_INTERVAL=500  # Faster interval for detecting changes
+    - CHOKIDAR_INTERVAL=500 # Faster interval for detecting changes
     # Debugging and verbose logging
     - DEBUG=turbo*
     - FORCE_COLOR=1
     # Turborepo cache dir inside the container
     - TURBO_CACHE_DIR=/app/.turbo
-    # Enable Vite/React Router dev server flags (if needed)
     - VITE_DEV_SERVER=true
     - NODE_ENV=development
+    - NODE_OPTIONS=--max-old-space-size=4096
   build:
     context: .
     dockerfile: Dockerfile
@@ -56,7 +56,7 @@ services:
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -110,11 +110,7 @@ services:
     volumes:
       - ./deployment/scripts/search-attributes.sh:/etc/temporal/entrypoint.sh
     entrypoint: >
-      /bin/sh -c "
-      chmod +x /etc/temporal/entrypoint.sh &&
-      /etc/temporal/entrypoint.sh &&
-      exec /bin/bash
-      "
+      /bin/sh -c " chmod +x /etc/temporal/entrypoint.sh && /etc/temporal/entrypoint.sh && exec /bin/bash "
 
   temporal-ui:
     image: temporalio/ui:2.34.0
@@ -137,19 +133,7 @@ services:
     <<: *service-common
     container_name: auth
     command: >
-      bash -c "
-      pnpm install --frozen-lockfile &&
-      pnpm --filter @projectx/db run prisma:generate &&
-      pnpm --filter @projectx/db run prisma:migrate &&
-      rm -rf /app/.turbo &&
-      rm -rf /app/apps/auth/dist &&
-      pnpm --filter @projectx/core build &&
-      pnpm --filter @projectx/db build &&
-      pnpm --filter @projectx/email build &&
-      pnpm --filter @projectx/models build &&
-      pnpm --filter @projectx/workflows build &&
-      cd /app/apps/auth && pnpm start:dev
-      "
+      bash -c " pnpm install --frozen-lockfile && pnpm --filter @projectx/db run prisma:generate && pnpm --filter @projectx/db run prisma:migrate && rm -rf /app/.turbo && rm -rf /app/apps/auth/dist && cd /app/apps/auth && pnpm start:dev "
     ports:
       - "${AUTH_PORT:-8081}:${AUTH_PORT:-8081}"
       - "9229:9229"
@@ -159,20 +143,7 @@ services:
     <<: *service-common
     container_name: order
     command: >
-      bash -c "
-      pnpm install --frozen-lockfile &&
-      pnpm --filter @projectx/db run prisma:generate &&
-      pnpm --filter @projectx/db run prisma:migrate &&
-      rm -rf /app/.turbo &&
-      rm -rf /app/apps/order/dist &&
-      pnpm --filter @projectx/core build &&
-      pnpm --filter @projectx/db build &&
-      pnpm --filter @projectx/email build &&
-      pnpm --filter @projectx/models build &&
-      pnpm --filter @projectx/payment build &&
-      pnpm --filter @projectx/workflows build &&
-      cd /app/apps/order && pnpm start:dev
-      "
+      bash -c " pnpm install --frozen-lockfile && pnpm --filter @projectx/db run prisma:generate && pnpm --filter @projectx/db run prisma:migrate && rm -rf /app/.turbo && rm -rf /app/apps/order/dist && cd /app/apps/order && pnpm start:dev "
     ports:
       - "${ORDER_PORT:-8082}:${ORDER_PORT:-8082}"
       - "9230:9230"
@@ -182,18 +153,7 @@ services:
     <<: *service-common
     container_name: product
     command: >
-      bash -c "
-      pnpm install --frozen-lockfile &&
-      pnpm --filter @projectx/db run prisma:generate &&
-      pnpm --filter @projectx/db run prisma:migrate &&
-      rm -rf /app/.turbo &&
-      rm -rf /app/apps/product/dist &&
-      pnpm --filter @projectx/core build &&
-      pnpm --filter @projectx/db build &&
-      pnpm --filter @projectx/models build &&
-      pnpm --filter @projectx/workflows build &&
-      cd /app/apps/product && pnpm start:dev
-      "
+      bash -c " pnpm install --frozen-lockfile && pnpm --filter @projectx/db run prisma:generate && pnpm --filter @projectx/db run prisma:migrate && rm -rf /app/.turbo && rm -rf /app/apps/product/dist && cd /app/apps/product && pnpm start:dev "
     ports:
       - "${PRODUCT_PORT:-8083}:${PRODUCT_PORT:-8083}"
       - "9231:9231"

@@ -19,19 +19,10 @@ export function createLoggerOptions(
       },
     },
     base: { service: serviceName },
-    transport: !isProduction
-      ? {
-          target: "pino-pretty",
-          options: {
-            colorize: true,
-            translateTime: "SYS:standard",
-            ignore: "pid,hostname",
-          },
-        }
-      : undefined,
+    transport: undefined,
     // Generate a correlation ID for each request
-    mixin: (request: Request) => ({
-      correlationId: request.headers["x-correlation-id"] || uuidv4(),
+    mixin: (request?: Request) => ({
+      correlationId: request?.headers?.["x-correlation-id"] || uuidv4(),
     }),
   } as LoggerOptions;
 }

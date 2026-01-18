@@ -1,15 +1,15 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import type { Prisma, Product, ProductStatus } from "@prisma/client";
 import { ProductDto } from "@projectx/models";
 import { plainToInstance } from "class-transformer";
 
-import type { PrismaService } from "../prisma.service";
+import { PrismaService } from "../prisma.service";
 
 @Injectable()
 export class ProductRepositoryService {
   private logger = new Logger(ProductRepositoryService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
   async createProduct(
     userId: number,

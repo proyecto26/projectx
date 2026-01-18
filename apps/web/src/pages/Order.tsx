@@ -217,7 +217,7 @@ export const OrderPage: React.FC = () => {
                 <dt className="font-medium text-gray-900 dark:text-gray-100">
                   Payment information
                 </dt>
-                <dd className="-ml-4 -mt-1 flex flex-wrap">
+                <dd className="-mt-1 -ml-4 flex flex-wrap">
                   <div className="mt-4 ml-4 flex-shrink-0">
                     <svg
                       width={36}

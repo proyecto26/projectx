@@ -1,4 +1,4 @@
-import { Environment } from "@projectx/models";
+import { Environment } from '@projectx/models';
 import {
   IsDefined,
   IsEnum,
@@ -7,7 +7,7 @@ import {
   IsString,
   Max,
   Min,
-} from "class-validator";
+} from 'class-validator';
 
 export class EnvironmentVariables {
   @IsEnum(Environment)

@@ -1,4 +1,11 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  Post,
+} from "@nestjs/common";
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -12,12 +19,12 @@ import {
   type AuthVerifyDto,
 } from "@projectx/models";
 
-import type { AppService } from "./app.service";
+import { AppService } from "./app.service";
 
 @ApiTags("Auth")
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(@Inject(AppService) private readonly appService: AppService) {}
 
   /**
    * Endpoint to initiate the login process by sending a verification email.

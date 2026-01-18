@@ -171,7 +171,7 @@ export function ProductDetail() {
                         aria-label={color.name}
                         className={classnames(
                           color.selectedColor,
-                          "-m-0.5 relative flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none data-[focus]:data-[checked]:ring data-[focus]:data-[checked]:ring-offset-1 data-[checked]:ring-2 dark:data-[focus]:data-[checked]:ring-offset-gray-800 dark:data-[checked]:ring-indigo-400",
+                          "relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none data-[focus]:data-[checked]:ring data-[focus]:data-[checked]:ring-offset-1 data-[checked]:ring-2 dark:data-[focus]:data-[checked]:ring-offset-gray-800 dark:data-[checked]:ring-indigo-400",
                         )}
                       >
                         <span

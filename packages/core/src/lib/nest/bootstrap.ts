@@ -117,9 +117,9 @@ export async function bootstrapApp<T extends NestExpressApplication>(
       logger.log("Shutdown hooks are enabled");
 
       // Check for HMR flag for webpack hot reload
-      if (module?.hot) {
-        module.hot.accept();
-        module.hot.dispose(async () => {
+      if ((module as any)?.hot) {
+        (module as any).hot.accept();
+        (module as any).hot.dispose(async () => {
           logger.log("HMR dispose triggered, cleaning up resources");
           await closeAppWithGrace(currentApp);
         });

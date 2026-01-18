@@ -14,6 +14,7 @@
     "baseUrl": "./",
     "paths": {
       "@projectx/core": ["../../packages/core/dist/index"],
+      "@projectx/core/workflows": ["../../packages/core/dist/workflows"],
       "@projectx/core/*": ["../../packages/core/dist/*"],
       "@projectx/db": ["../../packages/db/dist/index"],
       "@projectx/db/*": ["../../packages/db/dist/*"],

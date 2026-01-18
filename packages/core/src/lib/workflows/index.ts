@@ -21,6 +21,5 @@ export const cancelWorkflowSignal = defineSignal("cancelWorkflowSignal");
 /**
  * Try to cancel the workflow and return true if successful
  */
-export const cancelWorkflowUpdate = defineUpdate<boolean>(
-  "cancelWorkflowUpdate",
-);
+export const cancelWorkflowUpdate: ReturnType<typeof defineUpdate> =
+  defineUpdate<boolean>("cancelWorkflowUpdate");

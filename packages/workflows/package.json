@@ -15,20 +15,20 @@
     "test": "echo 'no tests'"
   },
   "dependencies": {
-    "tslib": "^2.3.0",
+    "tslib": "^2.8.1",
     "@projectx/core": "workspace:*"
   },
   "devDependencies": {
-    "tsup": "^8.3.0",
-    "typescript": "^5.6.3"
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
-    "@nestjs/common": "11.1.6",
+    "@nestjs/common": "11.1.12",
     "@nestjs/config": "4.0.2",
-    "@temporalio/proto": "1.13.1",
-    "@temporalio/workflow": "1.13.1",
-    "@temporalio/client": "1.13.1",
-    "@temporalio/worker": "1.13.1",
-    "pino": "9.12.0"
+    "@temporalio/proto": "1.14.1",
+    "@temporalio/workflow": "1.14.1",
+    "@temporalio/client": "1.14.1",
+    "@temporalio/worker": "1.14.1",
+    "pino": "10.2.0"
   }
 }

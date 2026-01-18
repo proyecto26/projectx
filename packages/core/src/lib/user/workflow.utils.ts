@@ -49,4 +49,11 @@ export const verifyLoginCodeUpdate = defineUpdate<
     user?: UserDto;
   },
   [number]
->("verifyLoginCodeUpdate");
+>("verifyLoginCodeUpdate") as ReturnType<
+  typeof defineUpdate<
+    {
+      user?: UserDto;
+    },
+    [number]
+  >
+>;

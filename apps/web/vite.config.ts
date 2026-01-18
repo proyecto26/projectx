@@ -5,6 +5,7 @@ import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig(() => ({
+  envDir: "../../",
   plugins: [
     tailwindcss(),
     // Enable reactRouter when not running tests for vitest
@@ -28,6 +29,16 @@ export default defineConfig(() => ({
     ],
   },
   ssr: {
-    noExternal: ["@projectx/ui"],
+    noExternal: ["@projectx/ui", "@projectx/models"],
+  },
+  optimizeDeps: {
+    exclude: [
+      "@nestjs/common",
+      "@nestjs/core",
+      "@nestjs/mapped-types",
+      "@nestjs/swagger",
+      "class-transformer",
+      "class-validator",
+    ],
   },
 }));

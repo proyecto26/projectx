@@ -8,20 +8,38 @@
   ],
   "scripts": {
     "dev": "turbo run dev --parallel",
+    "dev:web": "turbo run dev --filter=web",
+    "dev:auth": "turbo run dev --filter=auth",
+    "dev:order": "turbo run dev --filter=order",
+    "dev:product": "turbo run dev --filter=product",
     "build": "turbo run build",
+    "build:web": "turbo run build --filter=web",
+    "build:ui": "turbo run build --filter=@projectx/ui",
+    "build:auth": "turbo run build --filter=auth",
+    "build:order": "turbo run build --filter=order",
+    "build:product": "turbo run build --filter=product",
+    "build:core": "turbo run build --filter=@projectx/core",
+    "storybook": "turbo run storybook --filter=@projectx/ui",
+    "storybook:build": "turbo run build-storybook --filter=@projectx/ui",
+    "prisma:generate": "pnpm --filter @projectx/db run prisma:generate",
+    "prisma:migrate": "pnpm --filter @projectx/db run prisma:migrate",
+    "prisma:migrate:dev": "pnpm --filter @projectx/db run prisma:migrate:dev",
+    "prisma:seed": "pnpm --filter @projectx/db run prisma:seed",
     "lint": "turbo run lint",
+    "list": "pnpm list --recursive --only-projects --json --depth -1",
     "test": "turbo run test",
     "check": "biome check --write .",
     "prepare": "husky"
   },
   "dependencies": {
-    "@types/express": "5.0.0"
+    "@types/express": "5.0.6"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.0",
+    "@biomejs/biome": "^2.3.11",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.2",
-    "turbo": "^2.5.4"
+    "lint-staged": "^16.2.7",
+    "pino-pretty": "13.1.1",
+    "turbo": "^2.7.5"
   },
   "packageManager": "pnpm@9.12.3",
   "lint-staged": {

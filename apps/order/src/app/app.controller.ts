@@ -7,6 +7,7 @@ import {
   Headers,
   HttpCode,
   HttpStatus,
+  Inject,
   Param,
   Post,
   type RawBodyRequest,
@@ -25,12 +26,12 @@ import {
 import { AuthenticatedUser, type AuthUser, JwtAuthGuard } from '@projectx/core';
 import { type CreateOrderDto, OrderStatusResponseDto } from '@projectx/models';
 
-import type { AppService } from './app.service';
+import { AppService } from './app.service';
 
 @ApiTags('Order')
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(@Inject(AppService) private readonly appService: AppService) {}
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)

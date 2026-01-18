@@ -8,7 +8,9 @@
     "moduleResolution": "node10",
     "esModuleInterop": true,
     "target": "ES2021",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": ["src/**/*"],
   "exclude": [

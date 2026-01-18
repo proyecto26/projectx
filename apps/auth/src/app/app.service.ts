@@ -1,6 +1,12 @@
-import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+} from "@nestjs/common";
 import type { ConfigService } from "@nestjs/config";
-import type { AuthService } from "@projectx/core";
+import { type AuthService, verifyLoginCodeUpdate } from "@projectx/core";
 import {
   type AuthLoginDto,
   AuthResponseDto,
@@ -13,7 +19,6 @@ import {
 } from "@projectx/workflows";
 import { WorkflowExecutionAlreadyStartedError } from "@temporalio/common";
 import { plainToInstance } from "class-transformer";
-import { verifyLoginCodeUpdate } from "../../../../packages/core/src/lib/user/workflow.utils";
 
 import { loginUserWorkflow } from "../workflows";
 

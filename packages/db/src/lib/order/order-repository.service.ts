@@ -1,14 +1,14 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { type Order, OrderStatus, Prisma } from "@prisma/client";
 import type { CreateOrderDto } from "@projectx/models";
 
-import type { PrismaService } from "../prisma.service";
+import { PrismaService } from "../prisma.service";
 
 @Injectable()
 export class OrderRepositoryService {
   private logger = new Logger(OrderRepositoryService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
   async createOrder(userId: number, createOrderDto: CreateOrderDto) {
     this.logger.verbose(
@@ -48,7 +48,9 @@ export class OrderRepositoryService {
             create: createOrderDto.items.map((item) => {
               const price = pricesMap[item.productId];
               if (!price) {
-                throw new Error(`Price not found for product ID ${item.productId}`);
+                throw new Error(
+                  `Price not found for product ID ${item.productId}`,
+                );
               }
               return {
                 product: {

@@ -1,10 +1,11 @@
 import {
+  Inject,
   Injectable,
   Logger,
   type OnModuleDestroy,
   type OnModuleInit,
 } from "@nestjs/common";
-import type { ConfigService } from "@nestjs/config";
+import { ConfigService } from "@nestjs/config";
 import { Client, Connection } from "@temporalio/client";
 
 import { delay } from "./utils";
@@ -14,7 +15,9 @@ export class ClientService implements OnModuleInit, OnModuleDestroy {
   readonly logger = new Logger(ClientService.name);
   public client?: Client;
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    @Inject(ConfigService) private readonly configService: ConfigService,
+  ) {}
 
   async onModuleInit() {
     this.initializeClientWithRetry();

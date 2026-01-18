@@ -1,9 +1,10 @@
 import {
+  Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
 } from "@nestjs/common";
-import type { ConfigService } from "@nestjs/config";
+import { ConfigService } from "@nestjs/config";
 import SendGrid from "@sendgrid/mail";
 import type { LoginEmailData } from "./auth/login";
 import { PROJECT_NAME } from "./common";
@@ -14,7 +15,9 @@ export class EmailService {
   logger = new Logger(EmailService.name);
   readonly fromEmail: string;
   readonly fromName: string;
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    @Inject(ConfigService) private readonly configService: ConfigService,
+  ) {
     const apiKey = this.configService.get<string>("email.apiKey");
     const fromEmail = this.configService.get<string>("email.fromEmail");
     const fromName = this.configService.get<string>("email.fromName");

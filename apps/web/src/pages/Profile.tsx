@@ -162,7 +162,7 @@ export function ProfilePage() {
                   Phone Number
                 </label>
                 <div className="relative">
-                  <Phone className="-translate-y-1/2 absolute top-1/2 left-3 h-5 w-5 transform text-gray-400 dark:text-gray-500" />
+                  <Phone className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 transform text-gray-400 dark:text-gray-500" />
                   <input
                     id="phone"
                     name="phone"
@@ -189,7 +189,7 @@ export function ProfilePage() {
                     Street Address
                   </label>
                   <div className="relative">
-                    <MapPin className="-translate-y-1/2 absolute top-1/2 left-3 h-5 w-5 transform text-gray-400 dark:text-gray-500" />
+                    <MapPin className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 transform text-gray-400 dark:text-gray-500" />
                     <input
                       id="street"
                       name="street"

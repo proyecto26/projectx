@@ -1,4 +1,4 @@
-import { continueAsNew, workflowInfo } from "@temporalio/workflow";
+import { continueAsNew, workflowInfo } from '@temporalio/workflow';
 
 const MAX_NUMBER_OF_EVENTS = 10000;
 // It's just an example of a long running workflow

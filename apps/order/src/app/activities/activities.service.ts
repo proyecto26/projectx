@@ -1,11 +1,13 @@
-import { Injectable } from "@nestjs/common";
-import type { OrderWorkflowData } from "@projectx/core";
+import { Inject, Injectable } from '@nestjs/common';
+import type { OrderWorkflowData } from '@projectx/core';
 
-import type { OrderService } from "../order/order.service";
+import { OrderService } from '../order/order.service';
 
 @Injectable()
 export class ActivitiesService {
-  constructor(public readonly orderService: OrderService) {}
+  constructor(
+    @Inject(OrderService) public readonly orderService: OrderService,
+  ) {}
 
   async createOrder(data: OrderWorkflowData) {
     return await this.orderService.createOrder(data);

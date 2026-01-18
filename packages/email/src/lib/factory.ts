@@ -20,24 +20,20 @@ export type EmailTemplateDataMap = {
   [EmailTemplates.OrderFailed]: OrderFailedEmailData;
 };
 
-class EmailTemplateFactory {
-  static createEmailTemplate<T extends EmailTemplates>(
-    templateKey: EmailTemplates,
-    data: EmailTemplateDataMap[T],
-  ) {
-    switch (templateKey) {
-      case EmailTemplates.AuthLogin:
-        return getLoginEmailHtml(data as LoginEmailData);
-      case EmailTemplates.OrderPending:
-        return getOrderPendingEmailHtml(data as OrderPendingEmailData);
-      case EmailTemplates.OrderSuccess:
-        return getOrderSuccessEmailHtml(data as OrderSuccessEmailData);
-      case EmailTemplates.OrderFailed:
-        return getOrderFailedEmailHtml(data as OrderFailedEmailData);
-      default:
-        return null;
-    }
+export function createEmailTemplate<T extends EmailTemplates>(
+  templateKey: EmailTemplates,
+  data: EmailTemplateDataMap[T],
+) {
+  switch (templateKey) {
+    case EmailTemplates.AuthLogin:
+      return getLoginEmailHtml(data as LoginEmailData);
+    case EmailTemplates.OrderPending:
+      return getOrderPendingEmailHtml(data as OrderPendingEmailData);
+    case EmailTemplates.OrderSuccess:
+      return getOrderSuccessEmailHtml(data as OrderSuccessEmailData);
+    case EmailTemplates.OrderFailed:
+      return getOrderFailedEmailHtml(data as OrderFailedEmailData);
+    default:
+      return null;
   }
 }
-
-export { EmailTemplateFactory };

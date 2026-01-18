@@ -1,12 +1,12 @@
-import { Controller, Get, HttpCode, HttpStatus } from "@nestjs/common";
+import { Controller, Get, HttpCode, HttpStatus, Inject } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import {
   HealthCheck,
-  type HealthCheckService,
-  type MemoryHealthIndicator,
-  type PrismaHealthIndicator,
+  HealthCheckService,
+  MemoryHealthIndicator,
+  PrismaHealthIndicator,
 } from "@nestjs/terminus";
-import type { PrismaService } from "@projectx/db";
+import { PrismaService } from "@projectx/db";
 
 const MEMORY_HEAP_LIMIT = 512 * 1024 * 1024; // 512MB
 const MEMORY_RSS_LIMIT = 512 * 1024 * 1024; // 512MB
@@ -15,10 +15,12 @@ const MEMORY_RSS_LIMIT = 512 * 1024 * 1024; // 512MB
 @Controller("health")
 export class HealthController {
   constructor(
-    private readonly health: HealthCheckService,
+    @Inject(HealthCheckService) private readonly health: HealthCheckService,
+    @Inject(MemoryHealthIndicator)
     private readonly memory: MemoryHealthIndicator,
+    @Inject(PrismaHealthIndicator)
     private readonly prismaHealth: PrismaHealthIndicator,
-    private readonly prismaService: PrismaService,
+    @Inject(PrismaService) private readonly prismaService: PrismaService,
   ) {}
 
   /**

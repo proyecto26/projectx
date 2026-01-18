@@ -70,4 +70,4 @@ export const paymentWebHookEventSignal = defineSignal<[PaymentWebhookEvent]>(
 // DEFINE UPDATES
 export const createOrderUpdate = defineUpdate<OrderStatusResponseDto, []>(
   "createOrderUpdate",
-);
+) as ReturnType<typeof defineUpdate<OrderStatusResponseDto, []>>;

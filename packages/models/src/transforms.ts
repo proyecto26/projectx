@@ -38,5 +38,7 @@ export function transformToDate(value: string, allowNull = true) {
     return new Error(`Invalid format, expected ISO string: ${value}`);
   }
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? new Error(`Invalid date: ${value}`) : date;
+  return Number.isNaN(date.getTime())
+    ? new Error(`Invalid date: ${value}`)
+    : date;
 }

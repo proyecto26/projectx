@@ -8,7 +8,7 @@ export interface PaymentConfig {
 export default registerAs(
   "payment",
   (): PaymentConfig => ({
-    stripeSecretKey: process.env["STRIPE_SECRET_KEY"] ?? "",
-    stripeWebhookSecret: process.env["STRIPE_WEBHOOK_SECRET"] ?? "",
+    stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
+    stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
   }),
 );

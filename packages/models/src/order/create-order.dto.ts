@@ -33,6 +33,15 @@ export class CreateOrderDto extends OmitType(OrderDto, [
   "updatedAt",
 ] as const) {
   @ApiProperty({
+    description: "Unique reference identifier for tracking the order",
+    example: "123e4567-e89b-12d3-a456-426614174000",
+  })
+  @IsDefined()
+  @IsString()
+  @Expose()
+  referenceId!: string;
+
+  @ApiProperty({
     description: "Items included in the order",
     type: [OrderItemDto],
   })

@@ -1,4 +1,4 @@
-import { type EmailTemplateDataMap, EmailTemplateFactory } from "./factory";
+import { createEmailTemplate, type EmailTemplateDataMap } from "./factory";
 
 export enum EmailTemplates {
   AuthLogin = "auth_login",
@@ -11,5 +11,5 @@ export function getEmailTemplate<T extends EmailTemplates>(
   templateKey: EmailTemplates,
   data: EmailTemplateDataMap[T],
 ) {
-  return EmailTemplateFactory.createEmailTemplate(templateKey, data);
+  return createEmailTemplate(templateKey, data);
 }
