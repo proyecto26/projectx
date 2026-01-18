@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "prebuild": "pnpm run prisma:generate",
-    "build": "tsup src/index.ts --format cjs,esm --splitting --sourcemap --clean --dts",
+    "build": "tsup src/index.ts --format cjs,esm --sourcemap --clean && tsc -p tsconfig.json --emitDeclarationOnly --outDir dist",
     "dev": "tsc -w -p tsconfig.json",
     "lint": "biome check .",
     "test": "echo 'no tests'",

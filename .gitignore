@@ -38,6 +38,7 @@ testem.log
 .DS_Store
 Thumbs.db
 
+.pnpm-store/
 .turbo
 .alchemy
 

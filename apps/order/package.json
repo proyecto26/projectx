@@ -30,6 +30,7 @@
     "@projectx/db": "workspace:*",
     "@projectx/email": "workspace:*",
     "@projectx/models": "workspace:*",
+    "@projectx/payment": "workspace:*",
     "@projectx/workflows": "workspace:*",
     "@temporalio/client": "1.14.1",
     "@temporalio/common": "1.14.1",

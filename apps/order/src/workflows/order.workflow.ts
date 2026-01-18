@@ -80,7 +80,7 @@ export async function createOrder(
       log.error('The payment process has already finished, cannot cancel');
     }
   });
-  setHandler(paymentWebHookEventSignal, (e) =>
+  setHandler(paymentWebHookEventSignal, (e: unknown) =>
     processPaymentWorkflow?.signal(paymentWebHookEventSignal, e),
   );
   // Create the order and the payment intent with the payment provider

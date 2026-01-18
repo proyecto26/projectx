@@ -1,5 +1,7 @@
-# Use the official Node.js image as the base image
-FROM node:22
+FROM node:25
+
+# Install bash and other dependencies
+RUN apt-get update && apt-get install -y bash libc6 && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -11,9 +13,6 @@ COPY .npmrc .
 
 # Install pnpm globally
 RUN npm install -g pnpm
-
-# Install bash
-RUN apt-get update && apt-get install -y bash
 
 # Copy the application files
 COPY . .

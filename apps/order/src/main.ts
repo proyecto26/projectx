@@ -7,7 +7,7 @@ import { AppModule } from './app/app.module';
 export * from './app/activities/activities.service';
 
 // Enable raw body parsing for webhook events
-bootstrapApp(AppModule, { rawBody: true }).catch((err) => {
+bootstrapApp(AppModule, { rawBody: true }).catch((err: unknown) => {
   Logger.error(`⚠️ Application failed to start: ${err}`);
   process.exit(1);
 });

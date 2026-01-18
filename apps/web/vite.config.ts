@@ -12,6 +12,10 @@ export default defineConfig(() => ({
     process.env.VITEST ? undefined : reactRouter(),
     tsconfigPaths(),
   ].filter(Boolean),
+  server: {
+    host: true,
+    port: 3000,
+  },
   resolve: {
     alias: [
       {
@@ -24,6 +28,24 @@ export default defineConfig(() => ({
         find: /^(?:@projectx\/ui)(?:$)/,
         replacement: fileURLToPath(
           new URL("../../packages/ui/src/index.ts", import.meta.url),
+        ),
+      },
+      {
+        find: /^(?:@projectx\/models)(?:$)/,
+        replacement: fileURLToPath(
+          new URL("../../packages/models/src/index.ts", import.meta.url),
+        ),
+      },
+      {
+        find: /^(?:@projectx\/core)(?:$)/,
+        replacement: fileURLToPath(
+          new URL("../../packages/core/src/index.ts", import.meta.url),
+        ),
+      },
+      {
+        find: /^(?:@projectx\/email)(?:$)/,
+        replacement: fileURLToPath(
+          new URL("../../packages/email/src/index.ts", import.meta.url),
         ),
       },
     ],

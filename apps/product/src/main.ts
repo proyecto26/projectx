@@ -3,7 +3,7 @@ import { bootstrapApp } from '@projectx/core';
 
 import { AppModule } from './app/app.module';
 
-bootstrapApp(AppModule).catch((err) => {
+bootstrapApp(AppModule).catch((err: unknown) => {
   Logger.error(`⚠️ Application failed to start: ${err}`);
   process.exit(1);
 });

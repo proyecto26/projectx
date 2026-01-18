@@ -27,15 +27,15 @@ import { UserModule } from "./user/user.module";
     EmailModule,
     WorkflowsModule.registerAsync({
       imports: [ActivitiesModule],
+      inject: [ActivitiesService],
       useFactory: (activitiesService: ActivitiesService) => ({
         activitiesService,
         workflowsPath: path.join(__dirname, "../workflows"),
       }),
-      inject: [ActivitiesService],
     }),
     UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

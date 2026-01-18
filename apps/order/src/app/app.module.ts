@@ -27,15 +27,15 @@ import { AppService } from './app.service';
     EmailModule,
     WorkflowsModule.registerAsync({
       imports: [ActivitiesModule],
+      inject: [ActivitiesService],
       useFactory: (activitiesService: ActivitiesService) => ({
         activitiesService,
         workflowsPath: path.join(__dirname, '../workflows'),
       }),
-      inject: [ActivitiesService],
     }),
     PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
