@@ -1,0 +1,351 @@
+---
+description: Rules for React Router (Framework mode) web application
+globs: 
+  - apps/web/**/*
+alwaysApply: true
+---
+# Web Application Rules (React Router SSR)
+## Project Overview
+- **Framework:** React Router v7 (Framework mode) - The next version of RemixJS
+- **Rendering:** Server-Side Rendering (SSR)
+- **Module System:** ESM (not CommonJS)
+- **Styling:** TailwindCSS v4 (imported from `@projectx/ui` package)
+- **Build Tool:** Vite
+- **Port:** 3000
+## Critical: Module System
+### ✅ This app uses ESM
+```typescript
+// ✅ CORRECT - ESM imports
+import { something } from './module';
+export { something };
+export default Component;
+// ❌ WRONG - CommonJS (don't use in web app)
+const something = require('./module');
+module.exports = something;
+```
+### Importing from packages
+```typescript
+// ✅ Can import ESM and CommonJS packages
+import { User } from '@projectx/models';  // ESM
+import { AuthService } from '@projectx/core';  // CommonJS (transpiled)
+import { Button } from '@projectx/ui';  // ESM
+```
+## React Router Framework Mode
+### This is NOT traditional React Router
+- Uses file-based routing (like Remix/Next.js)
+- Server-side rendering by default
+- Built-in data loading with loaders
+- Form handling with actions
+- Automatic code splitting
+### File structure:
+```
+apps/web/
+├── app/
+│   ├── routes/           # File-based routes
+│   │   ├── _index.tsx    # Home page (/)
+│   │   ├── about.tsx     # /about
+│   │   └── users.$id.tsx # /users/:id (dynamic)
+│   ├── root.tsx          # Root layout
+│   └── entry.client.tsx  # Client entry point
+│   └── entry.server.tsx  # Server entry point
+```
+### Route conventions:
+- `_index.tsx` - Index route
+- `about.tsx` - Static route `/about`
+- `users.$id.tsx` - Dynamic route `/users/:id`
+- `_layout.tsx` - Layout route (no URL segment)
+- `_auth.login.tsx` - Pathless layout
+## Data Loading
+### Use loaders for server-side data fetching
+```typescript
+import { json, type LoaderFunctionArgs } from 'react-router';
+export async function loader({ params, request }: LoaderFunctionArgs) {
+  const user = await fetchUser(params.id);
+  return json({ user });
+}
+export default function UserPage() {
+  const { user } = useLoaderData<typeof loader>();
+  return <div>{user.name}</div>;
+}
+```
+### Use actions for mutations
+```typescript
+import { redirect, type ActionFunctionArgs } from 'react-router';
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const user = await createUser(formData);
+  return redirect(`/users/${user.id}`);
+}
+export default function NewUserPage() {
+  return (
+    <Form method="post">
+      <input name="name" />
+      <button type="submit">Create</button>
+    </Form>
+  );
+}
+```
+## TailwindCSS v4 Integration
+### Styles are imported from `@projectx/ui`
+```typescript
+// In root.tsx or layout
+import '@projectx/ui/styles';  // ✅ Import TailwindCSS from ui package
+```
+### The `@projectx/ui` package:
+- Exports TailwindCSS v4 configuration
+- Provides shared UI components
+- Is a configuration package (Turborepo pattern)
+- Uses ESM
+### Using Tailwind classes:
+```tsx
+<div className="flex items-center justify-between p-4 bg-gray-100">
+  <h1 className="text-2xl font-bold">Title</h1>
+</div>
+```
+## API Integration
+### Call backend services from loaders/actions
+```typescript
+// Environment variables for API URLs
+const AUTH_API_URL = process.env.AUTH_API_URL;  // http://localhost:8081
+const ORDER_API_URL = process.env.ORDER_API_URL;  // http://localhost:8082
+const PRODUCT_API_URL = process.env.PRODUCT_API_URL;  // http://localhost:8083
+export async function loader() {
+  const response = await fetch(`${AUTH_API_URL}/user/profile`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+  const user = await response.json();
+  return json({ user });
+}
+```
+### Handle authentication
+- Store JWT tokens in cookies (httpOnly, secure)
+- Include Authorization header in API requests
+- Redirect to login if unauthorized
+## Environment Variables
+### Required variables:
+- `AUTH_API_URL` - Auth service URL
+- `ORDER_API_URL` - Order service URL
+- `PRODUCT_API_URL` - Product service URL
+- `SESSION_SECRET` - Secret for session cookies
+- `NODE_ENV` - development/production
+### Accessing in server code:
+```typescript
+// ✅ In loaders/actions (server-side)
+const apiUrl = process.env.AUTH_API_URL;
+// ❌ Don't expose secrets to client
+// Use public env vars with VITE_ prefix for client-side
+```
+## Development Mode
+### Running locally:
+```bash
+cd apps/web
+pnpm dev  # Starts dev server on port 3000
+```
+### In Docker:
+```bash
+# docker-compose.yml command
+pnpm install --frozen-lockfile && \
+rm -rf /app/.turbo && \
+cd /app/apps/web && \
+pnpm dev
+```
+### Hot reload:
+- Vite provides instant HMR
+- Server-side code restarts automatically
+- File watching enabled with polling in Docker
+## Build Process
+### Development build:
+```bash
+pnpm dev  # Start dev server
+```
+### Production build:
+```bash
+pnpm build  # Creates optimized build
+pnpm start  # Serves production build
+```
+### Build output:
+- Client bundle: `build/client/`
+- Server bundle: `build/server/`
+## Styling Best Practices
+### Use Tailwind utility classes
+```tsx
+// ✅ Preferred
+<button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+  Click me
+</button>
+// ❌ Avoid inline styles
+<button style={{ padding: '8px 16px', backgroundColor: 'blue' }}>
+  Click me
+</button>
+```
+### Component composition
+```tsx
+// Create reusable components in @projectx/ui
+import { Button } from '@projectx/ui';
+<Button variant="primary" size="lg">
+  Click me
+</Button>
+```
+## TypeScript Configuration
+### Web app uses ESM
+```json
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "types": ["vite/client"]
+  }
+}
+```
+### Type imports
+```typescript
+// ✅ Use type imports for types only
+import type { User } from '@projectx/models';
+import type { LoaderFunctionArgs } from 'react-router';
+// ✅ Regular imports for components/functions
+import { Button } from '@projectx/ui';
+import { json } from 'react-router';
+```
+## Error Handling
+### Error boundaries
+```typescript
+import { isRouteErrorResponse, useRouteError } from 'react-router';
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (isRouteErrorResponse(error)) {
+    return (
+      <div>
+        <h1>{error.status} {error.statusText}</h1>
+        <p>{error.data}</p>
+      </div>
+    );
+  }
+  return <div>Something went wrong!</div>;
+}
+```
+### Throwing responses
+```typescript
+export async function loader() {
+  const user = await fetchUser();
+  if (!user) {
+    throw new Response('Not Found', { status: 404 });
+  }
+  return json({ user });
+}
+```
+## Performance Optimization
+### Code splitting
+- Automatic route-based code splitting
+- Use dynamic imports for heavy components
+```typescript
+import { lazy } from 'react';
+const HeavyComponent = lazy(() => import('./HeavyComponent'));
+```
+### Prefetching
+```tsx
+import { Link } from 'react-router';
+// Prefetch on hover
+<Link to="/users" prefetch="intent">
+  Users
+</Link>
+```
+### Caching
+- Use Cache-Control headers in loaders
+- Implement stale-while-revalidate pattern
+## SEO
+### Meta tags in routes
+```typescript
+import type { MetaFunction } from 'react-router';
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'Page Title' },
+    { name: 'description', content: 'Page description' },
+    { property: 'og:title', content: 'Page Title' },
+  ];
+};
+```
+### Sitemap and robots.txt
+- Generate sitemap.xml in public folder
+- Configure robots.txt for crawlers
+## Forms and Validation
+### Use React Router Form component
+```tsx
+import { Form, useActionData } from 'react-router';
+export default function LoginPage() {
+  const actionData = useActionData<typeof action>();
+  return (
+    <Form method="post">
+      <input name="email" type="email" required />
+      <input name="password" type="password" required />
+      {actionData?.error && <p>{actionData.error}</p>}
+      <button type="submit">Login</button>
+    </Form>
+  );
+}
+```
+### Validation
+- Validate on server in actions
+- Use libraries like Zod for schema validation
+- Return errors in action data
+## Common Issues
+### Issue: "Cannot find module" for packages
+**Cause:** Package not built or wrong import path
+**Solution:** Build packages first with `pnpm turbo run build`
+### Issue: Styles not loading
+**Cause:** TailwindCSS not imported from `@projectx/ui`
+**Solution:** Add `import '@projectx/ui/styles'` in root.tsx
+### Issue: ESM/CommonJS conflicts
+**Cause:** Mixing module systems
+**Solution:** Web app is ESM, packages can be CommonJS (transpiled by Vite)
+### Issue: Environment variables not available
+**Cause:** Not prefixed with VITE_ for client-side
+**Solution:** Use process.env in server code, VITE_ prefix for client
+## Docker Considerations
+### Vite dev server in Docker
+```yaml
+environment:
+  - VITE_DEV_SERVER=true
+  - WATCHPACK_POLLING=true
+  - CHOKIDAR_USEPOLLING=true
+ports:
+  - "3000:3000"
+```
+### Volume mounts
+- Mount source code for hot reload
+- Exclude node_modules with anonymous volume
+- Exclude .vite cache folder
+## Testing
+### Unit tests with Vitest
+```typescript
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+describe('Component', () => {
+  it('renders correctly', () => {
+    render(<Component />);
+    expect(screen.getByText('Hello')).toBeInTheDocument();
+  });
+});
+```
+### Integration tests
+- Test loaders and actions
+- Mock API calls
+- Test full user flows
+## Deployment
+### Build for production
+```bash
+pnpm build
+```
+### Environment variables in production
+- Set all required env vars
+- Use secrets management
+- Enable HTTPS
+### Hosting options
+- Vercel (recommended for React Router)
+- Netlify
+- Self-hosted with Node.js
+- Docker container

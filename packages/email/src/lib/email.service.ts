@@ -42,7 +42,7 @@ export class EmailService {
       return transport;
     } catch (error) {
       this.logger.error(`send(${template}) - ${error}`);
-      throw new InternalServerErrorException(error);
+      throw error;
     }
   }
 

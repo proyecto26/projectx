@@ -203,15 +203,14 @@ services:
       - "com.*project-name.service=temporal-ui"
     expose:
       - "${TEMPORAL_UI_PORT:-8080}"
-
-  # PROJECTX SERVICES
-  web:
-    <<: *service-common
-    container_name: web
-    command: >
-      bash -c " pnpm install --frozen-lockfile && rm -rf /app/.turbo && cd /app/apps/web && pnpm dev "
-    ports:
-      - "3000:3000"
+    # PROJECTX SERVICES
+    # web:
+    #   <<: *service-common
+    #   container_name: web
+    #   command: >
+    #     bash -c " pnpm install --frozen-lockfile && rm -rf /app/.turbo && cd /app/apps/web && pnpm dev "
+    #   ports:
+    #     - "3000:3000"
     #restart: unless-stopped
 
   auth:

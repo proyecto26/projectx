@@ -1,0 +1,142 @@
+---
+description: Rules for frontend packages (ui, models) used by the web app
+globs: 
+  - packages/ui/**/*
+  - packages/models/**/*
+alwaysApply: false
+---
+# Frontend Packages Rules
+## Package Overview
+### UI Package (`@projectx/ui`)
+- **Purpose:** Shared UI components and TailwindCSS v4 configuration
+- **Module System:** ESM only
+- **Styling:** TailwindCSS v4
+- **Exports:** React components, styles, and Tailwind config
+### Models Package (`@projectx/models`)
+- **Purpose:** Shared TypeScript types and DTOs
+- **Module System:** Dual (CJS + ESM)
+- **Exports:** Type definitions, interfaces, enums, DTOs
+## Critical: UI Package is ESM Only
+### ❌ DO NOT use CommonJS in UI package
+```typescript
+// ❌ WRONG
+module.exports = Component;
+const something = require('./module');
+// ✅ CORRECT
+export default Component;
+import { something } from './module';
+```
+### Why ESM Only?
+- The `web` app uses ESM and imports this package
+- TailwindCSS v4 configuration requires ESM
+- Vite (used by web app) works best with ESM
+## TailwindCSS v4 Configuration
+### Package Structure
+```
+packages/ui/
+├── src/
+│   ├── index.ts          # Main export
+│   ├── styles.css        # TailwindCSS entry point
+│   └── components/       # React components
+├── tailwind.config.ts    # Tailwind v4 config
+└── package.json
+```
+### Exporting Styles
+The `web` app imports styles from this package:
+```typescript
+// In web app's root.tsx
+import '@projectx/ui/styles';
+```
+### Component Exports
+```typescript
+// packages/ui/src/index.ts
+export { Button } from './components/Button';
+export { Input } from './components/Input';
+export * from './styles';
+```
+## Models Package
+### Type-Only Exports
+```typescript
+// ✅ Export types and interfaces
+export interface User {
+  id: number;
+  email: string;
+  name?: string;
+}
+export type AuthUser = Pick<User, 'id' | 'email'>;
+export enum UserStatus {
+  Active = 'active',
+  Inactive = 'inactive',
+}
+```
+### DTOs (Data Transfer Objects)
+```typescript
+// Use class-validator decorators for validation
+import { IsEmail, IsString, IsOptional } from 'class-validator';
+export class CreateUserDto {
+  @IsEmail()
+  email: string;
+  @IsString()
+  @IsOptional()
+  name?: string;
+}
+```
+### Shared Between Frontend and Backend
+- DTOs are used by both NestJS apps and web app
+- Types are shared across all packages
+- Enums define constants used everywhere
+## Build Configuration
+### UI Package Build
+```json
+{
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --sourcemap --clean && tsc -p tsconfig.json --emitDeclarationOnly"
+  }
+}
+```
+### Models Package Build (Dual Output)
+```json
+{
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --sourcemap --clean && tsc -p tsconfig.json --emitDeclarationOnly"
+  }
+}
+```
+## Component Patterns
+### Button Component Example
+Reference: `packages/ui/src/components/Button.tsx`
+### Using Tailwind Classes
+- Use Tailwind utility classes directly
+- Create variants using `clsx` or `cn` utility
+- Export component with proper TypeScript types
+## Common Issues
+### Issue: "Cannot find module '@projectx/ui/styles'"
+**Cause:** Styles not properly exported in package.json
+**Solution:** Ensure `package.json` has correct exports:
+```json
+{
+  "exports": {
+    ".": "./dist/index.js",
+    "./styles": "./src/styles.css"
+  }
+}
+```
+### Issue: "Module not found" in web app
+**Cause:** Package not built or wrong module format
+**Solution:** Run `pnpm turbo run build` from root
+### Issue: Type errors in consuming apps
+**Cause:** Declaration files not generated
+**Solution:** Ensure `tsc --emitDeclarationOnly` runs in build script
+## Best Practices
+1. **Keep UI components simple** - One component per file
+2. **Use TypeScript strictly** - No `any` types
+3. **Export types separately** - Make them easy to import
+4. **Document component props** - Use JSDoc comments
+5. **Test components** - Use Vitest and React Testing Library
+6. **Keep models focused** - One concern per file
+7. **Version carefully** - Breaking changes require major version bump
+## References
+- UI components: `packages/ui/src/components/`
+- Tailwind config: `packages/ui/tailwind.config.ts`
+- Model types: `packages/models/src/`
+- Web app usage: `apps/web/app/`

@@ -5,14 +5,14 @@ import {
   Logger,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { type AuthService, verifyLoginCodeUpdate } from "@projectx/core";
+import { AuthService, verifyLoginCodeUpdate } from "@projectx/core";
 import {
   type AuthLoginDto,
   AuthResponseDto,
   type AuthVerifyDto,
 } from "@projectx/models";
 import {
-  type ClientService,
+  ClientService,
   getWorkflowDescription,
   isWorkflowRunning,
 } from "@projectx/workflows";

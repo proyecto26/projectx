@@ -8,6 +8,7 @@ export type LoginWorkflowData = {
 export enum LoginWorkflowCodeStatus {
   PENDING = "PENDING",
   SENT = "SENT",
+  ERROR_SENDING_EMAIL = "ERROR_SENDING_EMAIL",
 }
 
 export enum LoginWorkflowStatus {

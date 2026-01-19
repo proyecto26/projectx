@@ -50,7 +50,7 @@ export const links: LinksFunction = () => [
 ];
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  const [csrfToken, cookieHeader] = await csrf.commitToken();
+  const [csrfToken, cookieHeader] = await csrf.commitToken(request);
   const theme = request.headers.get("Cookie")?.includes("theme=dark")
     ? THEME.DARK
     : THEME.LIGHT;

@@ -1,0 +1,242 @@
+---
+description: Docker configuration for PostgreSQL database and Elasticsearch
+globs: 
+  - docker-compose.yml
+alwaysApply: false
+---
+# Docker Database Infrastructure
+## Services Overview
+### Database Services
+- `db` - PostgreSQL 17 with PostGIS extension (Port 5432)
+- `elasticsearch` - Elasticsearch 7.17.27 for Temporal visibility (Port 9200)
+## PostgreSQL Configuration
+### Image Version (DO NOT CHANGE)
+```yaml
+db:
+  image: postgis/postgis:17-3.5
+```
+**Why PostGIS?** Provides PostgreSQL with geospatial extensions (PostGIS, pg_trgm, etc.)
+### Service Definition
+```yaml
+db:
+  image: postgis/postgis:17-3.5
+  environment:
+    - POSTGRES_USER=${POSTGRES_USER}
+    - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    - POSTGRES_DB=${POSTGRES_DB}
+    - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+  ports:
+    - "${POSTGRES_PORT:-5432}:5432"
+  volumes:
+    - postgres-data:/var/lib/postgresql/data
+  networks:
+    - projectx-network
+  restart: unless-stopped
+```
+### Health Check
+```yaml
+healthcheck:
+  test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+  interval: 5s
+  timeout: 5s
+  retries: 60
+  start_period: 30s
+```
+**Why these settings?**
+- `interval: 5s` - Check frequently during startup
+- `retries: 60` - Allow up to 5 minutes for startup (60 × 5s)
+- `start_period: 30s` - Grace period before health checks count as failures
+### Data Persistence
+```yaml
+volumes:
+  postgres-data:
+    driver: local
+services:
+  db:
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+```
+Data persists across container restarts.
+## PostgreSQL Extensions
+### PostGIS Image Includes
+- `postgis` - Geospatial extension
+- `postgis_topology` - Topology support
+- `postgis_tiger_geocoder` - US address geocoding
+- `fuzzystrmatch` - Fuzzy string matching
+- `postgis_sfcgal` - 3D geometry support
+- `pg_trgm` - Trigram matching for text search
+### Used by Prisma
+The project uses Prisma ORM which connects to this PostgreSQL instance.
+**Connection String Format:**
+```
+postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
+```
+## Elasticsearch Configuration
+### Image Version (DO NOT CHANGE)
+```yaml
+elasticsearch:
+  image: elasticsearch:7.17.27
+```
+**Why 7.17.27?** Compatible with Temporal Server 1.29.2
+### Service Definition
+```yaml
+elasticsearch:
+  image: elasticsearch:7.17.27
+  environment:
+    - discovery.type=single-node
+    - xpack.security.enabled=false
+    - ES_JAVA_OPTS=-Xms512m -Xmx512m
+  ports:
+    - "9200:9200"
+  volumes:
+    - elasticsearch-data:/usr/share/elasticsearch/data
+  networks:
+    - projectx-network
+  restart: unless-stopped
+```
+### Environment Variables
+- `discovery.type=single-node` - Single-node cluster (dev only)
+- `xpack.security.enabled=false` - Disable auth (dev only)
+- `ES_JAVA_OPTS=-Xms512m -Xmx512m` - Limit memory to 512MB
+### Health Check
+```yaml
+healthcheck:
+  test: ["CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1"]
+  interval: 5s
+  timeout: 5s
+  retries: 60
+  start_period: 30s
+```
+### Data Persistence
+```yaml
+volumes:
+  elasticsearch-data:
+    driver: local
+services:
+  elasticsearch:
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+```
+### Used by Temporal
+Temporal uses Elasticsearch for:
+- Workflow visibility and search
+- Advanced workflow queries
+- Workflow history indexing
+**Visibility Index:** `temporal_visibility_v1_dev`
+## Environment Variables
+### PostgreSQL Variables
+```bash
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=projectx_db
+POSTGRES_PORT=5432
+```
+### Connection String
+```bash
+DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
+```
+### Elasticsearch Variables (Internal)
+```bash
+ES_SCHEME=http
+ES_HOST=elasticsearch
+ES_PORT=9200
+ES_VISIBILITY_INDEX=temporal_visibility_v1_dev
+ES_VERSION=v7
+```
+## Common Commands
+### Access PostgreSQL
+```bash
+docker compose exec db psql -U postgres -d projectx_db
+```
+### View Database Logs
+```bash
+docker compose logs -f db
+```
+### Check Database Health
+```bash
+docker compose exec db pg_isready -U postgres -d projectx_db
+```
+### List Databases
+```bash
+docker compose exec db psql -U postgres -c "\l"
+```
+### List Tables
+```bash
+docker compose exec db psql -U postgres -d projectx_db -c "\dt"
+```
+### Check Elasticsearch Health
+```bash
+curl http://localhost:9200/_cluster/health?pretty
+```
+### View Elasticsearch Indices
+```bash
+curl http://localhost:9200/_cat/indices?v
+```
+### View Temporal Visibility Index
+```bash
+curl http://localhost:9200/temporal_visibility_v1_dev/_search?pretty
+```
+## Data Management
+### Backup Database
+```bash
+docker compose exec db pg_dump -U postgres projectx_db > backup.sql
+```
+### Restore Database
+```bash
+docker compose exec -T db psql -U postgres projectx_db < backup.sql
+```
+### Clear All Data (DESTRUCTIVE)
+```bash
+docker compose down -v
+```
+This removes all volumes including database data.
+### Clear Only Database Data
+```bash
+docker compose down
+docker volume rm projectx_postgres-data
+docker compose up -d db
+```
+## Troubleshooting
+### Database Won't Start
+1. Check logs: `docker compose logs db`
+2. Verify port is available: `lsof -i :5432`
+3. Check environment variables in `.env`
+4. Verify volume permissions
+### Connection Refused
+1. Ensure database is healthy: `docker compose ps db`
+2. Check network: `docker compose exec app ping db`
+3. Verify `DATABASE_URL` format
+4. Check if migrations ran: `docker compose logs app | grep prisma`
+### Elasticsearch Won't Start
+1. Check logs: `docker compose logs elasticsearch`
+2. Verify memory settings: `ES_JAVA_OPTS`
+3. Check disk space: `df -h`
+4. Ensure port 9200 is available
+### Elasticsearch Out of Memory
+1. Increase heap size: `ES_JAVA_OPTS=-Xms1g -Xmx1g`
+2. Check Docker memory limits
+3. Restart: `docker compose restart elasticsearch`
+### Temporal Can't Connect to Database
+1. Verify database is healthy
+2. Check `POSTGRES_SEEDS=db` in temporal service
+3. Verify schema was created by admin-tools
+4. Check temporal logs: `docker compose logs temporal`
+### Temporal Can't Connect to Elasticsearch
+1. Verify Elasticsearch is healthy
+2. Check `ES_SEEDS=elasticsearch` in temporal service
+3. Verify visibility index exists: `curl localhost:9200/_cat/indices`
+4. Check temporal logs for ES errors
+## Best Practices
+1. **Use health checks** - Ensure services are ready before dependent services start
+2. **Persist data with volumes** - Use named volumes for data persistence
+3. **Set resource limits** - Prevent services from consuming too much memory
+4. **Monitor logs** - Regularly check database and Elasticsearch logs
+5. **Backup regularly** - Use `pg_dump` for database backups
+6. **Use environment variables** - For credentials and configuration
+7. **Don't expose in production** - Limit port exposure in production environments
+## References
+- PostgreSQL docs: https://www.postgresql.org/docs/17/
+- PostGIS docs: https://postgis.net/documentation/
+- Elasticsearch docs: https://www.elastic.co/guide/en/elasticsearch/reference/7.17/
+- Prisma schema: `packages/db/prisma/schema.prisma`
+- Environment variables: `.env`

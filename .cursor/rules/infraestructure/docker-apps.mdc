@@ -1,0 +1,177 @@
+---
+description: Docker configuration for application services (auth, order, product, web)
+globs: 
+  - docker-compose.yml
+  - Dockerfile
+alwaysApply: false
+---
+# Docker Application Services
+## Service Overview
+### Application Services
+- `auth` (NestJS - Port 8081, Debug 9229)
+- `order` (NestJS - Port 8082, Debug 9230)
+- `product` (NestJS - Port 8083, Debug 9231)
+- `web` (React Router SSR - Port 3000) - Optional
+## Common Service Template
+### Shared Configuration
+```yaml
+x-service-common: &service-common
+  networks:
+    - projectx-network
+  restart: unless-stopped
+  volumes:
+    - .:/app
+    - /app/node_modules
+```
+All services inherit from this base configuration to ensure consistency.
+## NestJS Service Pattern
+### Standard NestJS Service
+```yaml
+service-name:
+  <<: *service-common
+  build:
+    context: .
+    dockerfile: Dockerfile
+    target: development
+  command: >
+    sh -c "pnpm install --frozen-lockfile &&
+           pnpm turbo run build --filter=service-name^... &&
+           pnpm --filter @projectx/db run prisma:generate &&
+           pnpm --filter @projectx/db run prisma:migrate &&
+           cd /app/apps/service-name &&
+           pnpm start:dev"
+  environment:
+    - NODE_ENV=development
+    - WATCHPACK_POLLING=true
+    - CHOKIDAR_USEPOLLING=true
+    - CHOKIDAR_INTERVAL=500
+  ports:
+    - "PORT:PORT"
+    - "DEBUG_PORT:DEBUG_PORT"
+  depends_on:
+    db:
+      condition: service_healthy
+    temporal:
+      condition: service_healthy
+```
+### Build Process for Apps
+1. Install dependencies with `pnpm install --frozen-lockfile`
+2. Build package dependencies with Turborepo filter
+3. Generate Prisma client
+4. Run Prisma migrations
+5. Start service in watch mode
+## Environment Variables for Apps
+### Common Variables
+```yaml
+environment:
+  - NODE_ENV=development
+  - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
+  - TEMPORAL_HOST=temporal:7233
+  - TEMPORAL_NAMESPACE=${TEMPORAL_NAMESPACE:-default}
+```
+### File Watching (Hot Reload)
+```yaml
+environment:
+  - WATCHPACK_POLLING=true
+  - CHOKIDAR_USEPOLLING=true
+  - CHOKIDAR_INTERVAL=500
+```
+These enable hot reload in Docker containers.
+## Volume Mounts
+### Application Code
+```yaml
+volumes:
+  - .:/app  # Mount entire monorepo
+  - /app/node_modules  # Prevent overwriting root node_modules
+  - /app/apps/service-name/node_modules  # Service-specific node_modules
+  - /app/packages/*/node_modules  # Package node_modules
+```
+**Why anonymous volumes?** Prevents Docker from overwriting node_modules installed inside the container.
+## Health Checks for Apps
+### Application Health Check
+```yaml
+healthcheck:
+  test: ["CMD", "curl", "-f", "http://localhost:PORT/health"]
+  interval: 30s
+  timeout: 3s
+  retries: 3
+  start_period: 40s
+```
+All NestJS apps expose a `/health` endpoint via `@nestjs/terminus`.
+## Service Dependencies
+### Startup Order
+```yaml
+depends_on:
+  db:
+    condition: service_healthy
+  temporal:
+    condition: service_healthy
+```
+Apps wait for infrastructure services to be healthy before starting.
+## Port Mappings
+| Service | App Port | Debug Port |
+|---------|----------|------------|
+| auth    | 8081     | 9229       |
+| order   | 8082     | 9230       |
+| product | 8083     | 9231       |
+| web     | 3000     | N/A        |
+## Common Commands
+### Start All Apps
+```bash
+docker compose up -d auth order product web
+```
+### Start Specific App
+```bash
+docker compose up -d auth
+```
+### View App Logs
+```bash
+docker compose logs -f auth
+docker compose logs -f auth order product
+```
+### Restart App
+```bash
+docker compose restart auth
+```
+### Rebuild App
+```bash
+docker compose up -d --build auth
+```
+### Execute Commands in App Container
+```bash
+docker compose exec auth sh
+docker compose exec auth pnpm prisma studio
+```
+## Troubleshooting
+### App Won't Start
+1. Check logs: `docker compose logs auth`
+2. Verify dependencies are healthy: `docker compose ps`
+3. Check environment variables in `.env`
+4. Ensure ports are not in use: `lsof -i :8081`
+### Hot Reload Not Working
+1. Verify `WATCHPACK_POLLING=true` is set
+2. Check volume mounts are correct
+3. Ensure `node_modules` volumes are anonymous
+4. Restart: `docker compose restart auth`
+### Build Failures
+1. Clear cache: `docker compose build --no-cache auth`
+2. Check Dockerfile syntax
+3. Verify all dependencies are in package.json
+4. Check Turborepo filter syntax
+### Database Connection Issues
+1. Ensure `db` service is healthy
+2. Verify `DATABASE_URL` format
+3. Check network connectivity: `docker compose exec auth ping db`
+4. Verify Prisma migrations ran successfully
+## Best Practices
+1. **Use health checks** - Ensure services are ready before dependent services start
+2. **Set restart policies** - Use `unless-stopped` for apps
+3. **Enable file watching** - For hot reload in development
+4. **Use anonymous volumes** - For `node_modules` to prevent overwriting
+5. **Check logs regularly** - Monitor service health and errors
+6. **Use proper dependencies** - Ensure `depends_on` conditions are correct
+## References
+- Dockerfile: `/Dockerfile`
+- Docker Compose: `/docker-compose.yml`
+- App configs: `/apps/*/src/config/`
+- Environment variables: `/.env`

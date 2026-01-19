@@ -1,6 +1,5 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { Environment } from "@projectx/models";
 import { LoggerModule } from "nestjs-pino";
 import { AuthModule } from "./auth";
 import { HealthModule } from "./health";
@@ -17,7 +16,6 @@ import { createLoggerOptions } from "./logger";
           pinoHttp: createLoggerOptions(
             configService.get("app.logLevel") ?? "info",
             configService.get("app.apiPrefix") ?? "app",
-            configService.get("app.environment") ?? Environment.Development,
           ),
         };
       },
@@ -26,4 +24,4 @@ import { createLoggerOptions } from "./logger";
   ],
   exports: [AuthModule],
 })
-export class CoreModule {}
+export class CoreModule { }

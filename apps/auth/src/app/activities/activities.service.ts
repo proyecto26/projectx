@@ -15,21 +15,36 @@ export class ActivitiesService {
   constructor(
     @Inject(EmailService) private readonly emailService: EmailService,
     @Inject(UserService) private readonly userService: UserService,
-  ) {}
+  ) { }
 
   async sendLoginEmail(email: string) {
     const code = generateRandomSixDigitNumber();
     const textCode = code.toString().padStart(6, "0");
     this.logger.log(`sendLoginEmail(${email}) - code generated: ${textCode}`);
-    await this.emailService.sendLoginEmail(
-      {
-        token: textCode,
-        userName: email.split("@")[0] as string,
-      },
-      email,
-    );
+    const hashedValue = await hashValue(textCode);
+    try {
+      await this.emailService.sendLoginEmail(
+        {
+          token: textCode,
+          userName: email.split("@")[0] as string,
+        },
+        email,
+      );
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("Unauthorized")) {
+        this.logger.error(`sendLoginEmail(${email}) - Unauthorized`, error.stack);
+        return {
+          hashedValue,
+          error: "Unauthorized",
+          ok: false,
+        }
+      } else {
+        this.logger.error(`sendLoginEmail(${email}) - ${error}`, error instanceof Error ? error.stack : undefined);
+        throw error;
+      }
+    }
 
-    return await hashValue(textCode);
+    return { hashedValue, ok: true };
   }
 
   async verifyLoginCode(email: string, code: number, hashedCode: string) {

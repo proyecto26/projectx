@@ -1,0 +1,361 @@
+---
+description: Rules for Temporal workflow integration and patterns
+globs: 
+  - packages/workflows/**/*
+  - apps/*/src/workflows/**/*
+  - apps/*/src/activities/**/*
+alwaysApply: true
+---
+# Temporal Workflow Rules
+## Project Context
+- This project uses Temporal.io for workflow orchestration
+- Temporal Server version: 1.29.2
+- Temporal Admin Tools: 1.29.1-tctl-1.18.4-cli-1.5.0
+- Temporal UI: 2.44.1
+- All services connect to Temporal for long-running business processes
+## Workflow Architecture
+### Workflow Locations
+- Workflow definitions: `apps/*/src/workflows/`
+- Activity implementations: `apps/*/src/activities/`
+- Shared workflow utilities: `packages/workflows/src/lib/`
+- Temporal configuration: `apps/*/src/config/temporal.config.ts`
+### Worker Configuration
+- Each NestJS app runs its own Temporal worker
+- Workers are initialized in the main application bootstrap
+- Task queue is configured per service via environment variables
+- Workers bundle workflows using Webpack
+## Workflow Patterns
+### Workflow Definition
+```typescript
+import { proxyActivities } from '@temporalio/workflow';
+import type { ActivitiesService } from '../main';
+const activities = proxyActivities<ActivitiesService>({
+  startToCloseTimeout: '1 minute',
+});
+export async function myWorkflow(input: WorkflowInput): Promise<WorkflowOutput> {
+  // Workflow logic here
+  const result = await activities.myActivity(input);
+  return result;
+}
+```
+### Activity Definition
+```typescript
+@Injectable()
+export class ActivitiesService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly emailService: EmailService,
+  ) {}
+  async myActivity(input: ActivityInput): Promise<ActivityOutput> {
+    // Activity logic with side effects
+    return result;
+  }
+}
+```
+## Critical Rules
+### Workflow Code Constraints
+- ❌ **NO** direct database calls in workflows
+- ❌ **NO** HTTP requests in workflows
+- ❌ **NO** file I/O in workflows
+- ❌ **NO** random number generation in workflows
+- ❌ **NO** Date.now() or new Date() in workflows
+- ✅ **YES** to deterministic logic only
+- ✅ **YES** to calling activities for side effects
+### Use Activities For
+- Database operations (Prisma queries)
+- HTTP/API calls
+- Email sending
+- File operations
+- Any non-deterministic operations
+- External service integrations
+### Workflow Timeouts
+```typescript
+const activities = proxyActivities<ActivitiesService>({
+  startToCloseTimeout: '1 minute',  // Max time for activity
+  scheduleToCloseTimeout: '5 minutes',  // Max time including retries
+  retry: {
+    initialInterval: '1s',
+    backoffCoefficient: 2,
+    maximumInterval: '1m',
+    maximumAttempts: 3,
+  },
+});
+```
+## Signals and Queries
+### Defining Signals
+```typescript
+import { defineSignal, setHandler } from '@temporalio/workflow';
+export const mySignal = defineSignal<[SignalInput]>('mySignal');
+export async function myWorkflow() {
+  setHandler(mySignal, (input: SignalInput) => {
+    // Handle signal
+  });
+}
+```
+### Defining Queries
+```typescript
+import { defineQuery, setHandler } from '@temporalio/workflow';
+export const myQuery = defineQuery<QueryOutput>('myQuery');
+export async function myWorkflow() {
+  let state: QueryOutput = { /* initial state */ };
+  
+  setHandler(myQuery, () => state);
+  
+  // Update state as workflow progresses
+}
+```
+### Defining Updates
+```typescript
+import { defineUpdate, setHandler } from '@temporalio/workflow';
+export const myUpdate = defineUpdate<UpdateOutput, [UpdateInput]>('myUpdate');
+export async function myWorkflow() {
+  setHandler(myUpdate, async (input: UpdateInput): Promise<UpdateOutput> => {
+    // Validate and process update
+    return result;
+  });
+}
+```
+## Client Usage in NestJS
+### Injecting Workflow Client
+```typescript
+import { ClientService } from '@projectx/workflows';
+@Injectable()
+export class MyService {
+  constructor(
+    private readonly clientService: ClientService,
+  ) {}
+  getWorkflowClient() {
+    const workflowClient = this.clientService.client?.workflow;
+    if (!workflowClient) {
+      throw new HttpException(
+        'Workflow client not initialized',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+    return workflowClient;
+  }
+}
+```
+### Starting a Workflow
+```typescript
+async startMyWorkflow(input: WorkflowInput) {
+  const workflowId = `my-workflow-${input.id}`;
+  
+  try {
+    await this.getWorkflowClient().start(myWorkflow, {
+      args: [input],
+      taskQueue: this.taskQueue,
+      workflowId,
+      workflowIdConflictPolicy: WorkflowIdConflictPolicy.FAIL,
+      searchAttributes: {
+        UserId: [input.userId],
+        Email: [input.email],
+      },
+    });
+  } catch (error) {
+    if (error instanceof WorkflowExecutionAlreadyStartedError) {
+      // Handle duplicate workflow
+    }
+    throw error;
+  }
+}
+```
+### Querying a Workflow
+```typescript
+async getWorkflowState(workflowId: string) {
+  const handle = this.getWorkflowClient().getHandle(workflowId);
+  const state = await handle.query(myQuery);
+  return state;
+}
+```
+### Signaling a Workflow
+```typescript
+async sendSignal(workflowId: string, input: SignalInput) {
+  const handle = this.getWorkflowClient().getHandle(workflowId);
+  await handle.signal(mySignal, input);
+}
+```
+### Executing an Update
+```typescript
+async executeUpdate(workflowId: string, input: UpdateInput) {
+  const handle = this.getWorkflowClient().getHandle(workflowId);
+  const result = await handle.executeUpdate(myUpdate, {
+    args: [input],
+  });
+  return result;
+}
+```
+## Search Attributes
+### Custom Search Attributes
+The project defines these custom search attributes:
+- `OrderId` (Keyword)
+- `UserId` (Keyword)
+- `Email` (Keyword)
+### Using Search Attributes
+```typescript
+// When starting a workflow
+await client.start(myWorkflow, {
+  searchAttributes: {
+    OrderId: [orderId],
+    UserId: [userId],
+    Email: [email],
+  },
+});
+// Searching for workflows
+const workflows = await client.list({
+  query: 'OrderId = "order-123"',
+});
+```
+## Workflow Bundling
+### Webpack Configuration
+- Workflows are bundled separately from the main application
+- Bundle is created at runtime during worker initialization
+- Bundle location: `dist/workflows-autogenerated-entrypoint.cjs`
+- All workflow dependencies must be bundled
+### Workflow Bundle Process
+1. Worker service starts
+2. Webpack bundles workflow code
+3. Bundle is loaded by Temporal worker
+4. Worker connects to Temporal server
+5. Worker polls for tasks on the configured task queue
+## Environment Variables
+### Required for All Services Using Temporal
+- `TEMPORAL_HOST` - Temporal server address (e.g., `temporal:7233`)
+- `TEMPORAL_PORT` - Temporal server port (default: `7233`)
+- `TEMPORAL_NAMESPACE` - Temporal namespace (default: `default`)
+- `TEMPORAL_TASK_QUEUE` - Task queue name for this service
+### Connection String Format
+```
+TEMPORAL_HOST=temporal:7233
+```
+## Error Handling
+### Workflow Errors
+```typescript
+import { ApplicationFailure } from '@temporalio/workflow';
+export async function myWorkflow(input: WorkflowInput) {
+  if (!input.isValid) {
+    throw ApplicationFailure.create({
+      message: 'Invalid input',
+      type: 'ValidationError',
+      nonRetryable: true,  // Don't retry this error
+    });
+  }
+}
+```
+### Activity Errors
+```typescript
+async myActivity(input: ActivityInput) {
+  try {
+    // Activity logic
+  } catch (error) {
+    // Let Temporal handle retries
+    throw error;
+  }
+}
+```
+## Testing Workflows
+### Unit Testing Workflows
+```typescript
+import { TestWorkflowEnvironment } from '@temporalio/testing';
+import { Worker } from '@temporalio/worker';
+import { myWorkflow } from './my.workflow';
+describe('myWorkflow', () => {
+  let testEnv: TestWorkflowEnvironment;
+  beforeAll(async () => {
+    testEnv = await TestWorkflowEnvironment.createLocal();
+  });
+  afterAll(async () => {
+    await testEnv?.teardown();
+  });
+  it('should complete successfully', async () => {
+    const { client } = testEnv;
+    const result = await client.workflow.execute(myWorkflow, {
+      args: [input],
+      workflowId: 'test-workflow',
+      taskQueue: 'test',
+    });
+    expect(result).toEqual(expectedOutput);
+  });
+});
+```
+## Common Patterns
+### Long-Running Workflows
+```typescript
+import { sleep } from '@temporalio/workflow';
+export async function longRunningWorkflow() {
+  // Wait for external event
+  await sleep('30 minutes');
+  
+  // Continue processing
+}
+```
+### Saga Pattern (Compensation)
+```typescript
+export async function sagaWorkflow(input: WorkflowInput) {
+  const compensations: Array<() => Promise<void>> = [];
+  try {
+    // Step 1
+    await activities.step1(input);
+    compensations.push(() => activities.compensateStep1(input));
+    // Step 2
+    await activities.step2(input);
+    compensations.push(() => activities.compensateStep2(input));
+    // Success
+  } catch (error) {
+    // Compensate in reverse order
+    for (const compensate of compensations.reverse()) {
+      await compensate();
+    }
+    throw error;
+  }
+}
+```
+### Child Workflows
+```typescript
+import { startChild } from '@temporalio/workflow';
+export async function parentWorkflow() {
+  const child = await startChild(childWorkflow, {
+    args: [childInput],
+    workflowId: 'child-workflow-id',
+  });
+  const result = await child.result();
+  return result;
+}
+```
+## Monitoring and Debugging
+### Temporal UI
+- Access at: http://localhost:8080
+- View workflow executions
+- Inspect workflow history
+- See pending activities
+- Debug failed workflows
+### Logging in Workflows
+```typescript
+import { log } from '@temporalio/workflow';
+export async function myWorkflow() {
+  log.info('Workflow started', { workflowId: 'my-workflow' });
+  // Workflow logic
+}
+```
+### Logging in Activities
+```typescript
+@Injectable()
+export class ActivitiesService {
+  private readonly logger = new Logger(ActivitiesService.name);
+  async myActivity() {
+    this.logger.log('Activity started');
+    // Activity logic
+  }
+}
+```
+## Best Practices
+1. **Keep workflows deterministic** - No side effects in workflow code
+2. **Use activities for I/O** - All external calls go through activities
+3. **Set appropriate timeouts** - Don't use infinite timeouts
+4. **Use meaningful workflow IDs** - Make them unique and descriptive
+5. **Add search attributes** - Make workflows searchable
+6. **Handle signals gracefully** - Validate signal inputs
+7. **Test workflows** - Use the test environment
+8. **Monitor workflow health** - Check Temporal UI regularly
+9. **Version workflows carefully** - Use workflow versioning for breaking changes
+10. **Keep workflow history small** - Avoid too many activities in one workflow

@@ -1,13 +1,17 @@
-until tctl workflow list > /dev/null 2>&1; do
+#!/bin/sh
+set -eu
+TEMPORAL_ADDRESS=${TEMPORAL_ADDRESS:-temporal:7233}
+echo "Waiting for Temporal server to be ready..."
+until temporal operator cluster health --address $TEMPORAL_ADDRESS > /dev/null 2>&1; do
     echo 'Waiting for Temporal server to be ready...'
     sleep 5
 done
 
-echo 'Creating default namespace...'
-tctl namespace register default || echo 'Namespace already exists.'
+echo 'Temporal server is ready!'
 
-echo 'Y' | tctl admin cluster add-search-attributes --name OrderId --type INT && echo 'Search attribute OrderID added successfully.'
-echo 'Y' | tctl admin cluster add-search-attributes --name UserId --type INT && echo 'Search attribute UserID added successfully.'
-echo 'Y' | tctl admin cluster add-search-attributes --name Email --type TEXT && echo 'Search attribute Email added successfully.'
+echo 'Adding custom search attributes...'
+temporal operator search-attribute create --namespace default --name OrderId --type Int --address $TEMPORAL_ADDRESS && echo 'Search attribute OrderId added successfully.' || echo 'OrderId already exists or failed to add.'
+temporal operator search-attribute create --namespace default --name UserId --type Int --address $TEMPORAL_ADDRESS && echo 'Search attribute UserId added successfully.' || echo 'UserId already exists or failed to add.'
+temporal operator search-attribute create --namespace default --name Email --type Text --address $TEMPORAL_ADDRESS && echo 'Search attribute Email added successfully.' || echo 'Email already exists or failed to add.'
 
-echo 'Temporal Search attributes added successfully.'
+echo 'Temporal search attributes setup complete!'

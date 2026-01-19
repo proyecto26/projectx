@@ -68,9 +68,9 @@ export async function loginUserWorkflow(
 
   try {
     // Send login email with a generated hashed code
-    const hashedCode = await sendLoginEmail(data.email);
-    state.code = hashedCode;
-    state.codeStatus = LoginWorkflowCodeStatus.SENT;
+    const { hashedValue, ok } = await sendLoginEmail(data.email);
+    state.code = hashedValue;
+    state.codeStatus = ok ? LoginWorkflowCodeStatus.SENT : LoginWorkflowCodeStatus.ERROR_SENDING_EMAIL;
 
     // Wait for user to verify code (human interaction)
     await condition(() => !!state.user, "10m");

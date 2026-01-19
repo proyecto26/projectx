@@ -8,7 +8,7 @@ set -eu
 : "${ES_VISIBILITY_INDEX:?ERROR: ES_VISIBILITY_INDEX environment variable is required}"
 : "${ES_VERSION:?ERROR: ES_VERSION environment variable is required}"
 
-DB_HOST=${DB_HOST:-db}
+DB_HOST=${POSTGRES_SEEDS:-${DB_HOST:-db}}
 DB_PORT=${DB_PORT:-5432}
 
 echo "Starting PostgreSQL and Elasticsearch schema setup..."
