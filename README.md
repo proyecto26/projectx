@@ -1,7 +1,7 @@
 # ProjectX
 
 <p align="center">
-  <img width="100px" alt="Turborepo for Monorepo" src="https://avatars.githubusercontent.com/u/85897821?s=200&v=4">
+  <img width="100px" alt="Turborepo for Monorepo" src="https://user-images.githubusercontent.com/4060187/196936123-f6e1db90-784d-4174-b774-92502b718836.png">
   <img width="100px" alt="React Router for Website" src="https://avatars.githubusercontent.com/u/64235328?s=200&v=4">
   <img width="300px" alt="ProjectX logo" src="https://github.com/user-attachments/assets/eecd8520-1e78-4ec7-8a12-55b62e5771c6">
   <img width="100px" alt="NestJS for Services" src="https://avatars.githubusercontent.com/u/28507035?s=200&v=4">
