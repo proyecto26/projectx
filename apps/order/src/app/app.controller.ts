@@ -31,7 +31,7 @@ import { AppService } from './app.service';
 @ApiTags('Order')
 @Controller()
 export class AppController {
-  constructor(@Inject(AppService) private readonly appService: AppService) {}
+  constructor(@Inject(AppService) private readonly appService: AppService) { }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)

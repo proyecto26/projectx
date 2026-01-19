@@ -19,69 +19,21 @@ type NestFactoryCreate = [
   options?: NestApplicationOptions,
 ];
 
-// Avoid TypeScript errors with HMR
-declare const module: {
-  hot: {
-    accept: () => void;
-    dispose: (callback: () => Promise<void>) => void;
-  };
-};
-
-// Track the server instance for proper cleanup during HMR
-let currentApp: NestExpressApplication | null = null;
 let logger: Logger;
-let isShuttingDown = false;
 
-// Helper function to wait for a specified time
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-// Function to close the app with grace period
-async function closeAppWithGrace(
-  app: NestExpressApplication | null,
-): Promise<void> {
-  if (!app) return;
-
-  try {
-    isShuttingDown = true;
-    logger?.log("Gracefully shutting down...");
-    await wait(1000); // Give time for connections to drain
-    await app.close();
-    logger?.log("Application instance closed successfully");
-    isShuttingDown = false;
-  } catch (err) {
-    logger?.error(`Error during graceful shutdown: ${err}`);
-    isShuttingDown = false;
-  }
-}
+// Declare module for HMR support
+declare const module: any;
 
 export async function bootstrapApp<T extends NestExpressApplication>(
   ...params: NestFactoryCreate
 ) {
   try {
-    // Don't start new instance if we're shutting down
-    if (isShuttingDown) {
-      logger?.log(
-        "Application is shutting down, delaying new instance creation",
-      );
-      await wait(2000);
-    }
-
     // Enable logging to buffer
     params[1] = params[1] || {};
     params[1].bufferLogs = true;
 
-    // Close previous instance if exists
-    if (currentApp) {
-      logger?.log("Closing previous application instance due to HMR");
-      await closeAppWithGrace(currentApp);
-      currentApp = null;
-      // Wait additional time to ensure port is released
-      await wait(1000);
-    }
-
     // Initialize app
     const app = await NestFactory.create<T>(...params);
-    currentApp = app;
 
     logger = app.get(Logger);
     app.useLogger(logger);
@@ -115,16 +67,6 @@ export async function bootstrapApp<T extends NestExpressApplication>(
     if (env === Environment.Development) {
       app.enableShutdownHooks();
       logger.log("Shutdown hooks are enabled");
-
-      // Check for HMR flag for webpack hot reload
-      if ((module as any)?.hot) {
-        (module as any).hot.accept();
-        (module as any).hot.dispose(async () => {
-          logger.log("HMR dispose triggered, cleaning up resources");
-          await closeAppWithGrace(currentApp);
-        });
-        logger.log("Hot Module Replacement (HMR) is enabled");
-      }
     }
 
     // Register the proxy's IP address (load balancer or reverse proxy)
@@ -141,10 +83,16 @@ export async function bootstrapApp<T extends NestExpressApplication>(
     await app.listen(port, "0.0.0.0");
     logger.log(`🚀 Application is running on port ${port}`);
 
+    // Hot Module Replacement
+    if (module.hot) {
+      module.hot.accept();
+      module.hot.dispose(() => app.close());
+      logger.log("🔥 Hot Module Replacement enabled");
+    }
+
     return app;
   } catch (error) {
     logger?.error(`Failed to start application, error: ${error}`);
-    console.error(`Bootstrap failed: ${error}`);
     throw error;
   }
 }

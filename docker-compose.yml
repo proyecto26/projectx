@@ -47,7 +47,6 @@ x-service-common: &service-common
     # Frontend files that should not be watched (speeds up the container)
     - /app/apps/web/.vite
     - /app/apps/web/dist
-    - /app/libs/frontend
 
 services:
   db:
@@ -216,8 +215,17 @@ services:
   auth:
     <<: *service-common
     container_name: auth
-    command: >
-      bash -c " pnpm install --frozen-lockfile && pnpm turbo run build --filter=auth^... && pnpm --filter @projectx/db run prisma:generate && pnpm --filter @projectx/db run prisma:migrate && rm -rf /app/.turbo && rm -rf /app/apps/auth/dist && cd /app/apps/auth && pnpm start:dev "
+    init: true # Ensures proper signal handling for graceful shutdowns
+    command:
+      - /bin/sh
+      - -c
+      - |
+        pnpm install --frozen-lockfile && \
+        pnpm turbo run build --filter=auth^... && \
+        pnpm --filter @projectx/db run prisma:generate && \
+        pnpm --filter @projectx/db run prisma:migrate && \
+        cd /app/apps/auth && \
+        exec pnpm start:dev
     ports:
       - "${AUTH_PORT:-8081}:${AUTH_PORT:-8081}"
       - "9229:9229"
@@ -226,8 +234,17 @@ services:
   order:
     <<: *service-common
     container_name: order
-    command: >
-      bash -c " pnpm install --frozen-lockfile && pnpm turbo run build --filter=order^... && pnpm --filter @projectx/db run prisma:generate && pnpm --filter @projectx/db run prisma:migrate && rm -rf /app/.turbo && rm -rf /app/apps/order/dist && cd /app/apps/order && pnpm start:dev "
+    init: true # Ensures proper signal handling for graceful shutdowns
+    command:
+      - /bin/sh
+      - -c
+      - |
+        pnpm install --frozen-lockfile && \
+        pnpm turbo run build --filter=order^... && \
+        pnpm --filter @projectx/db run prisma:generate && \
+        pnpm --filter @projectx/db run prisma:migrate && \
+        cd /app/apps/order && \
+        exec pnpm start:dev
     ports:
       - "${ORDER_PORT:-8082}:${ORDER_PORT:-8082}"
       - "9230:9230"
@@ -236,8 +253,18 @@ services:
   product:
     <<: *service-common
     container_name: product
-    command: >
-      bash -c " pnpm install --frozen-lockfile && pnpm turbo run build --filter=product^... && pnpm --filter @projectx/db run prisma:generate && pnpm --filter @projectx/db run prisma:migrate && pnpm --filter @projectx/db run prisma:seed && rm -rf /app/.turbo && rm -rf /app/apps/product/dist && cd /app/apps/product && pnpm start:dev "
+    init: true # Ensures proper signal handling for graceful shutdowns
+    command:
+      - /bin/sh
+      - -c
+      - |
+        pnpm install --frozen-lockfile && \
+        pnpm turbo run build --filter=product^... && \
+        pnpm --filter @projectx/db run prisma:generate && \
+        pnpm --filter @projectx/db run prisma:migrate && \
+        pnpm --filter @projectx/db run prisma:seed && \
+        cd /app/apps/product && \
+        exec pnpm start:dev
     ports:
       - "${PRODUCT_PORT:-8083}:${PRODUCT_PORT:-8083}"
       - "9231:9231"

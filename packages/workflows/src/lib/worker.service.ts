@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import {
   Inject,
   Injectable,
@@ -23,15 +22,14 @@ export const RESTRICTED_PROPERTIES = ["caller", "callee", "arguments"];
 
 @Injectable()
 export class WorkerService<T extends Record<string, unknown>>
-  implements OnModuleInit, OnModuleDestroy
-{
+  implements OnModuleInit, OnModuleDestroy {
   readonly logger = new Logger(WorkerService.name);
   private worker?: Worker;
   constructor(
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(WORKER_OPTIONS_TOKEN)
     private readonly workerOptions: WorkerServiceOptions<T>,
-  ) {}
+  ) { }
 
   async onModuleInit() {
     this.initializeWorkerWithRetry();
@@ -44,8 +42,7 @@ export class WorkerService<T extends Record<string, unknown>>
   private async initializeWorkerWithRetry(retries = 5, delayMs = 10000) {
     const logLevel = this.configService.get("app.logLevel") || "info";
     const apiPrefix = this.configService.get("app.apiPrefix");
-    const environment = this.configService.get("app.environment");
-    const loggerOptions = createLoggerOptions(logLevel, apiPrefix, environment);
+    const loggerOptions = createLoggerOptions(logLevel, apiPrefix);
     const pinoLogger = pino(loggerOptions);
     // Create loggers with different labels for the separate components
     const workerLogger = pinoLogger.child<string>({ label: "worker" });

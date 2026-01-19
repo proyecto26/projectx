@@ -16,7 +16,7 @@ import {
 import {
   AuthLoginDto,
   AuthResponseDto,
-  type AuthVerifyDto,
+  AuthVerifyDto,
 } from "@projectx/models";
 
 import { AppService } from "./app.service";
