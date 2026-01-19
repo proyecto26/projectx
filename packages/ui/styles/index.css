@@ -1,80 +1,9 @@
-/* Import external styles */
-@import "react-toastify/dist/ReactToastify.css";
-
-/* Import Tailwind */
-@import "tailwindcss";
-@import "tw-animate-css";
-
-/* Import your base and dark mode styles */
+/* Import shared base and dark mode variables */
 @import "./base.css";
 @import "./dark.css";
 
-@custom-variant dark (&:where(.dark, .dark *));
+/* Import the shared theme and plugins (DaisyUI, etc.) */
+@import "./theme.css";
 
-/* Theme configuration */
-@theme {
-  /* Font configuration */
-  --font-display: "Poppins", "Inter var", system-ui, sans-serif;
-
-  /* Color configuration using OKLCH for better color space */
-  --color-primary: var(--theme-color-primary);
-  --color-primary-contrast: var(--theme-color-primary-contrast);
-  --color-primary-shade: var(--theme-color-primary-shade);
-  --color-primary-tint: var(--theme-color-primary-tint);
-
-  --color-secondary: var(--theme-color-secondary);
-  --color-secondary-contrast: var(--theme-color-secondary-contrast);
-  --color-secondary-shade: var(--theme-color-secondary-shade);
-  --color-secondary-tint: var(--theme-color-secondary-tint);
-
-  --color-tertiary: var(--theme-color-tertiary);
-  --color-tertiary-contrast: var(--theme-color-tertiary-contrast);
-  --color-tertiary-shade: var(--theme-color-tertiary-shade);
-  --color-tertiary-tint: var(--theme-color-tertiary-tint);
-
-  --color-success: var(--theme-color-success);
-  --color-success-contrast: var(--theme-color-success-contrast);
-  --color-success-shade: var(--theme-color-success-shade);
-  --color-success-tint: var(--theme-color-success-tint);
-
-  --color-warning: var(--theme-color-warning);
-  --color-warning-contrast: var(--theme-color-warning-contrast);
-  --color-warning-shade: var(--theme-color-warning-shade);
-  --color-warning-tint: var(--theme-color-warning-tint);
-
-  --color-danger: var(--theme-color-danger);
-  --color-danger-contrast: var(--theme-color-danger-contrast);
-  --color-danger-shade: var(--theme-color-danger-shade);
-  --color-danger-tint: var(--theme-color-danger-tint);
-
-  --color-medium: var(--theme-color-medium);
-  --color-medium-contrast: var(--theme-color-medium-contrast);
-  --color-medium-shade: var(--theme-color-medium-shade);
-  --color-medium-tint: var(--theme-color-medium-tint);
-
-  --color-light: var(--theme-color-light);
-  --color-light-contrast: var(--theme-color-light-contrast);
-  --color-light-shade: var(--theme-color-light-shade);
-  --color-light-tint: var(--theme-color-light-tint);
-
-  --color-dark: var(--theme-color-dark);
-  --color-dark-contrast: var(--theme-color-dark-contrast);
-  --color-dark-shade: var(--theme-color-dark-shade);
-  --color-dark-tint: var(--theme-color-dark-tint);
-}
-
-/* Plugin configurations */
-@plugin "@tailwindcss/forms";
-@plugin "@tailwindcss/typography";
-@plugin "@tailwindcss/aspect-ratio";
-@plugin "daisyui" {
-  themes:
-    light --default,
-    dark --prefersdark,
-    cupcake;
-  root: ":root";
-  logs: true;
-}
-
-/* Source paths for automatic content detection */
-@source "../src/**/*!(*.stories|*.spec).{ts,tsx,html}";
+/* Animation utilities */
+@import "tw-animate-css";

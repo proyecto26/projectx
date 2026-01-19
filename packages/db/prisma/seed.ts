@@ -1,6 +1,11 @@
+import { Pool } from "pg";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, type Prisma, ProductStatus, UserStatus } from "../generated/prisma";
 
-const prisma = new PrismaClient();
+const connectionString = process.env.DATABASE_URL;
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 async function createDefaultUser() {
   const defaultUser = await prisma.user.upsert({

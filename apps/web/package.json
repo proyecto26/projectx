@@ -68,7 +68,7 @@
     "react-router-devtools": "6.2.0",
     "tailwindcss": "4.1.18",
     "typescript": "5.9.3",
-    "vite": "7.3.1",
+    "vite": "6.2.0",
     "vite-plugin-node-polyfills": "^0.25.0",
     "vite-tsconfig-paths": "6.0.4"
   }

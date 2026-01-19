@@ -238,7 +238,7 @@ services:
     <<: *service-common
     container_name: product
     command: >
-      bash -c " pnpm install --frozen-lockfile && pnpm turbo run build --filter=product^... && pnpm --filter @projectx/db run prisma:generate && pnpm --filter @projectx/db run prisma:migrate && rm -rf /app/.turbo && rm -rf /app/apps/product/dist && cd /app/apps/product && pnpm start:dev "
+      bash -c " pnpm install --frozen-lockfile && pnpm turbo run build --filter=product^... && pnpm --filter @projectx/db run prisma:generate && pnpm --filter @projectx/db run prisma:migrate && pnpm --filter @projectx/db run prisma:seed && rm -rf /app/.turbo && rm -rf /app/apps/product/dist && cd /app/apps/product && pnpm start:dev "
     ports:
       - "${PRODUCT_PORT:-8083}:${PRODUCT_PORT:-8083}"
       - "9231:9231"

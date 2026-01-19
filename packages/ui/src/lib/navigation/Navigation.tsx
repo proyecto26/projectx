@@ -19,7 +19,7 @@ export type NavigationProps = {
 
 export const Navigation: React.FC<NavigationProps> = ({
   className,
-  sections,
+  sections = [],
 }) => {
   const location = useLocation();
 

@@ -19,6 +19,24 @@ export default defineConfig(() => ({
   resolve: {
     alias: [
       {
+        find: /^(?:@projectx\/ui\/styles\/base\.css)$/,
+        replacement: fileURLToPath(
+          new URL("../../packages/ui/styles/base.css", import.meta.url),
+        ),
+      },
+      {
+        find: /^(?:@projectx\/ui\/styles\/dark\.css)$/,
+        replacement: fileURLToPath(
+          new URL("../../packages/ui/styles/dark.css", import.meta.url),
+        ),
+      },
+      {
+        find: /^(?:@projectx\/ui\/styles\/theme\.css)$/,
+        replacement: fileURLToPath(
+          new URL("../../packages/ui/styles/theme.css", import.meta.url),
+        ),
+      },
+      {
         find: /^(?:@projectx\/ui\/styles)$/,
         replacement: fileURLToPath(
           new URL("../../packages/ui/styles/index.css", import.meta.url),
@@ -55,6 +73,7 @@ export default defineConfig(() => ({
   },
   optimizeDeps: {
     exclude: [
+      "@projectx/ui",
       "@nestjs/common",
       "@nestjs/core",
       "@nestjs/mapped-types",
