@@ -225,7 +225,7 @@ services:
         pnpm --filter @projectx/db run prisma:generate && \
         pnpm --filter @projectx/db run prisma:migrate && \
         cd /app/apps/auth && \
-        exec pnpm start:dev
+        exec pnpm start:debug
     ports:
       - "${AUTH_PORT:-8081}:${AUTH_PORT:-8081}"
       - "9229:9229"
@@ -244,7 +244,7 @@ services:
         pnpm --filter @projectx/db run prisma:generate && \
         pnpm --filter @projectx/db run prisma:migrate && \
         cd /app/apps/order && \
-        exec pnpm start:dev
+        exec pnpm start:debug
     ports:
       - "${ORDER_PORT:-8082}:${ORDER_PORT:-8082}"
       - "9230:9230"
@@ -264,7 +264,7 @@ services:
         pnpm --filter @projectx/db run prisma:migrate && \
         pnpm --filter @projectx/db run prisma:seed && \
         cd /app/apps/product && \
-        exec pnpm start:dev
+        exec pnpm start:debug
     ports:
       - "${PRODUCT_PORT:-8083}:${PRODUCT_PORT:-8083}"
       - "9231:9231"

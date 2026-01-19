@@ -20,76 +20,49 @@
       "name": "Debug Auth Service",
       "type": "node",
       "request": "attach",
+      "address": "localhost",
       "port": 9229,
       "restart": true,
       "sourceMaps": true,
-      "remoteRoot": "/app",
-      "localRoot": "${workspaceFolder}",
+      "remoteRoot": "/app/apps/auth",
+      "localRoot": "${workspaceFolder}/apps/auth",
       "outFiles": [
         "${workspaceFolder}/apps/auth/dist/**/*.js",
         "${workspaceFolder}/packages/**/dist/**/*.js"
       ],
-      "resolveSourceMapLocations": [
-        "${workspaceFolder}/**",
-        "!**/node_modules/**"
-      ],
-      "skipFiles": ["<node_internals>/**"],
-      "trace": true,
-      "sourceMapPathOverrides": {
-        "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
-        "webpack:///./*": "${workspaceFolder}/*",
-        "webpack:///*": "*"
-      }
+      "skipFiles": ["<node_internals>/**"]
     },
     {
       "name": "Debug Order Service",
       "type": "node",
       "request": "attach",
+      "address": "localhost",
       "port": 9230,
       "restart": true,
       "sourceMaps": true,
-      "remoteRoot": "/app",
-      "localRoot": "${workspaceFolder}",
+      "remoteRoot": "/app/apps/order",
+      "localRoot": "${workspaceFolder}/apps/order",
       "outFiles": [
         "${workspaceFolder}/apps/order/dist/**/*.js",
         "${workspaceFolder}/packages/**/dist/**/*.js"
       ],
-      "resolveSourceMapLocations": [
-        "${workspaceFolder}/**",
-        "!**/node_modules/**"
-      ],
-      "skipFiles": ["<node_internals>/**"],
-      "trace": true,
-      "sourceMapPathOverrides": {
-        "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
-        "webpack:///./*": "${workspaceFolder}/*",
-        "webpack:///*": "*"
-      }
+      "skipFiles": ["<node_internals>/**"]
     },
     {
       "name": "Debug Product Service",
       "type": "node",
       "request": "attach",
+      "address": "localhost",
       "port": 9231,
       "restart": true,
       "sourceMaps": true,
-      "remoteRoot": "/app",
-      "localRoot": "${workspaceFolder}",
+      "remoteRoot": "/app/apps/product",
+      "localRoot": "${workspaceFolder}/apps/product",
       "outFiles": [
         "${workspaceFolder}/apps/product/dist/**/*.js",
         "${workspaceFolder}/packages/**/dist/**/*.js"
       ],
-      "resolveSourceMapLocations": [
-        "${workspaceFolder}/**",
-        "!**/node_modules/**"
-      ],
-      "skipFiles": ["<node_internals>/**"],
-      "trace": true,
-      "sourceMapPathOverrides": {
-        "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
-        "webpack:///./*": "${workspaceFolder}/*",
-        "webpack:///*": "*"
-      }
+      "skipFiles": ["<node_internals>/**"]
     }
   ]
 }
