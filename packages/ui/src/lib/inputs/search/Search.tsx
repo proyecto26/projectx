@@ -24,11 +24,11 @@ export const Search: React.FC<SearchProps> = ({
 }) => {
   const searchId = useId();
   return (
-    <form className={classnames("flex items-center w-full", className)}>
+    <form className={classnames("flex w-full items-center", className)}>
       <label htmlFor={searchId} className="sr-only">
         Search
       </label>
-      <div className="relative w-full group">
+      <div className="group relative w-full">
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
           <MagnifyingGlassIcon
             className="h-5 w-5 text-slate-400 transition-colors group-focus-within:text-primary dark:text-slate-500 dark:group-focus-within:text-primary-tint"
@@ -39,11 +39,11 @@ export const Search: React.FC<SearchProps> = ({
           type="text"
           id={searchId}
           className={classnames(
-            "block w-full rounded-lg border py-2.5 pl-10 pr-10 ring-1 ring-inset transition-all sm:text-sm sm:leading-6",
+            "block w-full rounded-lg border py-2.5 pr-10 pl-10 ring-1 ring-inset transition-all sm:text-sm sm:leading-6",
             "bg-slate-100 text-slate-900 ring-transparent placeholder:text-slate-500",
             "focus:bg-white focus:ring-2 focus:ring-primary",
             "dark:bg-slate-800/50 dark:text-white dark:ring-white/10 dark:placeholder:text-slate-400",
-            "dark:focus:bg-slate-900 dark:focus:ring-primary"
+            "dark:focus:bg-slate-900 dark:focus:ring-primary",
           )}
           placeholder={placeholder}
           required

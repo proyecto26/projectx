@@ -1,5 +1,3 @@
-/* eslint-disable @nx/enforce-module-boundaries */
-
 // Typescript alias issue while importing files from other libraries from workflows.
 import {
   cancelWorkflowSignal,
@@ -10,8 +8,8 @@ import {
   type OrderWorkflowData,
   OrderWorkflowNonRetryableErrors,
   paymentWebHookEventSignal,
-} from '@projectx/core/workflows';
-import type { OrderStatusResponseDto } from '@projectx/models';
+} from "@projectx/core/workflows";
+import { OrderStatus, type OrderStatusResponseDto } from "@projectx/models";
 import {
   ApplicationFailure,
   allHandlersFinished,
@@ -21,37 +19,28 @@ import {
   proxyActivities,
   setHandler,
   startChild,
-} from '@temporalio/workflow';
-import type { ActivitiesService } from '../main';
-import { processPayment } from './process-payment.workflow';
+} from "@temporalio/workflow";
+import type { ActivitiesService } from "../main";
+import { processPayment } from "./process-payment.workflow";
 
 const {
   createOrder: createOrderActivity,
   reportPaymentFailed,
   reportPaymentConfirmed,
 } = proxyActivities<ActivitiesService>({
-  startToCloseTimeout: '5 seconds',
+  startToCloseTimeout: "5 seconds",
   retry: {
-    initialInterval: '2s',
-    maximumInterval: '10s',
+    initialInterval: "2s",
+    maximumInterval: "10s",
     maximumAttempts: 10,
     backoffCoefficient: 1.5,
     nonRetryableErrorTypes: [OrderWorkflowNonRetryableErrors.UNKNOWN_ERROR],
   },
 });
 
-export enum OrderStatus {
-  Pending = 'Pending',
-  Confirmed = 'Confirmed',
-  Shipped = 'Shipped',
-  Delivered = 'Delivered',
-  Cancelled = 'Cancelled',
-  Failed = 'Failed',
-}
-
 const initialState: Partial<OrderStatusResponseDto> = {
   status: OrderStatus.Pending,
-  referenceId: '',
+  referenceId: "",
 };
 
 export async function createOrder(
@@ -67,21 +56,23 @@ export async function createOrder(
   // Attach queries, signals and updates
   setHandler(getOrderStateQuery, () => state as OrderStatusResponseDto);
   setHandler(cancelWorkflowSignal, () => {
-    log.info('Requesting order cancellation');
+    log.info("Requesting order cancellation");
     if (!state?.orderId) {
       throw ApplicationFailure.nonRetryable(
         OrderWorkflowNonRetryableErrors.CANCELLED,
-        'Order cancelled',
+        "Order cancelled",
       );
     }
     if (processPaymentWorkflow) {
-      processPaymentWorkflow.signal(cancelWorkflowSignal);
+      void processPaymentWorkflow.signal(cancelWorkflowSignal);
     } else {
-      log.error('The payment process has already finished, cannot cancel');
+      log.error("The payment process has already finished, cannot cancel");
     }
   });
-  setHandler(paymentWebHookEventSignal, (e: unknown) =>
-    processPaymentWorkflow?.signal(paymentWebHookEventSignal, e),
+  setHandler(
+    paymentWebHookEventSignal,
+    (e: unknown) =>
+      void processPaymentWorkflow?.signal(paymentWebHookEventSignal, e),
   );
   // Create the order and the payment intent with the payment provider
   setHandler(createOrderUpdate, async () => {
@@ -110,7 +101,7 @@ export async function createOrder(
       state.status = OrderStatus.Failed;
       throw ApplicationFailure.nonRetryable(
         OrderWorkflowNonRetryableErrors.UNKNOWN_ERROR,
-        'Payment failed',
+        "Payment failed",
       );
     }
     processPaymentWorkflow = undefined;

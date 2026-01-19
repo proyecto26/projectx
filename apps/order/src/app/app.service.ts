@@ -4,8 +4,8 @@ import {
   HttpStatus,
   Injectable,
   Logger,
-} from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+} from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import {
   type AuthUser,
   cancelWorkflowSignal,
@@ -14,22 +14,22 @@ import {
   type OrderWorkflowData,
   type PaymentWebhookEvent,
   paymentWebHookEventSignal,
-} from '@projectx/core';
-import type { CreateOrderDto } from '@projectx/models';
-import { StripeService } from '@projectx/payment';
+} from "@projectx/core";
+import type { CreateOrderDto } from "@projectx/models";
+import { StripeService } from "@projectx/payment";
 import {
   ClientService,
   getWorkflowDescription,
   isWorkflowRunning,
   WORKFLOW_TTL,
-} from '@projectx/workflows';
-import { WithStartWorkflowOperation } from '@temporalio/client';
+} from "@projectx/workflows";
+import { WithStartWorkflowOperation } from "@temporalio/client";
 import {
   WorkflowExecutionAlreadyStartedError,
   WorkflowIdConflictPolicy,
-} from '@temporalio/common';
+} from "@temporalio/common";
 
-import { createOrder } from '../workflows/order.workflow';
+import { createOrder } from "../workflows/order.workflow";
 
 @Injectable()
 export class AppService {
@@ -40,9 +40,9 @@ export class AppService {
     private readonly clientService: ClientService,
     private readonly stripeService: StripeService,
   ) {
-    const taskQueue = this.configService.get<string>('temporal.taskQueue');
+    const taskQueue = this.configService.get<string>("temporal.taskQueue");
     if (!taskQueue) {
-      throw new Error('Task queue not found');
+      throw new Error("Task queue not found");
     }
     this.taskQueue = taskQueue;
   }
@@ -51,7 +51,7 @@ export class AppService {
     const workflowClient = this.clientService.client?.workflow;
     if (!workflowClient) {
       throw new HttpException(
-        'The workflow client was not initialized correctly',
+        "The workflow client was not initialized correctly",
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -96,7 +96,7 @@ export class AppService {
         orderId: state.orderId,
         referenceId: state.referenceId,
         clientSecret: state.clientSecret,
-        message: 'Order created successfully',
+        message: "Order created successfully",
       };
     } catch (error) {
       if (error instanceof WorkflowExecutionAlreadyStartedError) {
@@ -104,7 +104,7 @@ export class AppService {
           `createOrder(${user.email}) - workflow already started`,
         );
         throw new HttpException(
-          'Order already in progress',
+          "Order already in progress",
           HttpStatus.CONFLICT,
         );
       }
@@ -112,7 +112,7 @@ export class AppService {
         `createOrder(${user.email}) - Error creating order`,
         error,
       );
-      throw new BadRequestException('Error creating order', {
+      throw new BadRequestException("Error creating order", {
         cause: error,
       });
     }
@@ -128,11 +128,11 @@ export class AppService {
     );
 
     if (!isWorkflowRunning(description)) {
-      throw new HttpException('No active order found', HttpStatus.NOT_FOUND);
+      throw new HttpException("No active order found", HttpStatus.NOT_FOUND);
     }
 
     if (Date.now() - description.startTime.getTime() >= WORKFLOW_TTL) {
-      throw new HttpException('Order has expired', HttpStatus.GONE);
+      throw new HttpException("Order has expired", HttpStatus.GONE);
     }
 
     const handle = this.getWorkflowClient().getHandle(workflowId);
@@ -150,7 +150,7 @@ export class AppService {
   async handleWebhook(payload: string | Buffer, signature: string) {
     if (!payload || !signature) {
       this.logger.error(`handleWebhook(${signature}) - No payload received`);
-      throw new BadRequestException('No payload received');
+      throw new BadRequestException("No payload received");
     }
     this.logger.log(`handleWebhook(${signature}) - Processing webhook event`);
     try {
@@ -172,7 +172,7 @@ export class AppService {
 
       if (!userId || !referenceId) {
         this.logger.error(
-          'Missing userId or referenceId in payment intent metadata',
+          "Missing userId or referenceId in payment intent metadata",
         );
         return { received: true };
       }
@@ -185,7 +185,7 @@ export class AppService {
       const webhookEvent: PaymentWebhookEvent = {
         id: event.id,
         type: event.type,
-        provider: 'Stripe',
+        provider: "Stripe",
         data: {
           id: paymentIntent.id,
           amount: paymentIntent.amount,
@@ -204,8 +204,10 @@ export class AppService {
       // Return true to indicate the webhook was received
       return { received: true };
     } catch (err) {
-      this.logger.error(`handleWebhook(${signature}) - Webhook Error: ${err}`);
-      throw new BadRequestException('Webhook Error', {
+      this.logger.error(
+        `handleWebhook(${signature}) - Webhook Error: ${String(err)}`,
+      );
+      throw new BadRequestException("Webhook Error", {
         cause: err,
       });
     }

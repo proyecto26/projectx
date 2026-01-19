@@ -24,4 +24,4 @@ import { createLoggerOptions } from "./logger";
   ],
   exports: [AuthModule],
 })
-export class CoreModule { }
+export class CoreModule {}

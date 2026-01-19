@@ -37,9 +37,9 @@
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
     "noUncheckedIndexedAccess": true,
-    "types": ["node"],
+    "types": ["node", "jest"],
     "lib": ["ES2021"]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
+  "exclude": ["node_modules", "dist", "test"]
 }

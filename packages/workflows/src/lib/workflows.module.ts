@@ -23,6 +23,7 @@ interface WorkerModuleAsyncOptions<T> {
   providers: [ClientService],
   exports: [ClientService],
 })
+// biome-ignore lint/complexity/noStaticOnlyClass: This is a standard NestJS pattern for dynamic modules.
 export class WorkflowsModule {
   static registerAsync<T>(options: WorkerModuleAsyncOptions<T>): DynamicModule {
     const asyncProviders: Provider[] = [

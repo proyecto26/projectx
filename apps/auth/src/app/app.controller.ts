@@ -13,18 +13,14 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
-import {
-  AuthLoginDto,
-  AuthResponseDto,
-  AuthVerifyDto,
-} from "@projectx/models";
+import { AuthLoginDto, AuthResponseDto, AuthVerifyDto } from "@projectx/models";
 
 import { AppService } from "./app.service";
 
 @ApiTags("Auth")
 @Controller()
 export class AppController {
-  constructor(@Inject(AppService) private readonly appService: AppService) { }
+  constructor(@Inject(AppService) private readonly appService: AppService) {}
 
   /**
    * Endpoint to initiate the login process by sending a verification email.

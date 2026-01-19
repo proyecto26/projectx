@@ -1,10 +1,10 @@
+import path from "node:path";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { CoreModule, validateConfiguration } from "@projectx/core";
 import { DbModule } from "@projectx/db";
 import { EmailModule } from "@projectx/email";
 import { WorkflowsModule } from "@projectx/workflows";
-import path from "path";
 import appConfig from "../config/app.config";
 import { EnvironmentVariables } from "../config/env.config";
 import swaggerConfig from "../config/swagger.config";
@@ -38,4 +38,4 @@ import { UserModule } from "./user/user.module";
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

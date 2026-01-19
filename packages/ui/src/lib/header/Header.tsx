@@ -72,32 +72,32 @@ export function Header({
         ref={headerRef}
         className={classnames(
           "sticky top-0 z-50 w-full transition-all duration-300",
-          "border-b border-transparent",
+          "border-transparent border-b",
           isScrolled
-            ? "bg-white/80 backdrop-blur-md shadow-sm border-slate-200/50 dark:bg-slate-950/80 dark:border-slate-800/50"
+            ? "border-slate-200/50 bg-white/80 shadow-sm backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-950/80"
             : "bg-white/60 backdrop-blur-sm dark:bg-slate-950/60",
-          className
+          className,
         )}
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Mobile Menu Trigger & Logo Area */}
           <div className="flex items-center gap-4 lg:hidden">
             <MobileNavigation sections={sections} logoImgSrc={logoImgSrc} />
-            <Link to="/" aria-label="Home page" className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg">
-              <img
-                alt="Logo"
-                src={logoImgSrc}
-                className="h-8 w-auto"
-              />
+            <Link
+              to="/"
+              aria-label="Home page"
+              className="flex items-center gap-2 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              <img alt="Logo" src={logoImgSrc} className="h-8 w-auto" />
             </Link>
           </div>
 
           {/* Desktop Logo & Title */}
-          <div className="hidden lg:flex lg:items-center lg:gap-4 lg:flex-none">
+          <div className="hidden lg:flex lg:flex-none lg:items-center lg:gap-4">
             <Link
               to="/"
               aria-label="Home page"
-              className="flex items-center gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg p-1"
+              className="flex items-center gap-3 rounded-lg p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <img
                 alt="Project Logo"
@@ -105,7 +105,7 @@ export function Header({
                 className="h-9 w-auto object-contain"
               />
               {title && (
-                <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                <span className="font-bold text-slate-900 text-xl tracking-tight dark:text-white">
                   {title}
                 </span>
               )}
@@ -132,7 +132,7 @@ export function Header({
                 {desktopLinks?.map((link) => (
                   <li key={link.href}>
                     <Link
-                      className="text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+                      className="font-medium text-slate-600 text-sm transition-colors hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
                       to={link.href}
                     >
                       {link.title}
@@ -147,7 +147,7 @@ export function Header({
               <Button
                 onClick={openMobileSearch}
                 type="button"
-                className="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 md:hidden"
+                className="p-2 text-slate-500 hover:text-slate-700 md:hidden dark:text-slate-400 dark:hover:text-slate-200"
                 variant="ghost"
               >
                 <MagnifyingGlassIcon className="h-6 w-6" aria-hidden="true" />
@@ -169,7 +169,7 @@ export function Header({
 
               {isAuthenticated ? (
                 <Menu as="div" className="relative ml-2">
-                  <MenuButton className="relative flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 ring-2 ring-white text-sm focus:outline-none focus:ring-2 focus:ring-primary dark:bg-slate-800 dark:ring-slate-700">
+                  <MenuButton className="relative flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-sm ring-2 ring-white focus:outline-none focus:ring-2 focus:ring-primary dark:bg-slate-800 dark:ring-slate-700">
                     <span className="absolute -inset-1.5" />
                     <span className="sr-only">Open user menu</span>
                     <img
@@ -185,12 +185,12 @@ export function Header({
                     {[
                       { to: "/profile", label: "Your Profile" },
                       { to: "/admin", label: "Admin" },
-                      { to: "/logout", label: "Sign out" }
+                      { to: "/logout", label: "Sign out" },
                     ].map((item) => (
                       <MenuItem key={item.to}>
                         <Link
                           to={item.to}
-                          className="block px-4 py-2 text-sm text-slate-700 data-[focus]:bg-slate-50 dark:text-slate-200 dark:data-[focus]:bg-slate-800"
+                          className="block px-4 py-2 text-slate-700 text-sm data-[focus]:bg-slate-50 dark:text-slate-200 dark:data-[focus]:bg-slate-800"
                         >
                           {item.label}
                         </Link>
@@ -201,7 +201,7 @@ export function Header({
               ) : (
                 <Link
                   to="/login"
-                  className="ml-2 inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-1.5 text-sm font-semibold text-white transition-all hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+                  className="ml-2 inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-1.5 font-semibold text-sm text-white transition-all hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
                 >
                   Log in
                 </Link>
@@ -216,7 +216,7 @@ export function Header({
             key="search"
             initial="collapsed"
             animate="open"
-            className="border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950 md:hidden"
+            className="border-slate-200 border-t bg-white md:hidden dark:border-slate-800 dark:bg-slate-950"
             variants={{
               open: { opacity: 1, height: "auto" },
               collapsed: { opacity: 0, height: 0 },
@@ -234,7 +234,7 @@ export function Header({
               <Button
                 onClick={onCloseSearch}
                 type="button"
-                className="p-2 text-slate-500 hover:bg-slate-100 rounded-full dark:text-slate-400 dark:hover:bg-slate-800"
+                className="rounded-full p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
                 variant="ghost"
               >
                 <XMarkIcon className="h-6 w-6" aria-hidden="true" />

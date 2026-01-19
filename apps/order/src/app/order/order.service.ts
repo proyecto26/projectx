@@ -1,8 +1,8 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
-import type { OrderWorkflowData } from '@projectx/core';
-import { OrderRepositoryService } from '@projectx/db';
-import { OrderStatus } from '@projectx/models';
-import { StripeService } from '@projectx/payment';
+import { Inject, Injectable, Logger } from "@nestjs/common";
+import type { OrderWorkflowData } from "@projectx/core";
+import { OrderRepositoryService } from "@projectx/db";
+import { OrderStatus } from "@projectx/models";
+import { StripeService } from "@projectx/payment";
 
 @Injectable()
 export class OrderService {

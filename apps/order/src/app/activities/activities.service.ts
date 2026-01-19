@@ -1,7 +1,7 @@
-import { Inject, Injectable } from '@nestjs/common';
-import type { OrderWorkflowData } from '@projectx/core';
+import { Inject, Injectable } from "@nestjs/common";
+import type { OrderWorkflowData } from "@projectx/core";
 
-import { OrderService } from '../order/order.service';
+import { OrderService } from "../order/order.service";
 
 @Injectable()
 export class ActivitiesService {

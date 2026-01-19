@@ -22,14 +22,15 @@ export const RESTRICTED_PROPERTIES = ["caller", "callee", "arguments"];
 
 @Injectable()
 export class WorkerService<T extends Record<string, unknown>>
-  implements OnModuleInit, OnModuleDestroy {
+  implements OnModuleInit, OnModuleDestroy
+{
   readonly logger = new Logger(WorkerService.name);
   private worker?: Worker;
   constructor(
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(WORKER_OPTIONS_TOKEN)
     private readonly workerOptions: WorkerServiceOptions<T>,
-  ) { }
+  ) {}
 
   async onModuleInit() {
     this.initializeWorkerWithRetry();
@@ -77,7 +78,7 @@ export class WorkerService<T extends Record<string, unknown>>
             }
             return acc;
           },
-          {} as Record<string, Function>,
+          {} as Record<string, (...args: unknown[]) => unknown>,
         );
 
         const workerOptions = await createWorkerOptions(

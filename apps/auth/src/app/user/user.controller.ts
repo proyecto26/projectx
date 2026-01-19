@@ -24,7 +24,7 @@ import { UserService } from "./user.service";
 @UseGuards(JwtAuthGuard)
 @Controller("user")
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
   @ApiOperation({
     summary: "Get user profile",
@@ -46,7 +46,7 @@ export class UserController {
     }
     if (user.status !== UserStatus.Active) {
       throw new ForbiddenException(
-        "User is not active in the system, status: " + user.status,
+        `User is not active in the system, status: ${user.status}`,
       );
     }
     return user;

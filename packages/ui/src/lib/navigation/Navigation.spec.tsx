@@ -28,20 +28,17 @@ describe("Navigation", () => {
   });
 
   it("handles navigation correctly", async () => {
-    const user = userEvent.setup();
-    const { container } = renderWithRouter(
-      <Navigation sections={mockSections} />,
-      {
-        path: "/",
-        initialEntries: ["/"],
-        routes: [
-          {
-            path: "/test",
-            element: <div>Test Page</div>,
-          },
-        ],
-      },
-    );
+    userEvent.setup();
+    renderWithRouter(<Navigation sections={mockSections} />, {
+      path: "/",
+      initialEntries: ["/"],
+      routes: [
+        {
+          path: "/test",
+          element: <div>Test Page</div>,
+        },
+      ],
+    });
 
     const link = screen.getByRole("link", { name: "Test Link" });
     expect(link).toBeTruthy();

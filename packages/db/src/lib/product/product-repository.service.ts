@@ -9,7 +9,7 @@ import { PrismaService } from "../prisma.service";
 export class ProductRepositoryService {
   private logger = new Logger(ProductRepositoryService.name);
 
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) { }
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
   async createProduct(
     userId: number,

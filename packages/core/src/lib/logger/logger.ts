@@ -2,19 +2,15 @@ import type { Request } from "express";
 import type { LoggerOptions } from "pino";
 import { v4 as uuidv4 } from "uuid";
 
-export function createLoggerOptions(
-  level: string,
-  serviceName: string,
-) {
-  const transport: LoggerOptions["transport"] =
-    process.stdout.isTTY
-      ? {
-        target: 'pino-pretty',
+export function createLoggerOptions(level: string, serviceName: string) {
+  const transport: LoggerOptions["transport"] = process.stdout.isTTY
+    ? {
+        target: "pino-pretty",
         options: {
-          colorize: true
-        }
+          colorize: true,
+        },
       }
-      : undefined;
+    : undefined;
   return {
     level,
     name: serviceName,

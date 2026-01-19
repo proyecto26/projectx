@@ -22,7 +22,12 @@ type NestFactoryCreate = [
 let logger: Logger;
 
 // Declare module for HMR support
-declare const module: any;
+declare const module: {
+  hot?: {
+    accept: (callback?: () => void) => void;
+    dispose: (callback: () => void) => void;
+  };
+};
 
 export async function bootstrapApp<T extends NestExpressApplication>(
   ...params: NestFactoryCreate

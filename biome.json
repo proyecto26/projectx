@@ -30,7 +30,8 @@
       "!**/*.sass",
       "!packages/ui/**/*.js",
       "!packages/ui/**/*.d.ts",
-      "!**/*.js.map"
+      "!**/*.js.map",
+      "!packages/db/generated/**"
     ],
     "maxSize": 4194304
   },
@@ -39,7 +40,13 @@
     "indentStyle": "space",
     "indentWidth": 2
   },
-  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
   "linter": {
     "enabled": true,
     "rules": {
@@ -52,11 +59,16 @@
           "level": "warn",
           "fix": "safe",
           "options": {
-            "functions": ["clsx", "cva", "cn"]
+            "functions": [
+              "clsx",
+              "cva",
+              "cn"
+            ]
           }
         }
       },
       "style": {
+        "useImportType": "off",
         "noParameterAssign": "error",
         "useAsConstAssertion": "error",
         "useDefaultParameterLast": "error",
