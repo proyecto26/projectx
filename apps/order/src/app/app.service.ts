@@ -5,7 +5,7 @@ import {
   Injectable,
   Logger,
 } from '@nestjs/common';
-import type { ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import {
   type AuthUser,
   cancelWorkflowSignal,
@@ -16,9 +16,9 @@ import {
   paymentWebHookEventSignal,
 } from '@projectx/core';
 import type { CreateOrderDto } from '@projectx/models';
-import type { StripeService } from '@projectx/payment';
+import { StripeService } from '@projectx/payment';
 import {
-  type ClientService,
+  ClientService,
   getWorkflowDescription,
   isWorkflowRunning,
   WORKFLOW_TTL,

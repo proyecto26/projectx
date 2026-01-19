@@ -1,11 +1,10 @@
 import {
   HttpException,
   HttpStatus,
-  Inject,
   Injectable,
   Logger,
 } from "@nestjs/common";
-import type { ConfigService } from "@nestjs/config";
+import { ConfigService } from "@nestjs/config";
 import { type AuthService, verifyLoginCodeUpdate } from "@projectx/core";
 import {
   type AuthLoginDto,

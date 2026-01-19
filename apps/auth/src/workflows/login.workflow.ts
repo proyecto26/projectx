@@ -17,7 +17,8 @@ import {
   proxyActivities,
   setHandler,
 } from "@temporalio/workflow";
-import type { ActivitiesService } from "../main";
+
+import { ActivitiesService } from "../main";
 
 const { sendLoginEmail } = proxyActivities<ActivitiesService>({
   startToCloseTimeout: "5 seconds",

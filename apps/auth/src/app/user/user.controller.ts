@@ -17,14 +17,14 @@ import {
 import { AuthenticatedUser, type AuthUser, JwtAuthGuard } from "@projectx/core";
 import { UserDto, UserStatus } from "@projectx/models";
 
-import type { UserService } from "./user.service";
+import { UserService } from "./user.service";
 
 @ApiBearerAuth()
 @ApiTags("User")
 @UseGuards(JwtAuthGuard)
 @Controller("user")
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @ApiOperation({
     summary: "Get user profile",
