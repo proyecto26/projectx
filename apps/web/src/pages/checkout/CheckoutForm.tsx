@@ -31,12 +31,13 @@ export const CheckoutForm = ({
     }
 
     setIsLoading(true);
+    const { orderId } = currentCheckoutWorkflow?.data?.response || {};
 
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: `${window.location.origin}/order-summary?orderId=${currentCheckoutWorkflow?.data?.response?.orderId}`,
+        return_url: `${window.location.origin}/order/${orderId}/summary`,
       },
     });
 

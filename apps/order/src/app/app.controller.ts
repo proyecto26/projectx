@@ -9,6 +9,7 @@ import {
   HttpStatus,
   Inject,
   Param,
+  ParseIntPipe,
   Post,
   type RawBodyRequest,
   Req,
@@ -24,14 +25,18 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { AuthenticatedUser, type AuthUser, JwtAuthGuard } from "@projectx/core";
-import { type CreateOrderDto, OrderStatusResponseDto } from "@projectx/models";
+import { CreateOrderDto, OrderDto, OrderStatusResponseDto } from "@projectx/models";
 
 import { AppService } from "./app.service";
+import { OrderService } from "./order/order.service";
 
 @ApiTags("Order")
 @Controller()
 export class AppController {
-  constructor(@Inject(AppService) private readonly appService: AppService) {}
+  constructor(
+    @Inject(AppService) private readonly appService: AppService,
+    @Inject(OrderService) private readonly orderService: OrderService,
+  ) { }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -44,6 +49,28 @@ export class AppController {
     @Body() orderDto: CreateOrderDto,
   ) {
     return this.appService.createOrder(userDto, orderDto);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "Get order by id",
+  })
+  @ApiParam({
+    name: "orderId",
+    required: true,
+    type: String,
+    description: "Order ID",
+    example: "1",
+  })
+  @ApiOkResponse({
+    description: "Returns the order",
+    type: OrderDto,
+  })
+  @HttpCode(HttpStatus.OK)
+  @Get("/:orderId")
+  async getOrderById(@Param('orderId', ParseIntPipe) orderId: number) {
+    return this.orderService.getOrderById(orderId);
   }
 
   @ApiBearerAuth()
@@ -63,7 +90,7 @@ export class AppController {
     type: OrderStatusResponseDto,
   })
   @HttpCode(HttpStatus.OK)
-  @Get(":referenceId")
+  @Get("status/:referenceId")
   async getOrderStatus(@Param("referenceId") referenceId: string) {
     return this.appService.getOrderStatus(referenceId);
   }

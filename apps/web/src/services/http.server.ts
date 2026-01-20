@@ -36,7 +36,7 @@ async function httpRequest<T>(
       throw new Error(`${response.status}`);
     }
     const message = await response.text();
-    return isEmpty(message) ? null : JSON.parse(message);
+    return isEmpty(message) ? undefined : JSON.parse(message);
   } catch (error) {
     if (Object.hasOwn(rest, "defaultResponse")) {
       return rest.defaultResponse as T;

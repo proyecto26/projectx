@@ -9,20 +9,7 @@ import {
 } from "class-validator";
 
 import { OrderDto } from "./order.dto";
-
-export class OrderItemDto {
-  @ApiProperty({ description: "Product ID" })
-  @IsDefined()
-  @IsInt()
-  @Expose()
-  productId!: number;
-
-  @ApiProperty({ description: "Product quantity" })
-  @IsDefined()
-  @IsInt()
-  @Expose()
-  quantity!: number;
-}
+import { OrderItemDto } from "./order-item.dto";
 
 export class CreateOrderDto extends OmitType(OrderDto, [
   "id",

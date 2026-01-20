@@ -242,7 +242,7 @@ docker-compose down --volumes
 ## Payment Providers
 
 - Stripe:
-  - [Webhooks](https://docs.stripe.com/webhooks?lang=node)
+  - [Test Webhooks](https://dashboard.stripe.com/test/webhooks)
   - [Stripe Webhook integration](https://docs.stripe.com/api/webhook_endpoints)
   - [Stripe Checkout](https://docs.stripe.com/payments/checkout)
   - [Webhooks Dashboard](https://dashboard.stripe.com/test/workbench/webhooks)

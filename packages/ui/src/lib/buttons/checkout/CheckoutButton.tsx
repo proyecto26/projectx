@@ -5,7 +5,11 @@ import { v4 as uuidv4 } from "uuid";
 
 import Button from "../button/Button";
 
-export function CheckoutButton() {
+type CheckoutButtonProps = {
+  onClick?: () => void;
+};
+
+export function CheckoutButton({ onClick }: CheckoutButtonProps) {
   const { isEmpty } = useCart();
   const navigate = useNavigate();
   const handleCheckout = () => {
@@ -18,6 +22,7 @@ export function CheckoutButton() {
     // Use UUID to generate a new referenceId
     const referenceId = uuidv4();
     navigate(`/checkout/${referenceId}`);
+    onClick?.();
   };
 
   return (

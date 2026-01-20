@@ -11,7 +11,7 @@ export class OrderService {
     @Inject(StripeService) public readonly stripeService: StripeService,
     @Inject(OrderRepositoryService)
     public readonly orderRepositoryService: OrderRepositoryService,
-  ) {}
+  ) { }
 
   async createOrder({ user, order }: OrderWorkflowData) {
     this.logger.log(`createOrder(${user.id})`, order);
@@ -23,7 +23,7 @@ export class OrderService {
 
     // Create payment intent with Stripe
     const paymentIntent = await this.stripeService.createPaymentIntent(
-      Math.round(newOrder.totalPrice.toNumber() * 100), // Convert to cents
+      Math.round(Number(newOrder.totalPrice) * 100), // Convert to cents
       {
         userId: user.id.toString(),
         referenceId: order.referenceId,
@@ -55,5 +55,10 @@ export class OrderService {
     );
     // TODO: Send email notification to user about payment confirmation
     return updatedOrder;
+  }
+
+  async getOrderById(orderId: number) {
+    this.logger.log(`getOrderById(${orderId})`);
+    return this.orderRepositoryService.getOrderById(orderId);
   }
 }

@@ -30,7 +30,7 @@ export default [
     route("product", "./routes/product.tsx"),
 
     // Orders
-    ...prefix("order", [
+    ...prefix("order/:orderId", [
       route("detail", "./routes/order/detail.tsx"),
       route("history", "./routes/order/history.tsx"),
       route("summary", "./routes/order/summary.tsx"),

@@ -1,14 +1,15 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import type { CreateOrderDto } from "@projectx/models";
+import { CreateOrderDto, OrderDto } from "@projectx/models";
 
-import { type Order, OrderStatus, Prisma } from "../../../generated/prisma";
+import { OrderStatus, Prisma } from "../../../generated/prisma";
 import { PrismaService } from "../prisma.service";
+import { plainToInstance } from "class-transformer";
 
 @Injectable()
 export class OrderRepositoryService {
   private logger = new Logger(OrderRepositoryService.name);
 
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) { }
 
   async createOrder(userId: number, createOrderDto: CreateOrderDto) {
     this.logger.verbose(
@@ -67,18 +68,36 @@ export class OrderRepositoryService {
         },
       });
 
-      return order;
+      return plainToInstance(OrderDto, order, {
+        excludeExtraneousValues: true,
+      });
     });
   }
 
   async updateOrderStatus(
     orderId: number,
     status: OrderStatus,
-  ): Promise<Order> {
+  ): Promise<OrderDto> {
     this.logger.verbose(`updateOrderStatus(${orderId}) - status: ${status}`);
-    return this.prisma.order.update({
+    const order = await this.prisma.order.update({
       where: { id: orderId },
       data: { status },
+    });
+    return plainToInstance(OrderDto, order, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async getOrderById(orderId: number): Promise<OrderDto> {
+    this.logger.verbose(`getOrderById(${orderId})`);
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: true,
+      },
+    });
+    return plainToInstance(OrderDto, order, {
+      excludeExtraneousValues: true,
     });
   }
 }

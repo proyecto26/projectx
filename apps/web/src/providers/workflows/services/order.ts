@@ -26,7 +26,7 @@ export async function getOrderStatus(
   referenceId: string,
 ): Promise<OrderStatusResponseDto> {
   const response = await axios.get<OrderStatusResponseDto>(
-    `${window.ENV.ORDER_API_URL}/order/${referenceId}`,
+    `${window.ENV.ORDER_API_URL}/order/status/${referenceId}`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,

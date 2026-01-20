@@ -19,9 +19,6 @@ import type { CreateOrderDto } from "@projectx/models";
 import { StripeService } from "@projectx/payment";
 import {
   ClientService,
-  getWorkflowDescription,
-  isWorkflowRunning,
-  WORKFLOW_TTL,
 } from "@projectx/workflows";
 import { WithStartWorkflowOperation } from "@temporalio/client";
 import {
@@ -121,19 +118,6 @@ export class AppService {
   async getOrderStatus(referenceId: string) {
     this.logger.log(`getOrderStatus(${referenceId}) - getting status`);
     const workflowId = this.getWorkflowIdByReferenceId(referenceId);
-
-    const description = await getWorkflowDescription(
-      this.getWorkflowClient(),
-      workflowId,
-    );
-
-    if (!isWorkflowRunning(description)) {
-      throw new HttpException("No active order found", HttpStatus.NOT_FOUND);
-    }
-
-    if (Date.now() - description.startTime.getTime() >= WORKFLOW_TTL) {
-      throw new HttpException("Order has expired", HttpStatus.GONE);
-    }
 
     const handle = this.getWorkflowClient().getHandle(workflowId);
     const state = await handle.query(getOrderStateQuery);

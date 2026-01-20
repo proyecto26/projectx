@@ -156,7 +156,7 @@ export default function Example() {
 
               <div className="mt-16 border-gray-200 border-t py-6 text-right dark:border-gray-700">
                 <a
-                  href="#"
+                  href="/"
                   className="font-medium text-indigo-600 text-sm hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
                 >
                   Continue Shopping

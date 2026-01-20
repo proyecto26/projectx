@@ -14,6 +14,7 @@ import { ActivitiesModule } from "./activities/activities.module";
 import { ActivitiesService } from "./activities/activities.service";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { OrderModule } from "./order/order.module";
 
 @Module({
   imports: [
@@ -34,8 +35,9 @@ import { AppService } from "./app.service";
       }),
     }),
     PaymentModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

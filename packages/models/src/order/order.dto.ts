@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Expose, Transform } from "class-transformer";
+import { Expose, Transform, Type } from "class-transformer";
 import {
+  IsArray,
   IsDate,
   IsDefined,
   IsEnum,
@@ -8,18 +9,11 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  ValidateNested,
 } from "class-validator";
-
+import { OrderStatus } from "../enums";
 import { transformToDate } from "../transforms";
-
-export enum OrderStatus {
-  Pending = "Pending",
-  Confirmed = "Confirmed",
-  Shipped = "Shipped",
-  Delivered = "Delivered",
-  Cancelled = "Cancelled",
-  Failed = "Failed",
-}
+import { OrderItemDto } from "./order-item.dto";
 
 export class OrderDto {
   constructor(partial?: Partial<OrderDto>) {
@@ -55,7 +49,7 @@ export class OrderDto {
   @Expose()
   totalPrice!: number;
 
-  @ApiProperty({ description: "Status of the order" })
+  @ApiProperty({ description: "Status of the order", enum: OrderStatus })
   @IsDefined()
   @IsEnum(OrderStatus, {
     message: "Status must be one of the defined enum values.",
@@ -82,12 +76,23 @@ export class OrderDto {
   @Expose()
   @Transform(({ value }) => transformToDate(value))
   updatedAt!: Date;
+
+  @ApiProperty({
+    description: "Items included in the order",
+    type: [OrderItemDto],
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => OrderItemDto)
+  @IsOptional()
+  items?: OrderItemDto[];
 }
 
 export class OrderStatusResponseDto {
   @ApiProperty({
     description: "The current status of the order",
     example: "PENDING",
+    enum: OrderStatus,
   })
   @IsEnum(OrderStatus, {
     message: "Status must be one of the defined enum values.",

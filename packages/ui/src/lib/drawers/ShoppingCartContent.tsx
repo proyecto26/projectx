@@ -161,7 +161,7 @@ export function ShoppingCartContent({
                     <span>${total.toFixed(2)}</span>
                   </div>
                   <div className="card-actions mt-4 justify-end">
-                    <CheckoutButton />
+                    <CheckoutButton onClick={onClose} />
                   </div>
                 </div>
               </div>
