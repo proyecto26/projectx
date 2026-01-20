@@ -1,20 +1,42 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { CreateOrderDto, OrderDto } from "@projectx/models";
-
+import { plainToInstance } from "class-transformer";
 import { OrderStatus, Prisma } from "../../../generated/prisma";
 import { PrismaService } from "../prisma.service";
-import { plainToInstance } from "class-transformer";
 
 @Injectable()
 export class OrderRepositoryService {
   private logger = new Logger(OrderRepositoryService.name);
 
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) { }
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
   async createOrder(userId: number, createOrderDto: CreateOrderDto) {
     this.logger.verbose(
       `createOrder(${userId}) - order: ${JSON.stringify(createOrderDto)}`,
     );
+
+    // Idempotency check: Return existing order if it's already created with the same referenceId
+    const existingOrder = await this.prisma.order.findUnique({
+      where: { referenceId: createOrderDto.referenceId },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+        payment: true,
+      },
+    });
+
+    if (existingOrder) {
+      this.logger.warn(
+        `Order with referenceId ${createOrderDto.referenceId} already exists. Returning existing one.`,
+      );
+      const plainOrder = JSON.parse(JSON.stringify(existingOrder));
+      return plainToInstance(OrderDto, plainOrder, {
+        excludeExtraneousValues: true,
+      });
+    }
 
     return await this.prisma.$transaction(async (tx) => {
       const products = await tx.product.findMany({
@@ -34,15 +56,22 @@ export class OrderRepositoryService {
         if (!product) {
           throw new Error(`Product ${item.productId} not found`);
         }
-        pricesMap[item.productId] = product.estimatedPrice.toNumber();
-        return acc + product.estimatedPrice.toNumber() * item.quantity;
+        const estimatedPrice = product.estimatedPrice.toNumber();
+        pricesMap[item.productId] = estimatedPrice;
+        return acc + estimatedPrice * item.quantity;
       }, 0);
 
       const order = await tx.order.create({
         data: {
           userId,
           referenceId: createOrderDto.referenceId,
-          totalPrice: new Prisma.Decimal(totalPrice),
+          totalPrice: new Prisma.Decimal(
+            totalPrice +
+              (createOrderDto.shippingCost || 0) +
+              (createOrderDto.taxAmount || 0),
+          ),
+          taxAmount: new Prisma.Decimal(createOrderDto.taxAmount || 0),
+          shippingCost: new Prisma.Decimal(createOrderDto.shippingCost || 0),
           status: OrderStatus.Pending,
           shippingAddress: createOrderDto.shippingAddress,
           items: {
@@ -68,7 +97,8 @@ export class OrderRepositoryService {
         },
       });
 
-      return plainToInstance(OrderDto, order, {
+      const plainOrder = JSON.parse(JSON.stringify(order));
+      return plainToInstance(OrderDto, plainOrder, {
         excludeExtraneousValues: true,
       });
     });
@@ -83,7 +113,8 @@ export class OrderRepositoryService {
       where: { id: orderId },
       data: { status },
     });
-    return plainToInstance(OrderDto, order, {
+    const plainOrder = JSON.parse(JSON.stringify(order));
+    return plainToInstance(OrderDto, plainOrder, {
       excludeExtraneousValues: true,
     });
   }
@@ -93,11 +124,39 @@ export class OrderRepositoryService {
     const order = await this.prisma.order.findUnique({
       where: { id: orderId },
       include: {
-        items: true,
+        items: {
+          select: {
+            quantity: true,
+            priceAtPurchase: true,
+            product: {
+              select: {
+                id: true,
+                estimatedPrice: true,
+              },
+            },
+          },
+        },
+        payment: true,
       },
     });
-    return plainToInstance(OrderDto, order, {
-      excludeExtraneousValues: true,
-    });
+
+    try {
+      const plainOrder = JSON.parse(JSON.stringify(order));
+      this.logger.verbose(
+        `transformed plainOrder for ${orderId}: ${JSON.stringify(plainOrder).substring(0, 500)}...`,
+      );
+      return plainToInstance(OrderDto, plainOrder, {
+        excludeExtraneousValues: true,
+      });
+    } catch (error) {
+      this.logger.error(`Error transforming order ${orderId}`, error);
+      // Log more details about the object that failed
+      try {
+        this.logger.debug(
+          `Failed object sample: ${JSON.stringify(order).substring(0, 1000)}`,
+        );
+      } catch (_error) {}
+      throw error;
+    }
   }
 }

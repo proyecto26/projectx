@@ -122,7 +122,6 @@ export const useOrderWorkflow = ({ accessToken, workflows }: WorkflowProps) => {
                 } catch {
                   return false;
                 }
-              case WorkflowStep.START:
               default:
                 try {
                   const response = await createOrder(

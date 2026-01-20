@@ -4,6 +4,8 @@ import {
   IsArray,
   IsDefined,
   IsInt,
+  IsNumber,
+  IsOptional,
   IsString,
   ValidateNested,
 } from "class-validator";
@@ -42,10 +44,20 @@ export class CreateOrderDto extends OmitType(OrderDto, [
   @IsString()
   billingAddress!: string;
 
-  @ApiProperty({ description: "Payment method for the order" })
-  @IsDefined()
+  @ApiProperty({ description: "Payment method for the order", required: false })
+  @IsOptional()
   @IsString()
-  paymentMethod!: string;
+  paymentMethod?: string;
+
+  @ApiProperty({ description: "Shipping cost", required: false })
+  @IsOptional()
+  @IsNumber()
+  shippingCost?: number;
+
+  @ApiProperty({ description: "Tax amount", required: false })
+  @IsOptional()
+  @IsNumber()
+  taxAmount?: number;
 }
 
 export class OrderCreateResponseDto {

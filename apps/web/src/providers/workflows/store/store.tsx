@@ -22,10 +22,7 @@ export const StoreProvider: React.FC<StoreProviderProps> = ({ children }) => {
     ...initialState,
   });
 
-  const value = React.useMemo<ContextProps>(
-    () => [state, dispatch],
-    [state, dispatch],
-  );
+  const value = React.useMemo<ContextProps>(() => [state, dispatch], [state]);
 
   return (
     <GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>

@@ -155,6 +155,8 @@ model Order {
   referenceId String    @unique @map("reference_id") @db.VarChar(36)
   userId      Int       @map("user_id")
   totalPrice  Decimal   @map("total_price") @db.Decimal(10, 2)
+  taxAmount   Decimal   @default(0) @map("tax_amount") @db.Decimal(10, 2)
+  shippingCost Decimal   @default(0) @map("shipping_cost") @db.Decimal(10, 2)
   status      OrderStatus
   shippingAddress String? @map("shipping_address") @db.Text
   createdAt   DateTime  @default(now()) @map("created_at")
@@ -194,7 +196,7 @@ model Payment {
   status        PaymentStatus
   transactionId String    @map("transaction_id") @db.VarChar(100)
   amount        Decimal   @db.Decimal(10, 2)
-  paymentMethod String    @db.VarChar(50)
+  paymentMethod String?   @map("payment_method") @db.VarChar(50)
   billingAddress  String? @map("billing_address") @db.Text
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")

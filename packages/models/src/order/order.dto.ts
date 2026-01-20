@@ -12,7 +12,8 @@ import {
   ValidateNested,
 } from "class-validator";
 import { OrderStatus } from "../enums";
-import { transformToDate } from "../transforms";
+import { PaymentDto } from "../payment/payment.dto";
+import { transformToDate, transformToNumber } from "../transforms";
 import { OrderItemDto } from "./order-item.dto";
 
 export class OrderDto {
@@ -47,7 +48,22 @@ export class OrderDto {
   @IsDefined()
   @IsNumber()
   @Expose()
+  @Transform(({ value }) => transformToNumber(value))
   totalPrice!: number;
+
+  @ApiProperty({ description: "Shipping cost" })
+  @IsNumber()
+  @IsOptional()
+  @Expose()
+  @Transform(({ value }) => transformToNumber(value))
+  shippingCost?: number;
+
+  @ApiProperty({ description: "Tax amount" })
+  @IsNumber()
+  @IsOptional()
+  @Expose()
+  @Transform(({ value }) => transformToNumber(value))
+  taxAmount?: number;
 
   @ApiProperty({ description: "Status of the order", enum: OrderStatus })
   @IsDefined()
@@ -84,8 +100,16 @@ export class OrderDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => OrderItemDto)
+  @Expose()
   @IsOptional()
   items?: OrderItemDto[];
+
+  @ApiProperty({ description: "Payment details", type: () => PaymentDto })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => PaymentDto)
+  @Expose()
+  payment?: PaymentDto;
 }
 
 export class OrderStatusResponseDto {

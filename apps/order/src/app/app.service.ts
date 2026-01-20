@@ -17,9 +17,7 @@ import {
 } from "@projectx/core";
 import type { CreateOrderDto } from "@projectx/models";
 import { StripeService } from "@projectx/payment";
-import {
-  ClientService,
-} from "@projectx/workflows";
+import { ClientService } from "@projectx/workflows";
 import { WithStartWorkflowOperation } from "@temporalio/client";
 import {
   WorkflowExecutionAlreadyStartedError,

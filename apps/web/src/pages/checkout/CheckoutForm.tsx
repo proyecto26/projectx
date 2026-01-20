@@ -59,6 +59,7 @@ export const CheckoutForm = ({
     <form id="payment-form" onSubmit={handleSubmit} className="space-y-6">
       <PaymentElement id="payment-element" className="mb-8" />
       <button
+        type="submit"
         disabled={isLoading || !stripe || !elements}
         id="submit"
         className="w-full rounded-lg bg-purple-600 px-4 py-2 font-semibold text-white transition-colors duration-200 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -72,6 +73,7 @@ export const CheckoutForm = ({
                 fill="none"
                 viewBox="0 0 24 24"
               >
+                <title>Loading</title>
                 <circle
                   className="opacity-25"
                   cx="12"

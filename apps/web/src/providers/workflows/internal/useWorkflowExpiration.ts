@@ -21,7 +21,7 @@ export const useWorkflowExpiration = ({
     (workflow: Workflow<unknown>) => {
       if (
         workflow.expirationTimeInMilliseconds &&
-        new Date().getTime() > workflow.expirationTimeInMilliseconds
+        Date.now() > workflow.expirationTimeInMilliseconds
       ) {
         console.warn(`${workflowType}: Expiration time reached.`);
         return handleClear({ workflow });

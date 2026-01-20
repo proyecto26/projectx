@@ -25,7 +25,11 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { AuthenticatedUser, type AuthUser, JwtAuthGuard } from "@projectx/core";
-import { CreateOrderDto, OrderDto, OrderStatusResponseDto } from "@projectx/models";
+import {
+  CreateOrderDto,
+  OrderDto,
+  OrderStatusResponseDto,
+} from "@projectx/models";
 
 import { AppService } from "./app.service";
 import { OrderService } from "./order/order.service";
@@ -36,7 +40,7 @@ export class AppController {
   constructor(
     @Inject(AppService) private readonly appService: AppService,
     @Inject(OrderService) private readonly orderService: OrderService,
-  ) { }
+  ) {}
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -68,9 +72,9 @@ export class AppController {
     type: OrderDto,
   })
   @HttpCode(HttpStatus.OK)
-  @Get("/:orderId")
-  async getOrderById(@Param('orderId', ParseIntPipe) orderId: number) {
-    return this.orderService.getOrderById(orderId);
+  @Get("summary/:orderId")
+  async getOrderSummaryById(@Param("orderId", ParseIntPipe) orderId: number) {
+    return this.orderService.getOrderSummaryById(orderId);
   }
 
   @ApiBearerAuth()

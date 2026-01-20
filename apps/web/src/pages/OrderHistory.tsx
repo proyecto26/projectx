@@ -153,10 +153,7 @@ export function OrderHistory() {
 
                   {/* Products */}
                   <h4 className="sr-only">Items</h4>
-                  <ul
-                    role="list"
-                    className="divide-y divide-gray-200 dark:divide-gray-700"
-                  >
+                  <ul className="divide-y divide-gray-200 dark:divide-gray-700">
                     {order.products.map((product) => (
                       <li key={product.id} className="p-4 sm:p-6">
                         <div className="flex items-center sm:items-start">

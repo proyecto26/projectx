@@ -1,10 +1,11 @@
+import type { OrderSummaryDto } from "@projectx/models";
 import type { LoaderFunction, MetaFunction } from "react-router";
+import { useLoaderData } from "react-router";
+import invariant from "tiny-invariant";
+import { orderAPIUrl } from "@/config/app.config.server";
 import { getAccessTokenOrRedirect } from "@/cookies/auth.server";
 import OrderSummary from "@/pages/OrderSummary";
 import { authRequest } from "@/services/http.server";
-import type { OrderDto } from "@projectx/models";
-import { orderAPIUrl } from "@/config/app.config.server";
-import invariant from "tiny-invariant";
 
 export const meta: MetaFunction = () => {
   return [
@@ -16,12 +17,17 @@ export const meta: MetaFunction = () => {
 const ORDER_API = `${orderAPIUrl}/order`;
 
 export const loader: LoaderFunction = async ({ request, params }) => {
+  await getAccessTokenOrRedirect(request);
   invariant(params?.orderId, "orderId is required");
   const { orderId } = params;
-  const order = await authRequest<OrderDto>(request, `${ORDER_API}/${orderId}`);
+  const order = await authRequest<OrderSummaryDto>(
+    request,
+    `${ORDER_API}/summary/${orderId}`,
+  );
   return { order };
 };
 
 export default function Index() {
-  return <OrderSummary />;
+  const { order } = useLoaderData() as { order: OrderSummaryDto };
+  return <OrderSummary order={order} />;
 }

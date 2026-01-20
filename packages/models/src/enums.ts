@@ -13,3 +13,10 @@ export enum OrderStatus {
   Cancelled = "Cancelled",
   Failed = "Failed",
 }
+
+export enum PaymentStatus {
+  Pending = "Pending",
+  Completed = "Completed",
+  Failed = "Failed",
+  Refunded = "Refunded",
+}

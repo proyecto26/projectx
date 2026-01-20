@@ -74,7 +74,13 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
       // Clear the cart after the workflow is triggered
       emptyCart();
     }
-  }, [currentCheckoutWorkflow, items]);
+  }, [
+    currentCheckoutWorkflow,
+    items, // Clear the cart after the workflow is triggered
+    emptyCart,
+    handleRun,
+    referenceId,
+  ]);
 
   // Manage errors with the current workflow
   useEffect(() => {
@@ -82,7 +88,7 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
       setError(currentCheckoutWorkflow.error);
       handleClear({ workflow: currentCheckoutWorkflow });
     }
-  }, [currentCheckoutWorkflow?.error]);
+  }, [currentCheckoutWorkflow?.error, currentCheckoutWorkflow, handleClear]);
 
   return (
     <CheckoutPage

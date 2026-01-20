@@ -12,7 +12,7 @@ import type { PaymentConfig } from "../../config";
 @Injectable()
 export class StripeService {
   private readonly logger = new Logger(StripeService.name);
-  private stripe: Stripe;
+  private readonly stripe: Stripe;
 
   constructor(@Inject(ConfigService) private configService: ConfigService) {
     const config = this.configService.get<PaymentConfig>("payment");
@@ -32,20 +32,38 @@ export class StripeService {
     });
   }
 
-  async createPaymentIntent(
-    amount: number,
-    metadata: Record<string, string>,
-    currency = "usd",
+  async getPaymentIntent(
+    paymentIntentId: string,
   ): Promise<Stripe.PaymentIntent> {
     try {
-      return await this.stripe.paymentIntents.create({
-        amount,
-        currency,
-        metadata,
-        automatic_payment_methods: {
-          enabled: true,
-        },
+      return await this.stripe.paymentIntents.retrieve(paymentIntentId, {
+        expand: ["payment_method"],
       });
+    } catch (error) {
+      this.logger.error(`Error retrieving payment intent: ${error}`);
+      throw new InternalServerErrorException(
+        "Error retrieving payment intent",
+        {
+          cause: error,
+        },
+      );
+    }
+  }
+
+  async createPaymentIntent(
+    options: Stripe.PaymentIntentCreateParams,
+    idempotencyKey?: string,
+  ): Promise<Stripe.PaymentIntent> {
+    try {
+      return await this.stripe.paymentIntents.create(
+        {
+          automatic_payment_methods: {
+            enabled: true,
+          },
+          ...options,
+        },
+        idempotencyKey ? { idempotencyKey } : undefined,
+      );
     } catch (error) {
       this.logger.error(`Error creating payment intent: ${error}`);
       throw new InternalServerErrorException("Error creating payment intent", {

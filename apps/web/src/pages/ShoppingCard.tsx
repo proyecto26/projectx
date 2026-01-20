@@ -1,6 +1,6 @@
 import { MinusIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useState } from "react";
+import { useState } from "react";
 
 type CartItem = {
   id: number;
@@ -85,6 +85,7 @@ export function ShoppingCart() {
                   </p>
                   <div className="mt-2 flex items-center">
                     <button
+                      type="button"
                       className="btn btn-sm btn-outline"
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       aria-label={`Decrease quantity of ${item.name}`}
@@ -93,6 +94,7 @@ export function ShoppingCart() {
                     </button>
                     <span className="mx-2">{item.quantity}</span>
                     <button
+                      type="button"
                       className="btn btn-sm btn-outline"
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
                       aria-label={`Increase quantity of ${item.name}`}
@@ -103,6 +105,7 @@ export function ShoppingCart() {
                 </div>
                 <div className="card-actions justify-end p-4">
                   <button
+                    type="button"
                     className="btn btn-ghost btn-circle"
                     onClick={() => removeItem(item.id)}
                     aria-label={`Remove ${item.name} from cart`}
@@ -139,7 +142,7 @@ export function ShoppingCart() {
                 <span>${total.toFixed(2)}</span>
               </div>
               <div className="card-actions mt-4 justify-end">
-                <button className="btn btn-primary btn-block">
+                <button type="button" className="btn btn-primary btn-block">
                   Proceed to Checkout
                 </button>
               </div>

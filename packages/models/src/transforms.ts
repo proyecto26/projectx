@@ -1,9 +1,4 @@
-import {
-  isDateString,
-  isDefined,
-  isNumberString,
-  isString,
-} from "class-validator";
+import { isDateString, isDefined, isString } from "class-validator";
 
 export function transformToLowerCase(value: string) {
   if (isDefined(value) && isString(value)) {
@@ -19,15 +14,23 @@ export function trimTransform(value: string) {
   return value;
 }
 
-export function transformToNumber(value: string) {
-  if (isDefined(value) && isNumberString(value)) {
-    const number = Number(value);
-    if (Number.isNaN(number)) {
-      throw new Error(`Invalid number: ${value}`);
-    }
-    return number;
+export function transformToNumber(value: unknown) {
+  if (!isDefined(value)) {
+    return value;
   }
-  return value;
+  // Handle Prisma Decimal objects
+  if (
+    value &&
+    typeof value === "object" &&
+    typeof (value as any).toNumber === "function"
+  ) {
+    return (value as any).toNumber();
+  }
+  const number = Number(value);
+  if (Number.isNaN(number)) {
+    throw new Error(`Invalid number: ${value}`);
+  }
+  return number;
 }
 
 export function transformToDate(value: string, allowNull = true) {

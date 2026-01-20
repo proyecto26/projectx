@@ -12,5 +12,5 @@ export const useWorkflowsByType = <T extends Workflow<unknown>>(
     return ((store?.workflows[workflowType] as T[]) || []).filter(
       (w) => !w.email || `${w.email}` === `${email}`,
     );
-  }, [store?.workflows[workflowType], email]);
+  }, [store?.workflows[workflowType], email, workflowType]);
 };

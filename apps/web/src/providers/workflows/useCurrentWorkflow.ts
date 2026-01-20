@@ -16,7 +16,7 @@ export const useCurrentWorkflow = <T extends Workflow<unknown>>(
     const workflow = (workflows || []).find(predicate);
     return workflow;
     // eslint-disable-next-line
-  }, [workflowType, workflows]);
+  }, [workflows, predicate]);
 
   return currentWorkflow;
 };

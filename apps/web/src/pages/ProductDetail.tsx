@@ -234,7 +234,7 @@ export function ProductDetail() {
                       </DisclosureButton>
                     </h3>
                     <DisclosurePanel className="prose prose-sm pb-6 text-gray-700 dark:text-gray-300">
-                      <ul role="list">
+                      <ul>
                         {detail.items.map((item) => (
                           <li key={item}>{item}</li>
                         ))}
