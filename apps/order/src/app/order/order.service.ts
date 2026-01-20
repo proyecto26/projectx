@@ -20,7 +20,7 @@ export class OrderService {
 
     // Calculate initial breakdown (business logic)
     // In a real app, these might come from a pricing service
-    const shippingCost = 8.0;
+    const shippingCost = 10.0;
     const taxAmount = 0; // Let Stripe calculate or use a default
 
     // Create order in database with referenceId and breakdown
