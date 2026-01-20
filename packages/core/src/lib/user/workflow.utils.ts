@@ -33,6 +33,8 @@ export enum LoginWorkflowNonRetryableErrors {
   LOGIN_CODE_EXPIRED = "LOGIN_CODE_EXPIRED",
 }
 
+export const LOGIN_WORKFLOW_TIMEOUT = "10m";
+
 // DEFINE QUERIES
 /**
  * Get the login state

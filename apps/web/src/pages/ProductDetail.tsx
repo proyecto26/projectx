@@ -146,6 +146,7 @@ export function ProductDetail() {
               <h3 className="sr-only">Description</h3>
 
               <div
+                // biome-ignore lint/security/noDangerouslySetInnerHtml: Safe to use, the info is comming from our API
                 dangerouslySetInnerHTML={{ __html: product.description }}
                 className="prose dark:prose-dark space-y-6 text-base text-gray-700 dark:text-gray-300"
               />

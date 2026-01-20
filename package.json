@@ -26,6 +26,7 @@
     "prisma:migrate:dev": "pnpm --filter @projectx/db run prisma:migrate:dev",
     "prisma:seed": "pnpm --filter @projectx/db run prisma:seed",
     "lint": "turbo run lint",
+    "lint:fix": "biome check --write .",
     "list": "pnpm list --recursive --only-projects --json --depth -1",
     "test": "turbo run test",
     "check": "biome check --write .",

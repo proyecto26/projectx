@@ -1,5 +1,6 @@
 import {
   getLoginStateQuery,
+  LOGIN_WORKFLOW_TIMEOUT,
   LoginWorkflowCodeStatus,
   type LoginWorkflowData,
   LoginWorkflowNonRetryableErrors,
@@ -75,7 +76,7 @@ export async function loginUserWorkflow(
       : LoginWorkflowCodeStatus.ERROR_SENDING_EMAIL;
 
     // Wait for user to verify code (human interaction)
-    await condition(() => !!state.user, "10m");
+    await condition(() => !!state.user, LOGIN_WORKFLOW_TIMEOUT);
 
     // Wait for all handlers to finish before checking the state
     await condition(allHandlersFinished);

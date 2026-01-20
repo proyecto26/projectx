@@ -63,7 +63,7 @@ export default function OrderSummary({ order }: OrderSummaryProps) {
                   <p className="flex-none font-medium text-gray-900 dark:text-gray-100">
                     $
                     {(
-                      item.product?.estimatedPrice || 0 * item.quantity
+                      (item.product?.estimatedPrice || 0) * item.quantity
                     ).toFixed(2)}
                   </p>
                 </li>

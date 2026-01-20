@@ -202,7 +202,7 @@ export function OrderHistory() {
                             </div>
                             <div className="flex flex-1 justify-center pl-4">
                               <a
-                                href="#"
+                                href="/"
                                 className="whitespace-nowrap text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
                               >
                                 Buy again

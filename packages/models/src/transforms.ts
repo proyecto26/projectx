@@ -22,9 +22,10 @@ export function transformToNumber(value: unknown) {
   if (
     value &&
     typeof value === "object" &&
-    typeof (value as any).toNumber === "function"
+    "toNumber" in value &&
+    typeof (value as Record<string, unknown>).toNumber === "function"
   ) {
-    return (value as any).toNumber();
+    return (value as { toNumber: () => number }).toNumber();
   }
   const number = Number(value);
   if (Number.isNaN(number)) {

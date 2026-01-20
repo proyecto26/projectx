@@ -14,7 +14,7 @@ export const useProducts = ({
     queryFn: async ({ pageParam = 1 }) => {
       // TODO: Use limit and offset to load more products from the endpoint
       const response = await axios.get<ProductDto[]>(
-        `${window.ENV.PRODUCT_API_URL}/product`,
+        `${window.ENV.PRODUCT_API_URL}/product?page=${pageParam}`,
       );
       return response.data;
     },

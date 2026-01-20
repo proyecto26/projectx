@@ -4,6 +4,7 @@ import {
   createOrderUpdate,
   getOrderStateQuery,
   getWorkflowIdByPaymentOrder,
+  ORDER_TIMEOUT,
   OrderProcessPaymentStatus,
   type OrderWorkflowData,
   OrderWorkflowNonRetryableErrors,
@@ -86,7 +87,14 @@ export async function createOrder(
   });
 
   // Wait the order to be ready to be processed
-  await condition(() => !!state?.orderId);
+  const orderCreated = await condition(() => !!state?.orderId, ORDER_TIMEOUT);
+
+  if (!orderCreated) {
+    throw ApplicationFailure.nonRetryable(
+      OrderWorkflowNonRetryableErrors.UNKNOWN_ERROR,
+      "Order creation timed out",
+    );
+  }
 
   // First step - Process payment
   if (state.status === OrderStatus.Pending) {

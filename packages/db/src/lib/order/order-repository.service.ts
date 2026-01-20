@@ -131,6 +131,8 @@ export class OrderRepositoryService {
             product: {
               select: {
                 id: true,
+                name: true,
+                imageUrl: true,
                 estimatedPrice: true,
               },
             },

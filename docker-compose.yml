@@ -180,7 +180,6 @@ services:
       - default
     volumes:
       - ./deployment/scripts/temporal:/scripts
-      - ./deployment/scripts/search-attributes.sh:/etc/temporal/search-attributes.sh
     entrypoint: [ "/bin/sh" ]
     command: /scripts/create-namespace.sh
 

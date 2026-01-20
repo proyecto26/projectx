@@ -32,8 +32,8 @@ temporal operator namespace describe -n $NAMESPACE --address $TEMPORAL_ADDRESS |
 echo "Namespace '$NAMESPACE' created"
 
 # Run search attributes creation if search-attributes.sh exists
-if [ -f /etc/temporal/search-attributes.sh ]; then
+if [ -f /scripts/search-attributes.sh ]; then
   echo "Running search attributes setup..."
-  chmod +x /etc/temporal/search-attributes.sh
-  /etc/temporal/search-attributes.sh
+  chmod +x /scripts/search-attributes.sh
+  /scripts/search-attributes.sh
 fi
