@@ -1,0 +1,245 @@
+---
+description: Docker configuration for Temporal infrastructure and deployment scripts
+globs: 
+  - docker-compose.yml
+  - deployment/scripts/temporal/**/*
+  - deployment/config/dynamicconfig/**/*
+alwaysApply: false
+---
+# Docker Temporal Infrastructure
+## Temporal Services Overview
+### Services
+- `temporal` - Temporal server (Port 7233)
+- `temporal-ui` - Web dashboard (Port 8080)
+- `temporal-admin-tools` - One-time schema setup
+- `temporal-create-namespace` - One-time namespace creation
+### Image Versions (DO NOT CHANGE)
+```yaml
+temporal:
+  image: temporalio/server:1.29.2
+temporal-admin-tools:
+  image: temporalio/admin-tools:1.29.1-tctl-1.18.4-cli-1.5.0
+temporal-ui:
+  image: temporalio/ui:2.44.1
+```
+## Temporal Server Configuration
+### Service Definition
+```yaml
+temporal:
+  image: temporalio/server:1.29.2
+  depends_on:
+    db:
+      condition: service_healthy
+    elasticsearch:
+      condition: service_healthy
+  environment:
+    - DB=postgres12
+    - DB_PORT=5432
+    - POSTGRES_USER=${POSTGRES_USER}
+    - POSTGRES_PWD=${POSTGRES_PASSWORD}
+    - POSTGRES_SEEDS=db
+    - ENABLE_ES=true
+    - ES_SEEDS=elasticsearch
+    - ES_VERSION=v7
+    - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development.yaml
+  ports:
+    - "7233:7233"
+  volumes:
+    - ./deployment/config/dynamicconfig:/etc/temporal/config/dynamicconfig
+```
+### Health Check
+```yaml
+healthcheck:
+  test: ["CMD", "nc", "-z", "localhost", "7233"]
+  interval: 5s
+  timeout: 3s
+  start_period: 30s
+  retries: 60
+```
+## Admin Tools (Schema Setup)
+### One-Time Setup Service
+```yaml
+temporal-admin-tools:
+  image: temporalio/admin-tools:1.29.1-tctl-1.18.4-cli-1.5.0
+  depends_on:
+    db:
+      condition: service_healthy
+    elasticsearch:
+      condition: service_healthy
+  environment:
+    - DB=postgres12
+    - DB_PORT=5432
+    - POSTGRES_USER=${POSTGRES_USER}
+    - POSTGRES_PWD=${POSTGRES_PASSWORD}
+    - POSTGRES_SEEDS=db
+    - ES_SCHEME=http
+    - ES_HOST=elasticsearch
+    - ES_PORT=9200
+    - ES_VISIBILITY_INDEX=temporal_visibility_v1_dev
+    - ES_VERSION=v7
+  entrypoint: /deployment/scripts/temporal/setup-postgres-es.sh
+  volumes:
+    - ./deployment:/deployment
+  restart: on-failure:6
+```
+### What It Does
+1. Waits for PostgreSQL and Elasticsearch to be healthy
+2. Creates Temporal database schema in PostgreSQL
+3. Creates Elasticsearch visibility index
+4. Exits after successful setup
+5. Retries up to 6 times on failure
+## Namespace Creation
+### Service Definition
+```yaml
+temporal-create-namespace:
+  image: temporalio/admin-tools:1.29.1-tctl-1.18.4-cli-1.5.0
+  depends_on:
+    temporal:
+      condition: service_healthy
+  environment:
+    - TEMPORAL_ADDRESS=temporal:7233
+    - DEFAULT_NAMESPACE=${TEMPORAL_NAMESPACE:-default}
+  entrypoint: /deployment/scripts/temporal/create-namespace.sh
+  volumes:
+    - ./deployment:/deployment
+  restart: on-failure:5
+```
+### What It Does
+1. Waits for Temporal server to be healthy
+2. Creates the default namespace
+3. Adds custom search attributes (OrderId, UserId, Email)
+4. Exits after successful creation
+5. Retries up to 5 times on failure
+## Deployment Scripts
+### Schema Setup Script
+**Location:** `deployment/scripts/temporal/setup-postgres-es.sh`
+**Purpose:** Sets up PostgreSQL schema and Elasticsearch index for Temporal
+**Key Variables:**
+- `DB_HOST` - Database host (uses `POSTGRES_SEEDS` or defaults to `db`)
+- `ES_SCHEME`, `ES_HOST`, `ES_PORT` - Elasticsearch connection
+- `ES_VISIBILITY_INDEX` - Visibility index name
+- `ES_VERSION` - Elasticsearch version
+### Namespace Creation Script
+**Location:** `deployment/scripts/temporal/create-namespace.sh`
+**Purpose:** Creates Temporal namespace and runs search attributes script
+**Key Variables:**
+- `TEMPORAL_ADDRESS` - Temporal server address
+- `DEFAULT_NAMESPACE` - Namespace to create
+### Search Attributes Script
+**Location:** `deployment/scripts/temporal/search-attributes.sh`
+**Purpose:** Adds custom search attributes to Temporal
+**Custom Attributes:**
+- `OrderId` (Keyword)
+- `UserId` (Keyword)
+- `Email` (Keyword)
+**Uses:** Modern `temporal` CLI (not deprecated `tctl`)
+## Dynamic Configuration
+### Configuration File
+**Location:** `deployment/config/dynamicconfig/development.yaml`
+```yaml
+limit.maxIDLength:
+  - value: 255
+    constraints: {}
+system.forceSearchAttributesCacheRefreshOnRead:
+  - value: true  # Dev only, not for production
+    constraints: {}
+```
+### Mounted in Temporal Server
+```yaml
+volumes:
+  - ./deployment/config/dynamicconfig:/etc/temporal/config/dynamicconfig
+```
+## Temporal UI
+### Service Definition
+```yaml
+temporal-ui:
+  image: temporalio/ui:2.44.1
+  depends_on:
+    temporal:
+      condition: service_healthy
+  environment:
+    - TEMPORAL_ADDRESS=temporal:7233
+  ports:
+    - "8080:8080"
+```
+**Access:** http://localhost:8080
+## Environment Variables
+### Required for Temporal
+```bash
+TEMPORAL_HOST=temporal:7233
+TEMPORAL_PORT=7233
+TEMPORAL_NAMESPACE=default
+```
+### Used by Setup Scripts
+```bash
+POSTGRES_SEEDS=db
+ES_SCHEME=http
+ES_HOST=elasticsearch
+ES_PORT=9200
+ES_VISIBILITY_INDEX=temporal_visibility_v1_dev
+ES_VERSION=v7
+```
+## Startup Sequence
+1. `db` and `elasticsearch` start and become healthy
+2. `temporal-admin-tools` runs schema setup (exits)
+3. `temporal` server starts and becomes healthy
+4. `temporal-create-namespace` creates namespace (exits)
+5. `temporal-ui` starts
+6. Application services connect to Temporal
+## Common Commands
+### View Temporal Logs
+```bash
+docker compose logs -f temporal
+docker compose logs temporal-admin-tools
+docker compose logs temporal-create-namespace
+```
+### Access Temporal UI
+```bash
+open http://localhost:8080
+```
+### Restart Temporal
+```bash
+docker compose restart temporal
+```
+### Re-run Schema Setup
+```bash
+docker compose up temporal-admin-tools
+```
+### Re-run Namespace Creation
+```bash
+docker compose up temporal-create-namespace
+```
+## Troubleshooting
+### Temporal Server Won't Start
+1. Check PostgreSQL is healthy: `docker compose ps db`
+2. Check Elasticsearch is healthy: `docker compose ps elasticsearch`
+3. Verify schema was created: `docker compose logs temporal-admin-tools`
+4. Check Temporal logs: `docker compose logs temporal`
+### Schema Setup Fails
+1. Check database connection: `docker compose exec temporal-admin-tools ping db`
+2. Verify environment variables are set
+3. Check script permissions: `ls -la deployment/scripts/temporal/`
+4. View setup logs: `docker compose logs temporal-admin-tools`
+### Namespace Creation Fails
+1. Ensure Temporal server is healthy
+2. Check namespace script logs: `docker compose logs temporal-create-namespace`
+3. Verify `TEMPORAL_ADDRESS` is correct
+4. Check search attributes script exists
+### Search Attributes Not Created
+1. Check if namespace was created: View Temporal UI
+2. Verify search-attributes.sh script is executable
+3. Check for errors in namespace creation logs
+4. Manually run: `docker compose exec temporal-create-namespace /deployment/scripts/temporal/search-attributes.sh`
+## Best Practices
+1. **Don't change image versions** - They are tested and working
+2. **Let setup scripts complete** - They exit automatically when done
+3. **Check logs if setup fails** - Scripts have detailed error messages
+4. **Use restart policies** - `on-failure` with retry limits
+5. **Mount deployment folder** - Scripts need access to deployment files
+6. **Use modern temporal CLI** - Not deprecated `tctl`
+## References
+- Setup script: `deployment/scripts/temporal/setup-postgres-es.sh`
+- Namespace script: `deployment/scripts/temporal/create-namespace.sh`
+- Search attributes: `deployment/scripts/temporal/search-attributes.sh`
+- Dynamic config: `deployment/config/dynamicconfig/development.yaml`
+- Temporal docs: See `/docs/temporal-docker-update-summary.md`

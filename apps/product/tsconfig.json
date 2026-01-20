@@ -1,16 +1,41 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "files": [],
-  "include": [],
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.spec.json"
-    }
-  ],
   "compilerOptions": {
-    "esModuleInterop": true
-  }
+    "module": "commonjs",
+    "moduleResolution": "node10",
+    "declaration": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2023",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "paths": {
+      "@projectx/core": ["../../packages/core/dist/index"],
+      "@projectx/core/*": ["../../packages/core/dist/*"],
+      "@projectx/db": ["../../packages/db/dist/index"],
+      "@projectx/db/*": ["../../packages/db/dist/*"],
+      "@projectx/models": ["../../packages/models/dist/index"],
+      "@projectx/models/*": ["../../packages/models/dist/*"],
+      "@projectx/workflows": ["../../packages/workflows/dist/index"],
+      "@projectx/workflows/*": ["../../packages/workflows/dist/*"]
+    },
+    "incremental": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "strictBindCallApply": true,
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "noUncheckedIndexedAccess": true,
+    "types": ["node"],
+    "lib": ["ES2021"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }

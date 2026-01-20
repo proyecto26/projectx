@@ -1,5 +1,3 @@
-version: '3.6'
-
 x-project-name: &project-name ${COMPOSE_PROJECT_NAME:-projectx}
 
 # Define common service settings to reduce duplication
@@ -13,18 +11,47 @@ x-service-common: &service-common
     temporal:
       condition: service_started
   environment:
-    - NX_DISABLE_DB=true
+    # Enable file system polling for better file watching in Docker
+    - WATCHPACK_POLLING=true
+    - CHOKIDAR_USEPOLLING=true
+    - CHOKIDAR_INTERVAL=500 # Faster interval for detecting changes
+    # Debugging and verbose logging
+    - DEBUG=turbo*
+    - FORCE_COLOR=1
+    # Turborepo cache dir inside the container
+    - TURBO_CACHE_DIR=/app/.turbo
+    - VITE_DEV_SERVER=true
+    - NODE_ENV=development
+    - NODE_OPTIONS=--max-old-space-size=4096
   build:
     context: .
     dockerfile: Dockerfile
   volumes:
-    - .:/app
-    - /app/libs/frontend
+    # Mount the entire project directory to ensure all files are visible in the container
+    - .:/app:delegated
+    # These are anonymous volumes to prevent node_modules from being overwritten by host
     - /app/node_modules
+    # Apps node_modules
+    - /app/apps/auth/node_modules
+    - /app/apps/order/node_modules
+    - /app/apps/product/node_modules
+    - /app/apps/web/node_modules
+    # Packages node_modules
+    - /app/packages/core/node_modules
+    - /app/packages/db/node_modules
+    - /app/packages/email/node_modules
+    - /app/packages/models/node_modules
+    - /app/packages/payment/node_modules
+    - /app/packages/ui/node_modules
+    - /app/packages/workflows/node_modules
+    # Frontend files that should not be watched (speeds up the container)
+    - /app/apps/web/.vite
+    - /app/apps/web/dist
 
 services:
   db:
     image: postgis/postgis:17-3.5
+    platform: linux/amd64
     container_name: ${COMPOSE_PROJECT_NAME:-projectx}-db
     restart: always
     networks:
@@ -40,7 +67,7 @@ services:
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -54,111 +81,198 @@ services:
       - /run
       - /run/postgresql
 
-  temporal:
-    image: temporalio/auto-setup:1.26.2
-    container_name: ${COMPOSE_PROJECT_NAME:-projectx}-temporal
+  elasticsearch:
+    image: elasticsearch:7.17.27
+    container_name: ${COMPOSE_PROJECT_NAME:-projectx}-elasticsearch
+    platform: linux/amd64
+    environment:
+      - cluster.routing.allocation.disk.threshold_enabled=true
+      - cluster.routing.allocation.disk.watermark.low=512mb
+      - cluster.routing.allocation.disk.watermark.high=256mb
+      - cluster.routing.allocation.disk.watermark.flood_stage=128mb
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms256m -Xmx256m
+      - xpack.security.enabled=false
+    networks:
+      - default
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=1s || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    labels:
+      - "com.*project-name.service=elasticsearch"
+
+  temporal-admin-tools:
+    image: temporalio/admin-tools:1.29.1-tctl-1.18.4-cli-1.5.0
+    container_name: ${COMPOSE_PROJECT_NAME:-projectx}-temporal-admin-tools
+    platform: linux/amd64
     depends_on:
       db:
         condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      - DB=postgres12
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PWD=${POSTGRES_PASSWORD}
+      - DB_HOST=db
+      - DB_PORT=${POSTGRES_PORT:-5432}
+      - SQL_PASSWORD=${POSTGRES_PASSWORD}
+      - ES_HOST=elasticsearch
+      - ES_PORT=9200
+      - ES_SCHEME=http
+      - ES_VERSION=v7
+      - ES_VISIBILITY_INDEX=temporal_visibility_v1_dev
+    networks:
+      - default
+    volumes:
+      - ./deployment/scripts/temporal:/scripts
+    entrypoint: [ "/bin/sh" ]
+    command: /scripts/setup-postgres-es.sh
+
+  temporal:
+    image: temporalio/server:1.29.2
+    container_name: ${COMPOSE_PROJECT_NAME:-projectx}-temporal
+    platform: linux/amd64
+    depends_on:
+      temporal-admin-tools:
+        condition: service_completed_successfully
     environment:
       - DB=postgres12
       - DB_PORT=${POSTGRES_PORT:-5432}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PWD=${POSTGRES_PASSWORD}
       - POSTGRES_SEEDS=db
+      - ENABLE_ES=true
+      - ES_SEEDS=elasticsearch
+      - ES_VERSION=v7
+      - BIND_ON_IP=0.0.0.0
       - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development.yaml
+    networks:
+      - default
     volumes:
       - ./deployment/config/dynamicconfig:/etc/temporal/config/dynamicconfig
     ports:
       - "${TEMPORAL_PORT:-7233}:7233"
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "7233" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     labels:
       - "com.*project-name.service=temporal"
     expose:
       - "${TEMPORAL_PORT:-7233}"
 
-  temporal-admin-tools:
-    image: temporalio/admin-tools:1.26.2-tctl-1.18.1-cli-1.2.0
-    container_name: ${COMPOSE_PROJECT_NAME:-projectx}-temporal-admin-tools
+  temporal-create-namespace:
+    image: temporalio/admin-tools:1.29.1-tctl-1.18.4-cli-1.5.0
+    container_name: ${COMPOSE_PROJECT_NAME:-projectx}-temporal-create-namespace
+    platform: linux/amd64
     depends_on:
-      - temporal
+      temporal:
+        condition: service_healthy
     environment:
       - TEMPORAL_ADDRESS=temporal:${TEMPORAL_PORT:-7233}
-      - TEMPORAL_CLI_ADDRESS=temporal:${TEMPORAL_PORT:-7233}
-      - TEMPORAL_CLI_SHOW_STACKS=1
-    stdin_open: true
-    tty: true
-    labels:
-      - "com.*project-name.service=temporal-admin-tools"
+      - DEFAULT_NAMESPACE=${TEMPORAL_NAMESPACE:-default}
+    networks:
+      - default
     volumes:
-      - ./deployment/scripts/search-attributes.sh:/etc/temporal/entrypoint.sh
-    entrypoint: >
-      /bin/sh -c "
-      chmod +x /etc/temporal/entrypoint.sh &&
-      /etc/temporal/entrypoint.sh &&
-      exec /bin/bash
-      "
+      - ./deployment/scripts/temporal:/scripts
+      - ./deployment/scripts/search-attributes.sh:/etc/temporal/search-attributes.sh
+    entrypoint: [ "/bin/sh" ]
+    command: /scripts/create-namespace.sh
 
   temporal-ui:
-    image: temporalio/ui:2.34.0
+    image: temporalio/ui:2.44.1
     container_name: ${COMPOSE_PROJECT_NAME:-projectx}-temporal-ui
+    platform: linux/amd64
     depends_on:
-      - temporal
+      temporal:
+        condition: service_healthy
     environment:
       - TEMPORAL_ADDRESS=temporal:${TEMPORAL_PORT:-7233}
       - TEMPORAL_CORS_ORIGINS=http://localhost:3000
+    networks:
+      - default
     ports:
       - "${TEMPORAL_UI_PORT:-8080}:8080"
     labels:
       - "com.*project-name.service=temporal-ui"
     expose:
       - "${TEMPORAL_UI_PORT:-8080}"
+    # PROJECTX SERVICES
+    # web:
+    #   <<: *service-common
+    #   container_name: web
+    #   command: >
+    #     bash -c " pnpm install --frozen-lockfile && rm -rf /app/.turbo && cd /app/apps/web && pnpm dev "
+    #   ports:
+    #     - "3000:3000"
+    #restart: unless-stopped
 
-  # PROJECTX SERVICES
   auth:
     <<: *service-common
     container_name: auth
-    command: >
-      bash -c "
-      npm run prisma:generate &&
-      npm run prisma:migrate &&
-      npx nx reset &&
-      npm run dev:auth
-      "
+    init: true # Ensures proper signal handling for graceful shutdowns
+    command:
+      - /bin/sh
+      - -c
+      - |
+        pnpm install --frozen-lockfile && \
+        pnpm turbo run build --filter=auth^... && \
+        pnpm --filter @projectx/db run prisma:generate && \
+        pnpm --filter @projectx/db run prisma:migrate && \
+        cd /app/apps/auth && \
+        exec pnpm start:debug
     ports:
       - "${AUTH_PORT:-8081}:${AUTH_PORT:-8081}"
       - "9229:9229"
+    #restart: unless-stopped
 
   order:
     <<: *service-common
     container_name: order
-    command: >
-      bash -c "
-      npm run prisma:generate &&
-      npm run prisma:migrate &&
-      npx nx reset &&
-      npm run dev:order
-      "
+    init: true # Ensures proper signal handling for graceful shutdowns
+    command:
+      - /bin/sh
+      - -c
+      - |
+        pnpm install --frozen-lockfile && \
+        pnpm turbo run build --filter=order^... && \
+        pnpm --filter @projectx/db run prisma:generate && \
+        pnpm --filter @projectx/db run prisma:migrate && \
+        cd /app/apps/order && \
+        exec pnpm start:debug
     ports:
       - "${ORDER_PORT:-8082}:${ORDER_PORT:-8082}"
       - "9230:9230"
+    #restart: unless-stopped
 
   product:
     <<: *service-common
     container_name: product
-    command: >
-      bash -c "
-      npm run prisma:generate &&
-      npm run prisma:migrate &&
-      npm run prisma:seed &&
-      npx nx reset &&
-      npm run dev:product
-      "
+    init: true # Ensures proper signal handling for graceful shutdowns
+    command:
+      - /bin/sh
+      - -c
+      - |
+        pnpm install --frozen-lockfile && \
+        pnpm turbo run build --filter=product^... && \
+        pnpm --filter @projectx/db run prisma:generate && \
+        pnpm --filter @projectx/db run prisma:migrate && \
+        pnpm --filter @projectx/db run prisma:seed && \
+        cd /app/apps/product && \
+        exec pnpm start:debug
     ports:
       - "${PRODUCT_PORT:-8083}:${PRODUCT_PORT:-8083}"
       - "9231:9231"
+    #restart: unless-stopped
 
   ngrok-order:
     image: ngrok/ngrok:latest
+    platform: linux/amd64
     command:
       - "http"
       - "http://host.docker.internal:${ORDER_PORT:-8082}"

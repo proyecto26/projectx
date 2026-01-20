@@ -1,0 +1,433 @@
+---
+description: Rules for backend packages (core, db, email, payment, workflows)
+globs: 
+  - packages/core/**/*
+  - packages/db/**/*
+  - packages/email/**/*
+  - packages/payment/**/*
+  - packages/workflows/**/*
+alwaysApply: true
+---
+# Backend Packages Rules
+## Package Overview
+### Core (`@projectx/core`)
+- **Purpose:** Shared backend utilities, authentication, health checks, logging
+- **Module System:** Dual (CJS + ESM via tsup)
+- **Exports:** AuthService, JwtAuthGuard, HealthModule, Logger utilities
+- **Dependencies:** NestJS, Passport, JWT
+### DB (`@projectx/db`)
+- **Purpose:** Prisma client and database utilities
+- **Module System:** Dual (CJS + ESM via tsup)
+- **Exports:** PrismaService, DbModule, Prisma client
+- **Database:** PostgreSQL with PostGIS extension
+### Email (`@projectx/email`)
+- **Purpose:** Email sending via SendGrid
+- **Module System:** Dual (CJS + ESM via tsup)
+- **Exports:** EmailService, EmailModule
+- **Provider:** SendGrid
+### Payment (`@projectx/payment`)
+- **Purpose:** Stripe payment integration
+- **Module System:** Dual (CJS + ESM via tsup)
+- **Exports:** StripeService, PaymentModule
+- **Provider:** Stripe
+### Workflows (`@projectx/workflows`)
+- **Purpose:** Temporal workflow client and worker management
+- **Module System:** Dual (CJS + ESM via tsup)
+- **Exports:** ClientService, WorkerService, WorkflowsModule
+- **Integration:** Temporal.io
+## Build Configuration
+### All packages use tsup for dual builds
+```json
+{
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --sourcemap --clean"
+  }
+}
+```
+### Build outputs:
+- `dist/index.js` - CommonJS (for NestJS apps)
+- `dist/index.mjs` - ESM (for web app)
+- `dist/index.d.ts` - TypeScript declarations
+- Source maps for both formats
+### Critical: Declaration files
+```bash
+# Always generate declaration files
+tsup src/index.ts --format cjs,esm --sourcemap --clean && \
+tsc -p tsconfig.json --emitDeclarationOnly --outDir dist
+```
+## Package: @projectx/core
+### Exports
+```typescript
+// Authentication
+export { AuthService } from './lib/auth/auth.service';
+export { JwtAuthGuard } from './lib/auth/auth.guard';
+export { JwtStrategy } from './lib/auth/jwt.strategy';
+export { AuthModule } from './lib/auth/auth.module';
+// Decorators
+export { AuthenticatedUser } from './lib/auth/auth.decorator';
+// Health checks
+export { HealthModule } from './lib/health/health.module';
+// Logger
+export { createLoggerOptions } from './lib/logger';
+// Workflows (Temporal)
+export { 
+  verifyLoginCodeUpdate,
+  createOrderUpdate,
+  getOrderStateQuery,
+  cancelWorkflowSignal,
+  paymentWebHookEventSignal 
+} from './workflows';
+// Types
+export type { AuthUser, OrderWorkflowData, PaymentWebhookEvent };
+```
+### AuthService
+```typescript
+@Injectable()
+export class AuthService {
+  async createAccessToken(user: AuthUser): Promise<string>;
+  async validateToken(token: string): Promise<AuthUser>;
+}
+```
+### Critical: Must be exported from AuthModule
+```typescript
+@Module({
+  providers: [AuthService, JwtAuthGuard, JwtStrategy],
+  exports: [AuthService, passportModule],  // ✅ Export AuthService
+})
+export class AuthModule {}
+```
+### Usage in apps:
+```typescript
+import { AuthService, JwtAuthGuard } from '@projectx/core';
+// ✅ Regular import (not type import)
+constructor(private readonly authService: AuthService) {}
+```
+## Package: @projectx/db
+### Prisma Configuration
+```typescript
+// prisma.config.ts
+import { defineConfig } from '@prisma/client/generator-helper';
+export default defineConfig({
+  generator: {
+    provider: 'prisma-client-js',
+    output: './generated/prisma',
+  },
+  datasource: {
+    provider: 'postgresql',
+    url: process.env.DATABASE_URL,
+  },
+});
+```
+### Schema location
+- `packages/db/prisma/schema.prisma`
+- Migrations: `packages/db/prisma/migrations/`
+### Exports
+```typescript
+export { PrismaService } from './lib/prisma.service';
+export { DbModule } from './lib/db.module';
+export * from './generated/prisma';  // Prisma client types
+```
+### Usage:
+```typescript
+import { PrismaService } from '@projectx/db';
+import { User, Product, Order } from '@projectx/db';
+@Injectable()
+export class UserService {
+  constructor(private readonly prisma: PrismaService) {}
+  async findOne(id: number): Promise<User | null> {
+    return this.prisma.user.findUnique({ where: { id } });
+  }
+}
+```
+### Build process:
+```bash
+# 1. Generate Prisma client
+pnpm prisma generate
+# 2. Build package
+pnpm build
+# 3. Run migrations (in apps, not package)
+pnpm prisma migrate deploy
+```
+### Critical: Prisma client generation
+- Must run `prisma generate` before building
+- Generated client goes to `./generated/prisma`
+- Re-export all Prisma types from package
+## Package: @projectx/email
+### EmailService
+```typescript
+@Injectable()
+export class EmailService {
+  async sendEmail(options: SendEmailOptions): Promise<void>;
+  async sendLoginEmail(email: string, code: string): Promise<void>;
+  async sendOrderConfirmation(email: string, order: Order): Promise<void>;
+}
+```
+### Configuration
+```typescript
+EmailModule.forRoot({
+  apiKey: process.env.SENDGRID_API_KEY,
+  from: process.env.EMAIL_FROM,
+  fromName: process.env.EMAIL_FROM_NAME,
+})
+```
+### Usage:
+```typescript
+import { EmailService } from '@projectx/email';
+constructor(private readonly emailService: EmailService) {}
+await this.emailService.sendLoginEmail(user.email, code);
+```
+## Package: @projectx/payment
+### StripeService
+```typescript
+@Injectable()
+export class StripeService {
+  async createPaymentIntent(amount: number, metadata: object): Promise<PaymentIntent>;
+  async constructWebhookEvent(payload: Buffer, signature: string): Promise<Stripe.Event>;
+  async handleWebhookEvent(event: Stripe.Event): Promise<PaymentIntent | null>;
+}
+```
+### Configuration
+```typescript
+PaymentModule.forRoot({
+  secretKey: process.env.STRIPE_SECRET_KEY,
+  webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+})
+```
+### Webhook handling:
+```typescript
+import { StripeService } from '@projectx/payment';
+@Post('webhook')
+async handleWebhook(
+  @Req() req: Request,
+  @Headers('stripe-signature') signature: string,
+) {
+  const event = this.stripeService.constructWebhookEvent(
+    req.body,  // Raw body required
+    signature,
+  );
+  const paymentIntent = this.stripeService.handleWebhookEvent(event);
+  // Process payment intent
+}
+```
+## Package: @projectx/workflows
+### Critical: Module exports
+```typescript
+@Module({
+  providers: [ClientService],
+  exports: [ClientService],  // ✅ Export ClientService
+})
+export class WorkflowsModule {
+  static registerAsync<T>(options: WorkerModuleAsyncOptions<T>): DynamicModule {
+    return {
+      module: WorkflowsModule,
+      imports: [...(options.imports || []), ConfigModule],
+      providers: [...asyncProviders, ClientService, WorkerService],
+      exports: [ClientService, WorkerService],  // ✅ Export both
+    };
+  }
+}
+```
+### ClientService
+```typescript
+@Injectable()
+export class ClientService {
+  client?: {
+    workflow: WorkflowClient;
+    schedule: ScheduleClient;
+  };
+  async connect(address: string, namespace: string): Promise<void>;
+}
+```
+### WorkerService
+```typescript
+@Injectable()
+export class WorkerService {
+  async start(options: WorkerServiceOptions): Promise<void>;
+  async stop(): Promise<void>;
+}
+```
+### Usage in apps:
+```typescript
+import { ClientService, WorkflowsModule } from '@projectx/workflows';
+// ✅ Regular import (not type import)
+constructor(private readonly clientService: ClientService) {}
+// Module registration
+WorkflowsModule.registerAsync({
+  imports: [ActivitiesModule],
+  inject: [ActivitiesService],
+  useFactory: (activitiesService: ActivitiesService) => ({
+    activitiesService,
+    workflowsPath: path.join(__dirname, '../workflows'),
+  }),
+})
+```
+### Workflow utilities:
+```typescript
+export async function getWorkflowDescription(
+  client: WorkflowClient,
+  workflowId: string,
+): Promise<WorkflowExecutionDescription>;
+export function isWorkflowRunning(
+  description: WorkflowExecutionDescription,
+): boolean;
+export const WORKFLOW_TTL = 30 * 60 * 1000;  // 30 minutes
+```
+## Common Patterns
+### Module pattern for packages
+```typescript
+import { Module, DynamicModule } from '@nestjs/common';
+@Module({
+  providers: [MyService],
+  exports: [MyService],
+})
+export class MyModule {
+  static forRoot(options: MyOptions): DynamicModule {
+    return {
+      module: MyModule,
+      providers: [
+        {
+          provide: 'OPTIONS',
+          useValue: options,
+        },
+        MyService,
+      ],
+      exports: [MyService],
+    };
+  }
+}
+```
+### Service pattern
+```typescript
+import { Injectable, Inject } from '@nestjs/common';
+@Injectable()
+export class MyService {
+  constructor(
+    @Inject('OPTIONS') private readonly options: MyOptions,
+  ) {}
+  async doSomething(): Promise<Result> {
+    // Implementation
+  }
+}
+```
+## TypeScript Configuration
+### All backend packages use strict mode
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true
+  }
+}
+```
+### Export types
+```typescript
+// ✅ Export types for consumers
+export type AuthUser = {
+  id: number;
+  email: string;
+  name?: string;
+};
+export interface SendEmailOptions {
+  to: string;
+  subject: string;
+  html: string;
+}
+```
+## Testing
+### Unit tests for all packages
+```typescript
+import { Test, TestingModule } from '@nestjs/testing';
+import { MyService } from './my.service';
+describe('MyService', () => {
+  let service: MyService;
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [MyService],
+    }).compile();
+    service = module.get<MyService>(MyService);
+  });
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+});
+```
+## Versioning
+### All packages start at 0.0.1
+- Use semantic versioning
+- Bump version when making breaking changes
+- Document changes in CHANGELOG.md
+## Dependencies
+### Peer dependencies
+```json
+{
+  "peerDependencies": {
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/core": "^11.0.0"
+  }
+}
+```
+### Keep dependencies minimal
+- Only include what's necessary
+- Use peer dependencies for framework packages
+- Avoid circular dependencies between packages
+## Build Order
+### Packages must be built in dependency order:
+1. `models` (no dependencies)
+2. `db` (depends on models)
+3. `core` (depends on models, db)
+4. `email` (depends on models)
+5. `payment` (depends on models)
+6. `workflows` (depends on core)
+### Turborepo handles this automatically
+```bash
+pnpm turbo run build  # Builds in correct order
+```
+## Common Issues
+### Issue: "Cannot find module" in apps
+**Cause:** Package not built or declarations missing
+**Solution:** Run `pnpm turbo run build` and ensure `tsc --emitDeclarationOnly`
+### Issue: Circular dependency
+**Cause:** Packages importing from each other
+**Solution:** Extract shared types to `models` package
+### Issue: Type errors in consuming apps
+**Cause:** Declaration files not generated
+**Solution:** Add `tsc -p tsconfig.json --emitDeclarationOnly --outDir dist` to build
+### Issue: Module not exported
+**Cause:** Service not in exports array
+**Solution:** Add service to module's exports array
+## Performance
+### Tree shaking
+- Export only what's needed
+- Use named exports
+- Avoid barrel exports of large modules
+### Build caching
+- Turborepo caches builds
+- Only rebuilds changed packages
+- Share cache across team
+## Documentation
+### Document all public APIs
+```typescript
+/**
+ * Creates a payment intent with Stripe
+ * @param amount - Amount in cents
+ * @param metadata - Additional metadata for the payment
+ * @returns Promise resolving to PaymentIntent
+ * @throws {StripeError} If payment creation fails
+ */
+async createPaymentIntent(
+  amount: number,
+  metadata: Record<string, string>,
+): Promise<PaymentIntent> {
+  // Implementation
+}
+```
+### README for each package
+- Purpose and features
+- Installation
+- Usage examples
+- API documentation
+- Configuration options

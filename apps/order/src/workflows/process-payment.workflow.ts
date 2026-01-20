@@ -1,20 +1,18 @@
-/* eslint-disable @nx/enforce-module-boundaries */
 import {
-  log,
-  condition,
-  setHandler,
-  allHandlersFinished,
-} from '@temporalio/workflow';
-
-import {
-  OrderWorkflowData,
-  PROCESS_PAYMENT_TIMEOUT,
-  OrderProcessPaymentState,
+  cancelWorkflowSignal,
+  type OrderProcessPaymentState,
   OrderProcessPaymentStatus,
+  type OrderWorkflowData,
+  type PaymentWebhookEvent,
+  PROCESS_PAYMENT_TIMEOUT,
   paymentWebHookEventSignal,
-  PaymentWebhookEvent,
-} from '../../../../libs/backend/core/src/lib/order/workflow.utils';
-import { cancelWorkflowSignal } from '../../../../libs/backend/core/src/lib/workflows';
+} from "@projectx/core/workflows";
+import {
+  allHandlersFinished,
+  condition,
+  log,
+  setHandler,
+} from "@temporalio/workflow";
 
 export const finalPaymentStatuses = [
   OrderProcessPaymentStatus.SUCCESS,
@@ -24,41 +22,41 @@ export const finalPaymentStatuses = [
 ];
 
 const initiatedWebhookEvents = [
-  'payment_intent.created',
-  'payment_intent.processing',
-  'payment_method.attached',
+  "payment_intent.created",
+  "payment_intent.processing",
+  "payment_method.attached",
 ];
 
 const confirmedWebhookEvents = [
-  'checkout.session.completed',
-  'checkout.session.async_payment_succeeded',
-  'payment_intent.succeeded',
+  "checkout.session.completed",
+  "checkout.session.async_payment_succeeded",
+  "payment_intent.succeeded",
 ];
 
 const failedWebhookEvents = [
-  'payment_intent.payment_failed',
-  'payment_intent.canceled',
+  "payment_intent.payment_failed",
+  "payment_intent.canceled",
 ];
 
 export async function processPayment(
-  data: OrderWorkflowData
+  data: OrderWorkflowData,
 ): Promise<OrderProcessPaymentState> {
   const state: OrderProcessPaymentState = {
     status: OrderProcessPaymentStatus.PENDING,
   };
-  log.info('Processing payment', { data });
+  log.info("Processing payment", { data });
 
   // Attach queries, signals and updates
-  setHandler(cancelWorkflowSignal, async () => {
+  setHandler(cancelWorkflowSignal, () => {
     if (finalPaymentStatuses.includes(state.status)) {
-      log.warn('Payment already completed, cannot cancel');
+      log.warn("Payment already completed, cannot cancel");
       return;
     }
-    log.warn('Cancelling payment');
+    log.warn("Cancelling payment");
     state.status = OrderProcessPaymentStatus.CANCELLED;
   });
-  setHandler(paymentWebHookEventSignal, async (event: PaymentWebhookEvent) => {
-    log.info('Received payment webhook event', { type: event.type });
+  setHandler(paymentWebHookEventSignal, (event: PaymentWebhookEvent) => {
+    log.info("Received payment webhook event", { type: event.type });
 
     if (initiatedWebhookEvents.includes(event.type)) {
       state.status = OrderProcessPaymentStatus.INITIATED;
@@ -68,13 +66,13 @@ export async function processPayment(
       state.status = OrderProcessPaymentStatus.FAILURE;
     }
 
-    log.info('Updated payment status', { status: state.status });
+    log.info("Updated payment status", { status: state.status });
   });
 
   // Wait for payment to complete or timeout
   await condition(
     () => finalPaymentStatuses.includes(state.status),
-    PROCESS_PAYMENT_TIMEOUT
+    PROCESS_PAYMENT_TIMEOUT,
   );
 
   // Wait for all handlers to finish before workflow completion

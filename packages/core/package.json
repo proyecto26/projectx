@@ -1,0 +1,77 @@
+{
+  "name": "@projectx/core",
+  "version": "0.0.1",
+  "private": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/workflows.ts src/logger.ts src/lib/logger/index.ts --format cjs,esm --sourcemap --clean --no-splitting && tsc -p tsconfig.json --emitDeclarationOnly --outDir dist",
+    "dev": "tsc -w -p tsconfig.json",
+    "lint": "biome check .",
+    "test": "echo 'no tests'"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./logger": {
+      "types": "./dist/logger.d.ts",
+      "import": "./dist/logger.mjs",
+      "require": "./dist/logger.js",
+      "default": "./dist/logger.js"
+    },
+    "./workflows": {
+      "types": "./dist/workflows.d.ts",
+      "import": "./dist/workflows.mjs",
+      "require": "./dist/workflows.js",
+      "default": "./dist/workflows.js"
+    }
+  },
+  "dependencies": {
+    "@projectx/db": "workspace:*",
+    "@projectx/models": "workspace:*",
+    "@temporalio/workflow": "1.14.1",
+    "bcrypt": "6.0.0",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.14.3",
+    "express": "5.2.1",
+    "express-rate-limit": "8.2.1",
+    "helmet": "8.1.0",
+    "lodash": "4.17.21",
+    "nestjs-pino": "4.5.0",
+    "pino": "10.2.0",
+    "pino-pretty": "13.1.1",
+    "tslib": "^2.8.1",
+    "uuid": "13.0.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "6.0.0",
+    "@types/express": "5.0.6",
+    "@types/lodash": "4.17.23",
+    "@types/passport-jwt": "4.0.1",
+    "@types/passport-local": "1.0.38",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "11.1.12",
+    "@nestjs/config": "4.0.2",
+    "@nestjs/core": "11.1.12",
+    "@nestjs/jwt": "11.0.2",
+    "@nestjs/passport": "11.0.5",
+    "@nestjs/platform-express": "11.1.12",
+    "@nestjs/swagger": "11.2.5",
+    "@nestjs/terminus": "11.0.0",
+    "passport": "0.7.0",
+    "passport-jwt": "4.0.1",
+    "passport-local": "1.0.0"
+  }
+}

@@ -1,0 +1,5 @@
+@import "tailwindcss";
+@import "@projectx/ui/styles";
+
+/* Scan UI package components and stories */
+@source "../../../packages/ui/src";

@@ -1,9 +1,0 @@
-@import 'react-toastify/dist/ReactToastify.css';
-
-@import './base.css';
-@import './dark.css';
-
-
-@view-transition: {
-    navigation: auto;
-}

@@ -26,4 +26,8 @@ Thumbs.db
 
 # Ignore repo files
 libs/frontend
-apps/web
+# Uncomment the following line to ignore the web app if running locally
+# apps/web
+
+# System Files
+.DS_Store

@@ -1,0 +1,9 @@
+/* Import shared base and dark mode variables */
+@import "./base.css";
+@import "./dark.css";
+
+/* Import the shared theme and plugins (DaisyUI, etc.) */
+@import "./theme.css";
+
+/* Animation utilities */
+@import "tw-animate-css";

@@ -1,0 +1,266 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  extensions = [postgis]
+}
+
+model User {
+  id            Int           @id @default(autoincrement()) @db.Integer
+  username      String?       @unique @db.VarChar(60)
+  email         String        @unique @db.VarChar(100)
+  firstName     String?       @map("first_name") @db.VarChar(100)
+  lastName      String?       @map("last_name") @db.VarChar(100)
+  addressLine1  String?       @map("address_line1") @db.VarChar(100)
+  addressLine2  String?       @map("address_line2") @db.VarChar(50)
+  city          String?       @db.VarChar(100)
+  state         String?       @db.VarChar(100)
+  postalCode    String?       @map("postal_code") @db.VarChar(10)
+  country       String?       @db.VarChar(100)
+  phoneNumber   String?       @map("phone_number") @db.VarChar(100)
+  location      Unsupported("geometry(Point, 4326)")? @map("location")
+  status        UserStatus
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  deletedAt     DateTime?     @map("deleted_at") @db.Timestamp()
+  
+  manufacturer  Manufacturer? @relation("UserManufacturer")
+  products      Product[]     @relation("UserProducts")
+  orders        Order[]       @relation("UserOrders")
+  reviews       Review[]      @relation("UserReviews")
+  roles         UserRole[]    @relation("UserRoles")
+
+  @@index([email], map: "ix_user_email")
+  @@index([username], map: "ix_user_username")
+  @@index([phoneNumber], map: "ix_user_phone_number")
+  @@map("user")
+}
+
+model Role {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(100)
+  description String?   @db.Text
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  userRoles   UserRole[] @relation("RoleUsers")
+  rolePermissions RolePermission[] @relation("RolePermissions")
+
+  @@index([name], map: "ix_role_name")
+  @@map("role")
+}
+
+model UserRole {
+  userId    Int      @map("user_id") @db.Integer
+  roleId    Int      @map("role_id") @db.Integer
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User    @relation("UserRoles", fields: [userId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_user_role_user_id")
+  role      Role    @relation("RoleUsers", fields: [roleId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_user_role_role_id")
+
+  @@id([userId, roleId])
+  @@map("user_role")
+  @@index([userId, roleId], map: "ix_user_role_user_id_role_id")
+}
+
+model Permission {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(100)
+  description String?   @db.Text
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  rolePermissions RolePermission[] @relation("PermissionRoles")
+
+  @@map("permission")
+  @@index([name], map: "ix_permission_name")
+}
+
+model RolePermission {
+  roleId      Int     @map("role_id")
+  permissionId Int    @map("permission_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  role        Role    @relation("RolePermissions", fields: [roleId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_role_permission_role_id")
+  permission  Permission @relation("PermissionRoles", fields: [permissionId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_role_permission_permission_id")
+
+  @@id([roleId, permissionId])
+  @@map("role_permission")
+}
+
+model Manufacturer {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(100)
+  status      ManufacturerStatus
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  userId      Int       @unique
+
+  user        User      @relation("UserManufacturer", fields: [userId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_manufacturer_user_id")
+
+  reviews     Review[]  @relation("ManufacturerReviews")
+  prices      ManufacturerPrice[] @relation("ManufacturerPrices")
+  orderItems  OrderItem[] @relation("ManufacturerOrderItems")
+
+  @@map("manufacturer")
+}
+
+model Product {
+  id             Int       @id @default(autoincrement())
+  createdBy      Int       @map("created_by")
+  name           String    @db.VarChar(100)
+  description    String?   @db.Text
+  sku            String    @unique @db.VarChar(50)
+  imageUrl       String?   @map("image_url") @db.Text
+  estimatedPrice Decimal   @map("estimated_price") @db.Decimal(10, 2)
+  downloadUrls   String[]  @map("download_urls")
+  tags           String[]
+  category       String?   @db.VarChar(100)
+  status         ProductStatus
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  user               User                @relation("UserProducts", fields: [createdBy], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_product_user_id")
+  orderItems         OrderItem[]         @relation("ProductOrderItems")
+  manufacturerPrices ManufacturerPrice[] @relation("ProductManufacturerPrices")
+
+  @@index([sku], map: "ix_product_sku")
+  @@index([category], map: "ix_product_category")
+  @@map("product")
+}
+
+model ManufacturerPrice {
+  manufacturerId Int       @map("manufacturer_id")
+  productId      Int       @map("product_id")
+  price          Decimal   @db.Decimal(10, 2)
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  manufacturer   Manufacturer @relation("ManufacturerPrices", fields: [manufacturerId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_manufacturer_price_manufacturer_id")
+  product        Product      @relation("ProductManufacturerPrices", fields: [productId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_manufacturer_price_product_id")
+
+  @@id([manufacturerId, productId])
+  @@map("manufacturer_price")
+}
+
+model Order {
+  id          Int       @id @default(autoincrement())
+  referenceId String    @unique @map("reference_id") @db.VarChar(36)
+  userId      Int       @map("user_id")
+  totalPrice  Decimal   @map("total_price") @db.Decimal(10, 2)
+  taxAmount   Decimal   @default(0) @map("tax_amount") @db.Decimal(10, 2)
+  shippingCost Decimal   @default(0) @map("shipping_cost") @db.Decimal(10, 2)
+  status      OrderStatus
+  shippingAddress String? @map("shipping_address") @db.Text
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  user        User      @relation("UserOrders", fields: [userId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_order_user_id")
+  items       OrderItem[] @relation("OrderItems")
+  payment     Payment?  @relation("OrderPayment")
+
+  @@map("order")
+  @@index([userId], map: "ix_order_user_id")
+  @@index([referenceId], map: "ix_order_reference_id")
+}
+
+model OrderItem {
+  id              Int       @id @default(autoincrement()) @db.Integer
+  orderId         Int       @map("order_id") @db.Integer
+  productId       Int       @map("product_id") @db.Integer
+  manufacturerId  Int?      @map("manufacturer_id") @db.Integer
+  quantity        Int       @db.Integer
+  priceAtPurchase Decimal   @map("price_at_purchase") @db.Decimal(10, 2)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  review          Review?   @relation("OrderItemReview")
+  order           Order     @relation("OrderItems", fields: [orderId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_order_item_order_id")
+  product         Product   @relation("ProductOrderItems", fields: [productId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_order_item_product_id")
+  manufacturer    Manufacturer? @relation("ManufacturerOrderItems", fields: [manufacturerId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_order_item_manufacturer_id")
+
+  @@map("order_item")
+}
+
+model Payment {
+  id            Int       @id @default(autoincrement()) @db.Integer
+  orderId       Int       @unique @map("order_id") @db.Integer
+  provider      String    @db.VarChar(100)
+  status        PaymentStatus
+  transactionId String    @map("transaction_id") @db.VarChar(100)
+  amount        Decimal   @db.Decimal(10, 2)
+  paymentMethod String?   @map("payment_method") @db.VarChar(50)
+  billingAddress  String? @map("billing_address") @db.Text
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  order         Order     @relation("OrderPayment", fields: [orderId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_payment_order_id")
+
+  @@map("payment")
+  @@index([orderId], map: "ix_payment_order_id")
+}
+
+model Review {
+  id                  Int       @id @default(autoincrement())
+  orderItemId         Int       @unique @map("order_item_id") @db.Integer
+  manufacturerId      Int       @map("manufacturer_id") @db.Integer
+  userId              Int       @map("user_id") @db.Integer
+  itemRating          Int       @map("item_rating") @db.Integer
+  communicationRating Int       @map("communication_rating") @db.Integer
+  shippingRating      Int       @map("shipping_rating") @db.Integer
+  comments            String?   @db.Text
+  anonymous           Boolean   @default(false) @db.Boolean
+  shareInFeed         Boolean   @default(false) @map("share_in_feed") @db.Boolean
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  manufacturer        Manufacturer @relation("ManufacturerReviews", fields: [manufacturerId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_review_manufacturer_id")
+  user                User         @relation("UserReviews", fields: [userId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_review_user_id")
+  orderItem           OrderItem    @relation("OrderItemReview", fields: [orderItemId], references: [id], map: "fk_review_order_item_id")
+
+  @@index([orderItemId], map: "ix_review_order_item_id")
+  @@map("review")
+}
+
+enum UserStatus {
+  Active
+  Inactive
+  Deleted
+  Suspended
+}
+
+enum ManufacturerStatus {
+  Active
+  Inactive
+  Suspended
+  UnderReview
+}
+
+enum ProductStatus {
+  Available
+  Unavailable
+  Discontinued
+}
+
+enum OrderStatus {
+  Pending
+  Confirmed
+  Shipped
+  Delivered
+  Cancelled
+  Failed
+}
+
+enum PaymentStatus {
+  Pending
+  Completed
+  Failed
+  Refunded
+}

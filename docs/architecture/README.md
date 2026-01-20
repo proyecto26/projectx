@@ -168,7 +168,7 @@ flowchart TB
 - **Workflow Engine**: Temporal
 - **Payment Processing**: Stripe
 - **Email Service**: SendGrid
-- **Development Tools**: Docker, Nx Monorepo
+- **Development Tools**: Docker, Turbo Monorepo
 
 ## Environment Configuration
 Each service requires specific environment variables:

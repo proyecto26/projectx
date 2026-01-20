@@ -1,8 +1,8 @@
 # ProjectX
 
 <p align="center">
-  <img width="100px" alt="Nx for Monorepo" src="https://avatars.githubusercontent.com/u/23692104?s=200&v=4">
-  <img width="100px" alt="Remix for Website" src="https://avatars.githubusercontent.com/u/64235328?s=200&v=4">
+  <img width="100px" alt="Turborepo for Monorepo" src="https://user-images.githubusercontent.com/4060187/196936123-f6e1db90-784d-4174-b774-92502b718836.png">
+  <img width="100px" alt="React Router for Website" src="https://avatars.githubusercontent.com/u/64235328?s=200&v=4">
   <img width="300px" alt="ProjectX logo" src="https://github.com/user-attachments/assets/eecd8520-1e78-4ec7-8a12-55b62e5771c6">
   <img width="100px" alt="NestJS for Services" src="https://avatars.githubusercontent.com/u/28507035?s=200&v=4">
   <img width="100px" alt="Temporal for Durable Executions" src="https://avatars.githubusercontent.com/u/56493103?s=200&v=4">
@@ -67,9 +67,9 @@ cp .env.example .env
 # Build and start all services (db, temporal, backend services)
 docker-compose up -d
 
-# Start web application
-npm install
-npm run dev:web
+# Install dependencies and start web application
+pnpm install
+pnpm run dev:web
 ```
 
 ### Documentation 📚
@@ -91,8 +91,8 @@ For detailed information about the project, please refer to:
 #### Root Directory
 
 - **package.json**: Contains the dependencies and scripts for the entire monorepo.
-- **nx.json**: Configuration for Nx, which manages the monorepo structure and build processes.
-- **tsconfig.base.json**: Base TypeScript configuration shared across the project.
+- **turbo.json**: Configuration for Turborepo, which manages the monorepo structure and build processes.
+- **tsconfig.json**: Base TypeScript configuration shared across the project.
 
 #### Apps
 
@@ -114,32 +114,40 @@ For detailed information about the project, please refer to:
   - **Configuration**: 
     - **tsconfig.json**: TypeScript configuration specific to the web app.
 
-#### Libs
+#### Packages
 
-- **libs/backend/core**: 
+- **packages/core**: 
   - **Purpose**: Contains business logic and common utilities.
   - **Key Features**: Shared functions and services used across backend applications.
 
-- **libs/backend/db**: 
+- **packages/db**: 
   - **Purpose**: Manages database access using Prisma and the Repository pattern.
   - **Key Features**: Database schema definitions and data access layers.
   - **Documentation**: 
     - **README.md**: Provides details on database setup and usage.
 
-- **libs/backend/email**: 
+- **packages/email**: 
   - **Purpose**: Handles email template creation and sending.
   - **Key Features**: Uses MJML for templates and provides email sending services.
 
-- **libs/models**: 
+- **packages/models**: 
   - **Purpose**: Defines DTOs and common types.
   - **Key Features**: Ensures consistency across web and backend services.
 
-- **libs/frontend/ui**: 
+- **packages/ui**: 
   - **Purpose**: Contains UI components and themes.
   - **Key Features**: Built with React and TailwindCSS, includes Storybook for component visualization.
   - **Configuration**: 
     - **package.json**: Dependencies and scripts for the UI library.
     - **tsconfig.json**: TypeScript configuration for the UI library.
+
+- **packages/workflows**: 
+  - **Purpose**: Temporal workflow orchestration utilities.
+  - **Key Features**: Shared workflow client and worker services.
+
+- **packages/payment**: 
+  - **Purpose**: Payment provider integrations.
+  - **Key Features**: Stripe and other payment gateway implementations.
 
 #### Additional paths
 
@@ -151,7 +159,7 @@ For detailed information about the project, please refer to:
 
 
 > [!TIP]
-> View the Database diagram [here](./libs/backend/db/README.md).
+> View the Database diagram [here](./packages/db/README.md).
 
 
 
@@ -161,23 +169,40 @@ For detailed information about the project, please refer to:
 ### Monorepo Management
 ```bash
 # View project structure
-npx nx show projects
-npx nx graph
+pnpm list --recursive --only-projects
 
-# Move project location
-npx nx g @nx/workspace:move --project core libs/backend/common
+# View dependency graph
+turbo run build --dry-run --graph
+
+# Run specific task across all packages
+turbo run build
+turbo run test
+turbo run lint
+
+# Run task for specific package
+turbo run build --filter=@projectx/core
+turbo run dev --filter=web
+
+# Clear Turborepo cache
+turbo run build --force
 ```
 
 ### UI Development
 ```bash
 # Run Storybook
-npm run storybook
+pnpm run storybook
 ```
 
-### Project Updates
+### Package Management
 ```bash
-npx nx migrate latest
-npx nx migrate --run-migrations
+# Add dependency to specific package
+pnpm add <package> --filter=@projectx/core
+
+# Add dev dependency to root
+pnpm add -D <package> -w
+
+# Update all dependencies
+pnpm update --recursive
 ```
 
 ## Docker Configuration 🐳
@@ -217,7 +242,7 @@ docker-compose down --volumes
 ## Payment Providers
 
 - Stripe:
-  - [Webhooks](https://docs.stripe.com/webhooks?lang=node)
+  - [Test Webhooks](https://dashboard.stripe.com/test/webhooks)
   - [Stripe Webhook integration](https://docs.stripe.com/api/webhook_endpoints)
   - [Stripe Checkout](https://docs.stripe.com/payments/checkout)
   - [Webhooks Dashboard](https://dashboard.stripe.com/test/workbench/webhooks)
@@ -232,6 +257,9 @@ stripe login --api-key ...
 stripe trigger payment_intent.succeeded
 stripe listen --forward-to localhost:8081/order/webhook // or using the secure tunnel created by Ngrok
 ```
+
+## MCP Servers
+- [Nx MCP Server](https://nx.dev/blog/nx-made-cursor-smarter)
 
 ## Supporting 🍻
 I believe in Unicorns 🦄
