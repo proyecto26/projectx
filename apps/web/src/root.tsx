@@ -76,7 +76,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const data = useRouteLoaderData<typeof loader>("root");
-  const { theme } = data ?? {};
+  const { theme, ENV } = data ?? {};
   return (
     <html lang="en" data-theme={theme}>
       <head>
@@ -95,7 +95,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {ENV && (
           <script
             suppressHydrationWarning
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: Needed to inject ENV global
             dangerouslySetInnerHTML={{
+              // biome-ignore lint/complexity/noUselessStringRaw: String.raw used for syntax highlighting
               __html: String.raw`
                 window.ENV = ${JSON.stringify(ENV)};
               `,

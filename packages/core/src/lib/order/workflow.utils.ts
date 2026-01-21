@@ -51,7 +51,8 @@ export type PaymentWebhookEvent = {
   };
 };
 
-export const PROCESS_PAYMENT_TIMEOUT = "20 minutes";
+export const ORDER_TIMEOUT = "20 minutes";
+export const PROCESS_PAYMENT_TIMEOUT = "15 minutes";
 
 // DEFINE QUERIES
 export const getOrderStateQuery =

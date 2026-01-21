@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { CreateOrderDto, OrderDto } from "@projectx/models";
 import { plainToInstance } from "class-transformer";
-import { OrderStatus, Prisma } from "../../../generated/prisma";
+import { OrderStatus, Prisma } from "../../../generated/prisma/client";
 import { PrismaService } from "../prisma.service";
 
 @Injectable()
@@ -131,6 +131,8 @@ export class OrderRepositoryService {
             product: {
               select: {
                 id: true,
+                name: true,
+                imageUrl: true,
                 estimatedPrice: true,
               },
             },

@@ -47,7 +47,7 @@ export default function handleRequest(
 
           responseHeaders.set("Content-Type", "text/html");
           for (const key in securityHeaders) {
-            responseHeaders.set(key, securityHeaders[key]);
+            responseHeaders.set(key, securityHeaders[key] as string);
           }
 
           resolve(
@@ -63,7 +63,6 @@ export default function handleRequest(
           reject(error);
         },
         onError(error: unknown) {
-          responseStatusCode = 500;
           // Log streaming rendering errors from inside the shell.  Don't log
           // errors encountered during initial shell rendering since they'll
           // reject and get logged in handleDocumentRequest.

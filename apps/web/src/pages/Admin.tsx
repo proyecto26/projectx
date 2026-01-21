@@ -67,6 +67,7 @@ export function AdminPage() {
           ].map(({ icon: Icon, label, id }) => (
             <button
               key={id}
+              type="button"
               onClick={() => setActiveTab(id)}
               className={`flex w-full items-center px-6 py-3 text-sm ${
                 activeTab === id
@@ -113,10 +114,16 @@ export function AdminPage() {
                 />
               </div>
               <div className="flex items-center space-x-4">
-                <button className="rounded-lg border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 text-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
+                <button
+                  type="button"
+                  className="rounded-lg border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 text-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                >
                   Import
                 </button>
-                <button className="rounded-lg bg-blue-600 px-4 py-2 font-medium text-sm text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800">
+                <button
+                  type="button"
+                  className="rounded-lg bg-blue-600 px-4 py-2 font-medium text-sm text-white hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
+                >
                   Export
                 </button>
               </div>
@@ -167,7 +174,10 @@ export function AdminPage() {
                 <h2 className="font-medium text-gray-900 text-lg dark:text-gray-100">
                   Recent Orders
                 </h2>
-                <button className="flex items-center text-gray-600 text-sm dark:text-gray-400">
+                <button
+                  type="button"
+                  className="flex items-center text-gray-600 text-sm dark:text-gray-400"
+                >
                   All filters
                   <ChevronDown className="ml-2 h-4 w-4" />
                 </button>

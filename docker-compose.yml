@@ -180,7 +180,6 @@ services:
       - default
     volumes:
       - ./deployment/scripts/temporal:/scripts
-      - ./deployment/scripts/search-attributes.sh:/etc/temporal/search-attributes.sh
     entrypoint: [ "/bin/sh" ]
     command: /scripts/create-namespace.sh
 
@@ -203,72 +202,72 @@ services:
     expose:
       - "${TEMPORAL_UI_PORT:-8080}"
     # PROJECTX SERVICES
-    # web:
-    #   <<: *service-common
-    #   container_name: web
-    #   command: >
-    #     bash -c " pnpm install --frozen-lockfile && rm -rf /app/.turbo && cd /app/apps/web && pnpm dev "
-    #   ports:
-    #     - "3000:3000"
-    #restart: unless-stopped
 
-  auth:
+  # Builder service - runs once to build all packages before app services start
+  builder:
     <<: *service-common
-    container_name: auth
-    init: true # Ensures proper signal handling for graceful shutdowns
+    container_name: ${COMPOSE_PROJECT_NAME:-projectx}-builder
     command:
       - /bin/sh
       - -c
       - |
         pnpm install --frozen-lockfile && \
-        pnpm turbo run build --filter=auth^... && \
-        pnpm --filter @projectx/db run prisma:generate && \
+        pnpm turbo run build --filter=auth^... --filter=order^... --filter=product^... && \
         pnpm --filter @projectx/db run prisma:migrate && \
+        pnpm --filter @projectx/db run prisma:seed && \
+        echo "Build complete!"
+    # No ports needed - this is a one-time build service
+
+  auth:
+    <<: *service-common
+    container_name: auth
+    init: true
+    depends_on:
+      builder:
+        condition: service_completed_successfully
+    command:
+      - /bin/sh
+      - -c
+      - |
         cd /app/apps/auth && \
         exec pnpm start:debug
     ports:
       - "${AUTH_PORT:-8081}:${AUTH_PORT:-8081}"
       - "9229:9229"
-    #restart: unless-stopped
 
   order:
     <<: *service-common
     container_name: order
-    init: true # Ensures proper signal handling for graceful shutdowns
+    init: true
+    depends_on:
+      builder:
+        condition: service_completed_successfully
     command:
       - /bin/sh
       - -c
       - |
-        pnpm install --frozen-lockfile && \
-        pnpm turbo run build --filter=order^... && \
-        pnpm --filter @projectx/db run prisma:generate && \
-        pnpm --filter @projectx/db run prisma:migrate && \
         cd /app/apps/order && \
         exec pnpm start:debug
     ports:
       - "${ORDER_PORT:-8082}:${ORDER_PORT:-8082}"
       - "9230:9230"
-    #restart: unless-stopped
 
   product:
     <<: *service-common
     container_name: product
-    init: true # Ensures proper signal handling for graceful shutdowns
+    init: true
+    depends_on:
+      builder:
+        condition: service_completed_successfully
     command:
       - /bin/sh
       - -c
       - |
-        pnpm install --frozen-lockfile && \
-        pnpm turbo run build --filter=product^... && \
-        pnpm --filter @projectx/db run prisma:generate && \
-        pnpm --filter @projectx/db run prisma:migrate && \
-        pnpm --filter @projectx/db run prisma:seed && \
         cd /app/apps/product && \
         exec pnpm start:debug
     ports:
       - "${PRODUCT_PORT:-8083}:${PRODUCT_PORT:-8083}"
       - "9231:9231"
-    #restart: unless-stopped
 
   ngrok-order:
     image: ngrok/ngrok:latest

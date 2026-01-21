@@ -1,8 +1,11 @@
 # Node modules and build artifacts
-node_modules
-dist
-build
-.cache
+**/node_modules
+**/dist
+**/build
+**/.cache
+**/.turbo
+**/generated
+**/out
 
 # Nx cache and temporary files
 .nx

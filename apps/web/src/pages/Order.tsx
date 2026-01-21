@@ -51,7 +51,7 @@ export const OrderPage: React.FC = () => {
               Order #54879
             </h1>
             <a
-              href="#"
+              href="/"
               className="hidden font-medium text-indigo-600 text-sm hover:text-indigo-500 sm:block dark:text-indigo-400 dark:hover:text-indigo-300"
             >
               View invoice
@@ -68,7 +68,7 @@ export const OrderPage: React.FC = () => {
             </time>
           </p>
           <a
-            href="#"
+            href="/"
             className="font-medium text-indigo-600 text-sm hover:text-indigo-500 sm:hidden dark:text-indigo-400 dark:hover:text-indigo-300"
           >
             View invoice

@@ -81,7 +81,7 @@ For detailed information about the project, please refer to:
 
 ## Project Structure Overview
 
-<img width="1643" alt="image" src="https://github.com/user-attachments/assets/82e99efc-640d-4ba4-a485-c92c0184f473">
+<img width="1204" alt="image" src="https://github.com/user-attachments/assets/6a82fc7a-178a-42e1-8d27-fbb353422793" />
 
 
 <details>
@@ -148,21 +148,8 @@ For detailed information about the project, please refer to:
 - **packages/payment**: 
   - **Purpose**: Payment provider integrations.
   - **Key Features**: Stripe and other payment gateway implementations.
-
-#### Additional paths
-
-- **prompts**: Contains initial project prompts or guidelines to be used with your AI tools (Cursor, etc).
 ```
 </details>
-
-
-
-
-> [!TIP]
-> View the Database diagram [here](./packages/db/README.md).
-
-
-
 
 ## Development Tools 🔧
 
@@ -257,9 +244,6 @@ stripe login --api-key ...
 stripe trigger payment_intent.succeeded
 stripe listen --forward-to localhost:8081/order/webhook // or using the secure tunnel created by Ngrok
 ```
-
-## MCP Servers
-- [Nx MCP Server](https://nx.dev/blog/nx-made-cursor-smarter)
 
 ## Supporting 🍻
 I believe in Unicorns 🦄

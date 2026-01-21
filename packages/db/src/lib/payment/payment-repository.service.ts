@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from "@nestjs/common";
 import { CreatePaymentDto, PaymentDto } from "@projectx/models";
 
 import { plainToInstance } from "class-transformer";
-import { PaymentStatus, Prisma } from "../../../generated/prisma";
+import { PaymentStatus, Prisma } from "../../../generated/prisma/client";
 import { PrismaService } from "../prisma.service";
 
 @Injectable()
