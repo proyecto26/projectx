@@ -1,79 +1,25 @@
-# Instructions
+# Backend (Turborepo)
 
-## Commands used to create the project structure
+## Common scripts
 
-- Run these commands only if the Workspace was not created before:
-```sh
-npx create-nx-workspace projectx --preset=nest
-cd projectx
-```
+- Install: `pnpm install`
+- Build all: `pnpm build` (runs `turbo run build`)
+- Dev (per app):
+  - Auth: `pnpm --filter auth dev`
+  - Order: `pnpm --filter order dev`
+  - Product: `pnpm --filter product dev`
+- Lint/format: `pnpm check` (Biome)
 
-- Create auth project:
-```sh
-npx nx add @nx/nest
-npx nx g @nx/nest:app apps/auth --frontendProject web
-```
+## Prisma
 
-- Create a lib for the business models (DTOs, common types, etc):
-```sh
-npx nx g @nx/nest:lib libs/models
-npm add @nestjs/swagger class-validator class-transformer lodash @2toad/profanity
-```
+- Generate: `pnpm --filter @projectx/db run prisma:generate`
+- Migrate (deploy): `pnpm --filter @projectx/db run prisma:migrate`
+- Seed: `pnpm --filter @projectx/db run prisma:seed`
 
-- Create a lib for the database:
-```sh
-npx nx g @nx/nest:lib libs/backend/db
-npm add -D prisma
-npm add @prisma/client
-cd libs/backend/db
-npx prisma init
-```
+## Temporal
 
-- Create a lib for sending emails:
-```sh
-npx nx g @nx/nest:lib libs/backend/email
-npm add @sendgrid/mail mjml
-```
+- Temporal services are managed via `docker-compose.yml`. Ensure `db`, `temporal`, `temporal-ui`, and `temporal-admin-tools` are running.
 
-- Create a lib for backend utils (hashing functions, nestjs, logger and temporal core, etc):
-```sh
-npx nx g @nx/nest:lib libs/backend/core
-npm add -D @types/bcrypt
-npm add bcrypt @nestjs/config body-parser helmet express-rate-limit
-```
+## Debugging
 
-- Install dependencies for authentication
-```sh
-npm add @nestjs/jwt @nestjs/passport passport passport-local passport-jwt
-npm add -D @types/passport-local @types/passport-jwt
-```
-
-- Install common dependencies
-```sh
-npm add nestjs-pino pino-http pino-pretty uuid @nestjs/terminus lodash
-```
-
-- Create order project:
-```sh
-npx nx g @nx/nest:app apps/order --frontendProject web
-```
-
-- Install temporal dependencies
-```sh
-npm add @temporalio/client @temporalio/worker @temporalio/workflow @temporalio/activity @temporalio/common
-```
-
-- Install packages for HTTP communication
-```sh
-npm add @nestjs/axios axios
-```
-
-- Testing... Why not?
-```sh
-npm add -D @golevelup/ts-jest
-```
-
-- Install Payment third party provider
-```sh
-npm add mercadopago
-```
+- Attach to ports: Auth 9229, Order 9230, Product 9231 (see `.vscode/launch.json`).

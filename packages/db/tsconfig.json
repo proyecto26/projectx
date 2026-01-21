@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": ".",
+    "declaration": true,
+    "declarationMap": true,
+    "module": "commonjs",
+    "moduleResolution": "node10",
+    "esModuleInterop": true,
+    "target": "ES2021",
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "include": ["src/**/*", "generated/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "prisma",
+    "**/*.spec.*",
+    "**/*.test.*",
+    "**/*.stories.*"
+  ]
+}

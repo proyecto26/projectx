@@ -1,38 +1,67 @@
-import { AuthLoginDto } from '@projectx/models';
 import {
+  Body,
   Controller,
   HttpCode,
   HttpStatus,
-  Body,
+  Inject,
   Post,
-} from '@nestjs/common';
-
-import { AppService } from './app.service';
+} from "@nestjs/common";
 import {
   ApiBadRequestResponse,
+  ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
+import { AuthLoginDto, AuthResponseDto, AuthVerifyDto } from "@projectx/models";
 
-@ApiTags('Auth')
+import { AppService } from "./app.service";
+
+@ApiTags("Auth")
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(@Inject(AppService) private readonly appService: AppService) {}
 
+  /**
+   * Endpoint to initiate the login process by sending a verification email.
+   * @param body AuthLoginDto containing the user's email.
+   * @returns A message indicating the email was sent.
+   */
   @ApiOperation({
-    summary: 'Login with email',
-    description: 'This endpoint allow a user to login with email',
+    summary: "Login with email",
+    description: "This endpoint allow a user to login with email",
   })
-  @ApiOkResponse({
-    description: 'The email for login was sent successfully',
+  @ApiCreatedResponse({
+    description: "The email for login was sent successfully",
   })
   @ApiBadRequestResponse({
-    description: 'There was an error sending the email',
+    description: "There was an error sending the email",
   })
-  @Post('login')
-  @HttpCode(HttpStatus.OK)
+  @Post("login")
+  @HttpCode(HttpStatus.CREATED)
   login(@Body() body: AuthLoginDto) {
-    return this.appService.sendLoginEmail(body);
+    return this.appService.login(body);
+  }
+
+  /**
+   * Endpoint to verify the login code and authenticate the user.
+   * @param body AuthVerifyDto containing the user's email and verification code.
+   * @returns AuthResponseDto containing the access token and user information.
+   */
+  @ApiOperation({
+    summary: "Verify login code",
+    description: "This endpoint allow a user to verify the login code",
+  })
+  @ApiOkResponse({
+    description: "The user was verified successfully",
+    type: AuthResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: "There was an error verifying the user",
+  })
+  @Post("verify-code")
+  @HttpCode(HttpStatus.OK)
+  verify(@Body() body: AuthVerifyDto) {
+    return this.appService.verifyLoginCode(body);
   }
 }

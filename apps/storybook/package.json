@@ -1,0 +1,25 @@
+{
+  "name": "storybook",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "storybook dev -p 6006",
+    "build": "storybook build --disable-telemetry"
+  },
+  "dependencies": {
+    "@projectx/ui": "workspace:*",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@storybook/react": "8.6.15",
+    "@storybook/react-vite": "8.6.15",
+    "@storybook/test": "8.6.15",
+    "@tailwindcss/vite": "4.1.18",
+    "daisyui": "5.5.14",
+    "storybook": "8.6.15",
+    "tailwindcss": "4.1.18",
+    "typescript": "5.9.3",
+    "vite": "6.2.0"
+  }
+}

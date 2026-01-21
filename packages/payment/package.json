@@ -1,0 +1,38 @@
+{
+  "name": "@projectx/payment",
+  "version": "0.0.1",
+  "private": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && tsup src/index.ts --format cjs,esm --splitting --sourcemap && tsc -p tsconfig.json --emitDeclarationOnly --outDir dist",
+    "dev": "tsc -w -p tsconfig.json",
+    "lint": "biome check .",
+    "test": "echo 'no tests'"
+  },
+  "dependencies": {
+    "stripe": "20.2.0",
+    "tslib": "^2.8.1"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "11.1.12",
+    "@nestjs/config": "4.0.2"
+  }
+}

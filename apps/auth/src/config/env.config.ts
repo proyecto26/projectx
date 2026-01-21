@@ -1,12 +1,30 @@
-import { Environment } from '@projectx/models';
-import { IsEnum, IsNumber, Max, Min } from 'class-validator';
+import { Environment } from "@projectx/models";
+import {
+  IsDefined,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsString,
+  Max,
+  Min,
+} from "class-validator";
 
 export class EnvironmentVariables {
   @IsEnum(Environment)
-  NODE_ENV: Environment;
+  @IsDefined()
+  NODE_ENV!: Environment;
 
-  @IsNumber({ allowNaN: false })
+  @IsInt()
   @Min(0)
   @Max(65535)
-  AUTH_PORT: number;
+  @IsDefined()
+  AUTH_PORT!: number;
+
+  @IsString()
+  @IsNotEmpty()
+  JWT_SECRET!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  SENDGRID_API_KEY!: string;
 }

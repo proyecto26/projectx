@@ -1,8 +1,36 @@
-node_modules
-dist
+# Node modules and build artifacts
+**/node_modules
+**/dist
+**/build
+**/.cache
+**/.turbo
+**/generated
+**/out
+
+# Nx cache and temporary files
+.nx
+tmp
+
+# Version control and configuration files
 .git
 .gitignore
 Dockerfile
 .dockerignore
+
+# Logs and error files
 npm-debug.log
 yarn-error.log
+
+# Editor and OS-specific files
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Ignore repo files
+libs/frontend
+# Uncomment the following line to ignore the web app if running locally
+# apps/web
+
+# System Files
+.DS_Store

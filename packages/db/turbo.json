@@ -1,0 +1,15 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["db:generate"],
+      "env": ["DATABASE_URL"],
+      "outputs": ["dist/**"]
+    },
+    "db:generate": {
+      "cache": false,
+      "outputs": ["generated/**"]
+    }
+  }
+}

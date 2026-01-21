@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@projectx/core": ["packages/core/dist/index"],
+      "@projectx/core/workflows": ["packages/core/dist/workflows"],
+      "@projectx/core/*": ["packages/core/dist/*"],
+      "@projectx/db": ["packages/db/dist/index"],
+      "@projectx/db/*": ["packages/db/dist/*"],
+      "@projectx/email": ["packages/email/dist/index"],
+      "@projectx/email/*": ["packages/email/dist/*"],
+      "@projectx/models": ["packages/models/dist/index"],
+      "@projectx/models/*": ["packages/models/dist/*"],
+      "@projectx/payment": ["packages/payment/dist/index"],
+      "@projectx/payment/*": ["packages/payment/dist/*"],
+      "@projectx/ui": ["packages/ui/dist/index"],
+      "@projectx/ui/*": ["packages/ui/dist/*"],
+      "@projectx/ui/styles": ["packages/ui/styles/index.css"],
+      "@projectx/workflows": ["packages/workflows/dist/index"],
+      "@projectx/workflows/*": ["packages/workflows/dist/*"]
+    },
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "noUncheckedIndexedAccess": true
+  },
+  "include": [],
+  "exclude": ["node_modules", "dist", "build", "out"]
+}

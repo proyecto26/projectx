@@ -1,0 +1,55 @@
+{
+  "name": "@projectx/db",
+  "version": "0.0.1",
+  "private": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "db:generate": "prisma generate",
+    "build": "tsup",
+    "dev": "tsc -w -p tsconfig.json",
+    "lint": "biome check .",
+    "test": "echo 'no tests'",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate deploy",
+    "prisma:migrate:dev": "prisma migrate dev",
+    "prisma:seed": "prisma db seed"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "7.2.0",
+    "@projectx/models": "workspace:*",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.14.3",
+    "pg": "^8.17.1",
+    "prisma": "7.2.0",
+    "tslib": "^2.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.9",
+    "@types/pg": "^8.16.0",
+    "dotenv-mono": "^1.5.1",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "11.1.12"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}

@@ -38,11 +38,26 @@ testem.log
 .DS_Store
 Thumbs.db
 
-.nx/cache
-.nx/workspace-data
+.pnpm-store/
+.turbo
+.alchemy
+**/generated
+
+vite.config.*.timestamp*
+vitest.config.*.timestamp*
+**/vite.config.{js,ts,mjs,mts,cjs,cts}.timestamp*
+
+test-output
 
 
 storybook-static
 
 # env files
 .env
+storybook-static
+
+# TypeScript build cache
+*.tsbuildinfo
+
+# Claude Code local settings
+.claude/settings.local.json

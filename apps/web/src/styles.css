@@ -1,0 +1,32 @@
+/* 1. Core Tailwind v4 Initialization - MUST come first */
+@import "tailwindcss";
+
+/* 2. Import Complete UI Design System */
+@import "@projectx/ui/styles";
+
+/* 3. External dependencies */
+@import "react-toastify/dist/ReactToastify.css";
+
+/* 4. Source scanning - Web app AND UI package components */
+/* Scan web app source directory */
+@source "./src";
+/* Scan UI package source directory */
+@source "../../../packages/ui/src";
+
+/* 5. View Transitions API */
+@view-transition {
+  navigation: auto;
+}
+
+/* 6. Web app specific utilities */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}

@@ -1,0 +1,64 @@
+html.dark {
+  --theme-color-primary: #8ab4f8; /* Blue 300 */
+  --theme-color-primary-rgb: 138, 180, 248;
+  --theme-color-primary-contrast: #000000;
+  --theme-color-primary-contrast-rgb: 0, 0, 0;
+  --theme-color-primary-shade: #7aa2e0;
+  --theme-color-primary-tint: #98bef9;
+
+  --theme-color-secondary: #9aa0a6; /* Gray 400 */
+  --theme-color-secondary-rgb: 154, 160, 166;
+  --theme-color-secondary-contrast: #000000;
+  --theme-color-secondary-contrast-rgb: 0, 0, 0;
+  --theme-color-secondary-shade: #889097;
+  --theme-color-secondary-tint: #a7adb3;
+
+  --theme-color-tertiary: #81c995; /* Green 300 */
+  --theme-color-tertiary-rgb: 129, 201, 149;
+  --theme-color-tertiary-contrast: #000000;
+  --theme-color-tertiary-contrast-rgb: 0, 0, 0;
+  --theme-color-tertiary-shade: #71b07f;
+  --theme-color-tertiary-tint: #90d1a4;
+
+  --theme-color-success: #66bb6a; /* Green 400 */
+  --theme-color-success-rgb: 102, 187, 106;
+  --theme-color-success-contrast: #000000;
+  --theme-color-success-contrast-rgb: 0, 0, 0;
+  --theme-color-success-shade: #5ba460;
+  --theme-color-success-tint: #77c482;
+
+  --theme-color-warning: #fdd663; /* Yellow 300 */
+  --theme-color-warning-rgb: 253, 214, 99;
+  --theme-color-warning-contrast: #000000;
+  --theme-color-warning-contrast-rgb: 0, 0, 0;
+  --theme-color-warning-shade: #dfbc58;
+  --theme-color-warning-tint: #fde07c;
+
+  --theme-color-danger: #f28b82; /* Red 300 */
+  --theme-color-danger-rgb: 242, 139, 130;
+  --theme-color-danger-contrast: #000000;
+  --theme-color-danger-contrast-rgb: 0, 0, 0;
+  --theme-color-danger-shade: #d97b73;
+  --theme-color-danger-tint: #f4a199;
+
+  --theme-color-dark: #202124; /* Gray 900 */
+  --theme-color-dark-rgb: 32, 33, 36;
+  --theme-color-dark-contrast: #ffffff;
+  --theme-color-dark-contrast-rgb: 255, 255, 255;
+  --theme-color-dark-shade: #1c1d1f;
+  --theme-color-dark-tint: #38393b;
+
+  --theme-color-medium: #5f6368; /* Gray 600 */
+  --theme-color-medium-rgb: 95, 99, 104;
+  --theme-color-medium-contrast: #ffffff;
+  --theme-color-medium-contrast-rgb: 255, 255, 255;
+  --theme-color-medium-shade: #54575c;
+  --theme-color-medium-tint: #6e7277;
+
+  --theme-color-light: #303134; /* Gray 800 */
+  --theme-color-light-rgb: 48, 49, 52;
+  --theme-color-light-contrast: #ffffff;
+  --theme-color-light-contrast-rgb: 255, 255, 255;
+  --theme-color-light-shade: #2a2b2e;
+  --theme-color-light-tint: #46474a;
+}

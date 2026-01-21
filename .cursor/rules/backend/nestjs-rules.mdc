@@ -1,0 +1,256 @@
+---
+description: Rules for NestJS backend services (auth, order, product)
+globs: 
+  - apps/auth/**/*
+  - apps/order/**/*
+  - apps/product/**/*
+alwaysApply: true
+---
+# NestJS Backend Services Rules
+## Project Structure
+- This is a monorepo using pnpm and Turborepo
+- NestJS apps are compiled with **CommonJS** (required for NestJS)
+- Apps: `auth`, `order`, `product`
+- All apps use NestJS 11.x with TypeScript 5.9.x
+## Critical: TypeScript Imports for Dependency Injection
+### ❌ NEVER use `type` imports for services
+```typescript
+// ❌ WRONG - Type imports are erased at compile time
+import type { ConfigService } from '@nestjs/config';
+import type { ClientService } from '@projectx/workflows';
+import { type AuthService } from '@projectx/core';
+// ✅ CORRECT - Regular imports for dependency injection
+import { ConfigService } from '@nestjs/config';
+import { ClientService } from '@projectx/workflows';
+import { AuthService } from '@projectx/core';
+```
+### When to use `type` imports:
+- ✅ For interfaces and type aliases only
+- ✅ For DTOs used only in type positions
+- ✅ For types that are never instantiated
+### When NOT to use `type` imports:
+- ❌ For classes decorated with `@Injectable()`
+- ❌ For services used in constructor injection
+- ❌ For any class that needs to exist at runtime
+- ❌ For guards, interceptors, pipes, or filters
+## Module Configuration
+### Always export services that are used in other modules
+```typescript
+@Module({
+  providers: [MyService],
+  exports: [MyService],  // ✅ Export if used elsewhere
+})
+```
+### ConfigModule should be global
+```typescript
+ConfigModule.forRoot({
+  isGlobal: true,  // ✅ Makes ConfigService available everywhere
+  load: [appConfig, swaggerConfig, temporalConfig],
+  validate: (config) => validateConfiguration(config, EnvironmentVariables),
+})
+```
+## Temporal Integration
+### All services use Temporal workflows
+- Task queue configured via environment variable: `temporal.taskQueue`
+- Workflow client accessed via `ClientService` from `@projectx/workflows`
+- Always check if workflow client is initialized before use
+### Workflow client pattern:
+```typescript
+getWorkflowClient() {
+  const workflowClient = this.clientService.client?.workflow;
+  if (!workflowClient) {
+    throw new HttpException(
+      'The workflow client was not initialized correctly',
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    );
+  }
+  return workflowClient;
+}
+```
+## Service-Specific Notes
+### Auth Service (Port 8081)
+- Handles user authentication via magic link emails
+- Uses Temporal workflow for login process
+- Workflow ID pattern: `login-${email}`
+- Search attributes: `Email`
+- Dependencies: `ConfigService`, `ClientService`, `AuthService`
+### Order Service (Port 8082)
+- Handles order creation and payment processing
+- Integrates with Stripe for payments
+- Workflow ID pattern: `order-${referenceId}`
+- Search attributes: `UserId`, `Email`, `OrderId`
+- Dependencies: `ConfigService`, `ClientService`, `StripeService`
+- Webhook endpoint: `/order/webhook` (raw body required)
+### Product Service (Port 8083)
+- Handles product catalog
+- No Temporal workflows (simpler service)
+- Dependencies: Standard NestJS services only
+## Database Integration
+### Prisma is used for all database operations
+- Schema location: `packages/db/prisma/schema.prisma`
+- Generated client: `packages/db/generated/prisma`
+- Always run migrations before starting: `pnpm prisma migrate deploy`
+- Generate client: `pnpm prisma generate`
+### Database connection
+- Uses `DbModule` from `@projectx/db`
+- Connection string from environment: `DATABASE_URL`
+- Health checks include database status
+## Environment Variables
+### Required for all services:
+- `NODE_ENV` - development/production
+- `DATABASE_URL` - PostgreSQL connection string
+- `POSTGRES_HOST` - Database host (use `db` in Docker)
+- `POSTGRES_PORT` - Database port (default: 5432)
+- `POSTGRES_USER` - Database user
+- `POSTGRES_PASSWORD` - Database password
+- `POSTGRES_DB` - Database name
+### Temporal-specific:
+- `TEMPORAL_HOST` - Temporal server address (format: `temporal:7233`)
+- `TEMPORAL_PORT` - Temporal server port (default: 7233)
+- `TEMPORAL_NAMESPACE` - Temporal namespace (default: `default`)
+### Service-specific:
+- `AUTH_PORT` - Auth service port (default: 8081)
+- `ORDER_PORT` - Order service port (default: 8082)
+- `PRODUCT_PORT` - Product service port (default: 8083)
+- `JWT_SECRET` - Secret for JWT tokens
+- `SESSION_SECRET` - Secret for sessions
+- `SENDGRID_API_KEY` - Email service API key
+- `STRIPE_SECRET_KEY` - Stripe secret key (order service)
+- `STRIPE_WEBHOOK_SECRET` - Stripe webhook secret (order service)
+## Build Process
+### Development mode (in Docker):
+```bash
+pnpm install --frozen-lockfile
+pnpm turbo run build --filter=<service>^...  # Build dependencies
+pnpm --filter @projectx/db run prisma:generate
+pnpm --filter @projectx/db run prisma:migrate
+cd /app/apps/<service>
+pnpm start:dev  # Watch mode with hot reload
+```
+### The build order matters:
+1. Install dependencies
+2. Build all package dependencies (models, core, db, etc.)
+3. Generate Prisma client
+4. Run Prisma migrations
+5. Start the service in watch mode
+## Logging
+### Use nestjs-pino for structured logging
+- Logger configured in `CoreModule`
+- Log level from config: `app.logLevel`
+- Service name from config: `app.apiPrefix`
+- Correlation IDs automatically added
+### Log pattern:
+```typescript
+private readonly logger = new Logger(ServiceName.name);
+this.logger.log('Operation started');
+this.logger.warn('Warning message');
+this.logger.error('Error message', error);
+```
+## Health Checks
+### All services expose `/health` endpoint
+- Checks database connection
+- Checks memory usage (heap and RSS)
+- Returns JSON with status details
+### Health check response format:
+```json
+{
+  "status": "ok",
+  "info": {
+    "db": {"status": "up"},
+    "memory_heap": {"status": "up"},
+    "memory_rss": {"status": "up"}
+  }
+}
+```
+## Error Handling
+### Use NestJS built-in exceptions
+```typescript
+throw new HttpException('Message', HttpStatus.BAD_REQUEST);
+throw new BadRequestException('Message', { cause: error });
+throw new NotFoundException('Resource not found');
+throw new UnauthorizedException('Invalid credentials');
+```
+### Workflow-specific errors:
+```typescript
+import { WorkflowExecutionAlreadyStartedError } from '@temporalio/common';
+try {
+  await workflowClient.start(...);
+} catch (error) {
+  if (error instanceof WorkflowExecutionAlreadyStartedError) {
+    // Handle duplicate workflow
+  }
+}
+```
+## Testing
+### Unit tests use Jest
+- Test files: `*.spec.ts`
+- Located next to source files
+- Mock all external dependencies
+### Integration tests
+- Use test database
+- Clean up after each test
+- Test full request/response cycle
+## Docker Considerations
+### File watching in Docker
+- `WATCHPACK_POLLING=true` - Enable polling for file changes
+- `CHOKIDAR_USEPOLLING=true` - Enable chokidar polling
+- `CHOKIDAR_INTERVAL=500` - Fast polling interval
+### Volume mounts
+- Source code mounted at `/app`
+- `node_modules` as anonymous volumes (prevent overwrite)
+- Each app and package has its own `node_modules` volume
+### Debug ports
+- Auth: 9229
+- Order: 9230
+- Product: 9231
+## Common Issues and Solutions
+### Issue: "Cannot resolve dependencies"
+**Cause:** Using `type` imports for injectable services
+**Solution:** Remove `type` keyword from service imports
+### Issue: "Workflow client not initialized"
+**Cause:** `ClientService` not exported from `WorkflowsModule`
+**Solution:** Ensure `ClientService` is in the exports array
+### Issue: "Database connection failed"
+**Cause:** Wrong host or migrations not run
+**Solution:** Use `db` as host in Docker, run migrations first
+### Issue: "Module not found" during build
+**Cause:** Dependencies not built in correct order
+**Solution:** Use `turbo run build --filter=<service>^...` to build deps first
+## Code Style
+### Use TypeScript strict mode
+- Enable all strict checks in `tsconfig.json`
+- No implicit any
+- Strict null checks
+### Async/await over promises
+```typescript
+// ✅ Preferred
+async someMethod() {
+  const result = await this.service.doSomething();
+  return result;
+}
+// ❌ Avoid
+someMethod() {
+  return this.service.doSomething().then(result => result);
+}
+```
+### Dependency injection in constructor
+```typescript
+constructor(
+  private readonly configService: ConfigService,
+  private readonly clientService: ClientService,
+) {
+  // Initialize non-injected properties here
+  this.taskQueue = this.configService.get<string>('temporal.taskQueue');
+}
+```
+## Performance
+### Use caching where appropriate
+- Cache expensive computations
+- Use Redis for distributed caching (if needed)
+### Optimize database queries
+- Use Prisma's `select` to fetch only needed fields
+- Use `include` carefully to avoid N+1 queries
+- Add indexes for frequently queried fields
+### Monitor memory usage
+- Health checks include memory metrics
+- Set `NODE_OPTIONS=--max-old-space-size=4096` for large apps
