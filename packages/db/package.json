@@ -18,15 +18,15 @@
     "dist"
   ],
   "scripts": {
-    "prebuild": "pnpm run prisma:generate",
-    "build": "tsup && tsc -p tsconfig.json --emitDeclarationOnly --outDir dist",
+    "db:generate": "prisma generate",
+    "build": "tsup",
     "dev": "tsc -w -p tsconfig.json",
     "lint": "biome check .",
     "test": "echo 'no tests'",
-    "prisma:generate": "pnpm prisma generate",
-    "prisma:migrate": "pnpm prisma migrate deploy",
-    "prisma:migrate:dev": "pnpm prisma migrate dev",
-    "prisma:seed": "pnpm prisma db seed"
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate deploy",
+    "prisma:migrate:dev": "prisma migrate dev",
+    "prisma:seed": "prisma db seed"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",

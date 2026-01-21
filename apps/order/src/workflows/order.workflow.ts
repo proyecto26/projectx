@@ -89,7 +89,10 @@ export async function createOrder(
   // Wait the order to be ready to be processed
   const orderCreated = await condition(() => !!state?.orderId, ORDER_TIMEOUT);
 
-  if (!orderCreated) {
+  // Wait for all handlers to finish before workflow completion
+  await condition(allHandlersFinished);
+
+  if (!orderCreated || !state?.orderId) {
     throw ApplicationFailure.nonRetryable(
       OrderWorkflowNonRetryableErrors.UNKNOWN_ERROR,
       "Order creation timed out",
@@ -118,7 +121,4 @@ export async function createOrder(
   }
 
   // TODO: Second step - Ship the order
-
-  // Wait for all handlers to finish before workflow completion
-  await condition(allHandlersFinished);
 }

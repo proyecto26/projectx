@@ -9,7 +9,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts src/workflows.ts src/logger.ts src/lib/logger/index.ts --format cjs,esm --sourcemap --clean --no-splitting && tsc -p tsconfig.json --emitDeclarationOnly --outDir dist",
+    "build": "tsup && tsc -p tsconfig.json --emitDeclarationOnly --outDir dist",
     "dev": "tsc -w -p tsconfig.json",
     "lint": "biome check .",
     "test": "echo 'no tests'"

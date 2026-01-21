@@ -34,6 +34,5 @@ echo "Namespace '$NAMESPACE' created"
 # Run search attributes creation if search-attributes.sh exists
 if [ -f /scripts/search-attributes.sh ]; then
   echo "Running search attributes setup..."
-  chmod +x /scripts/search-attributes.sh
-  /scripts/search-attributes.sh
+  sh /scripts/search-attributes.sh
 fi

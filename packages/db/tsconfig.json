@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": ".",
     "declaration": true,
     "declarationMap": true,
     "module": "commonjs",
@@ -12,10 +12,11 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "generated/**/*"],
   "exclude": [
     "node_modules",
     "dist",
+    "prisma",
     "**/*.spec.*",
     "**/*.test.*",
     "**/*.stories.*"
