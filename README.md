@@ -81,7 +81,7 @@ For detailed information about the project, please refer to:
 
 ## Project Structure Overview
 
-<img width="1643" alt="image" src="https://github.com/user-attachments/assets/82e99efc-640d-4ba4-a485-c92c0184f473">
+<img width="1204" alt="image" src="https://github.com/user-attachments/assets/6a82fc7a-178a-42e1-8d27-fbb353422793" />
 
 
 <details>
@@ -148,21 +148,8 @@ For detailed information about the project, please refer to:
 - **packages/payment**: 
   - **Purpose**: Payment provider integrations.
   - **Key Features**: Stripe and other payment gateway implementations.
-
-#### Additional paths
-
-- **prompts**: Contains initial project prompts or guidelines to be used with your AI tools (Cursor, etc).
 ```
 </details>
-
-
-
-
-> [!TIP]
-> View the Database diagram [here](./packages/db/README.md).
-
-
-
 
 ## Development Tools 🔧
 
