@@ -245,9 +245,6 @@ stripe trigger payment_intent.succeeded
 stripe listen --forward-to localhost:8081/order/webhook // or using the secure tunnel created by Ngrok
 ```
 
-## MCP Servers
-- [Nx MCP Server](https://nx.dev/blog/nx-made-cursor-smarter)
-
 ## Supporting 🍻
 I believe in Unicorns 🦄
 Support [me](http://www.paypal.me/jdnichollsc/2), if you do too.

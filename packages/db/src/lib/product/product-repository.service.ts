@@ -2,7 +2,11 @@ import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ProductDto } from "@projectx/models";
 import { plainToInstance } from "class-transformer";
 
-import type { Prisma, Product, ProductStatus } from "../../../generated/prisma/client";
+import type {
+  Prisma,
+  Product,
+  ProductStatus,
+} from "../../../generated/prisma/client";
 import { PrismaService } from "../prisma.service";
 
 @Injectable()
