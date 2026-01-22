@@ -10,17 +10,19 @@
 
 > **ProjectX** is a comprehensive full-stack template designed to simplify the development of scalable and resilient applications using **React** and **Temporal**. By integrating Temporal's advanced workflow orchestration with React's dynamic frontend framework, ProjectX enables developers to build applications with durable executions and seamless communication between services.
 
-## Features
- • ⏳ Temporal TypeScript SDK running from a Turborepo monorepo
- • 🧭 React Router v7 (Framework mode) + React Query 
- • 🎨 TailwindCSS v4
- • 🧱 NestJS for APIs & microservices
- • 🐳 Docker setup to run everything locally on any machine
- • 🤖 AI-first with Cursor Rules + MCP servers & Claude Subagents + Skills
- • 📚 Storybook for building UI components
- • 📧 MJML for lightning-fast email templates
- • 🛒 Stripe for checkout & payments
- • 🪝 Ngrok for local integrations and webhooks
+<details>
+  <summary><h2>Features 🧰</h2></summary>
+  - ⏳ Temporal TypeScript SDK running from a Turborepo monorepo<br/>
+  - 🧭 React Router v7 (Framework mode) + React Query<br/>
+  - 🎨 TailwindCSS v4<br/>
+  - 🧱 NestJS for APIs & microservices<br/>
+  - 🐳 Docker setup to run everything locally on any machine<br/>
+  - 🤖 AI-first with Cursor Rules + MCP servers & Claude Subagents + Skills<br/>
+  - 📚 Storybook for building UI components<br/>
+  - 📧 MJML for lightning-fast email templates<br/>
+  - 🛒 Stripe for checkout & payments<br/>
+  - 🪝 Ngrok for local integrations and webhooks<br/>
+</details>
 
 ## Why Temporal? 🤔
 
