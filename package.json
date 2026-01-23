@@ -45,7 +45,6 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "pino-pretty": "13.1.1",
-    "rimraf": "^6.1.2",
     "tsconfig-paths-webpack-plugin": "^4.2.0",
     "turbo": "^2.7.5",
     "typescript": "^5.9.3"

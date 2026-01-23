@@ -243,26 +243,42 @@ async function generateService(
       ? "nestjs-temporal-service"
       : "nestjs-service";
 
-    // Build arguments for turbo gen using --args flag
-    const args = [
-      "gen",
-      generatorName,
-      "--args",
-      `serviceName=${serviceName}`,
-      "--args",
-      `port=${port}`,
-      "--args",
-      `description=${descriptionInput}`,
-    ];
+    // Build arguments for turbo gen
+    // Args are passed positionally in order of prompts (plop bypass feature)
+    // Order for nestjs-service: serviceName, port, description, includeEmail, includePayment
+    // Order for nestjs-temporal-service: serviceName, port, description, workflowName, includeEmail, includePayment
+    const args = ["gen", generatorName];
 
-    if (includeEmail) {
-      args.push("--args", "includeEmail=true");
-    }
-    if (includePayment) {
-      args.push("--args", "includePayment=true");
-    }
     if (withTemporal) {
-      args.push("--args", `workflowName=${workflowName}`);
+      // nestjs-temporal-service prompt order: serviceName, port, description, workflowName, includeEmail, includePayment
+      args.push(
+        "--args",
+        serviceName,
+        "--args",
+        port,
+        "--args",
+        descriptionInput,
+        "--args",
+        workflowName,
+        "--args",
+        includeEmail ? "yes" : "no",
+        "--args",
+        includePayment ? "yes" : "no",
+      );
+    } else {
+      // nestjs-service prompt order: serviceName, port, description, includeEmail, includePayment
+      args.push(
+        "--args",
+        serviceName,
+        "--args",
+        port,
+        "--args",
+        descriptionInput,
+        "--args",
+        includeEmail ? "yes" : "no",
+        "--args",
+        includePayment ? "yes" : "no",
+      );
     }
 
     await execa("turbo", args, {
@@ -381,17 +397,19 @@ async function generateWorkflow(
   const spinner = ora("Generating workflow...").start();
 
   try {
+    // Args are passed positionally in order of prompts (plop bypass feature)
+    // Order for workflow: serviceName, workflowName, workflowDescription
     await execa(
       "turbo",
       [
         "gen",
         "workflow",
         "--args",
-        `serviceName=${serviceName}`,
+        serviceName,
         "--args",
-        `workflowName=${workflowName}`,
+        workflowName,
         "--args",
-        `workflowDescription=${descriptionInput}`,
+        descriptionInput,
       ],
       {
         cwd: projectRoot,

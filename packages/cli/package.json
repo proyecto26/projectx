@@ -12,7 +12,8 @@
     "dev": "tsup src/index.ts --format esm --watch",
     "start": "node dist/index.js",
     "lint": "biome check .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepare": "npm run build"
   },
   "keywords": [
     "temporal",
