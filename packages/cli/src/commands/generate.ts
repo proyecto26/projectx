@@ -243,19 +243,27 @@ async function generateService(
       ? "nestjs-temporal-service"
       : "nestjs-service";
 
-    // Build arguments for turbo gen
+    // Build arguments for turbo gen using --args flag
     const args = [
       "gen",
       generatorName,
-      "--",
-      `--serviceName=${serviceName}`,
-      `--port=${port}`,
-      `--description=${descriptionInput}`,
+      "--args",
+      `serviceName=${serviceName}`,
+      "--args",
+      `port=${port}`,
+      "--args",
+      `description=${descriptionInput}`,
     ];
 
-    if (includeEmail) args.push("--includeEmail");
-    if (includePayment) args.push("--includePayment");
-    if (withTemporal) args.push(`--workflowName=${workflowName}`);
+    if (includeEmail) {
+      args.push("--args", "includeEmail=true");
+    }
+    if (includePayment) {
+      args.push("--args", "includePayment=true");
+    }
+    if (withTemporal) {
+      args.push("--args", `workflowName=${workflowName}`);
+    }
 
     await execa("turbo", args, {
       cwd: projectRoot,
@@ -378,10 +386,12 @@ async function generateWorkflow(
       [
         "gen",
         "workflow",
-        "--",
-        `--serviceName=${serviceName}`,
-        `--workflowName=${workflowName}`,
-        `--workflowDescription=${descriptionInput}`,
+        "--args",
+        `serviceName=${serviceName}`,
+        "--args",
+        `workflowName=${workflowName}`,
+        "--args",
+        `workflowDescription=${descriptionInput}`,
       ],
       {
         cwd: projectRoot,
