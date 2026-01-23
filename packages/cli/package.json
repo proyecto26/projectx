@@ -1,0 +1,45 @@
+{
+  "name": "@projectx/cli",
+  "version": "1.0.0",
+  "description": "ProjectX CLI - Generate services, workflows, and customize your Temporal-powered application",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "projectx": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "dev": "tsup src/index.ts --format esm --watch",
+    "start": "node dist/index.js",
+    "lint": "biome check .",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "temporal",
+    "nestjs",
+    "microservices",
+    "cli",
+    "generator",
+    "scaffolding"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@clack/prompts": "^0.9.1",
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "execa": "^9.6.0",
+    "fs-extra": "^11.3.0",
+    "handlebars": "^4.7.8",
+    "ora": "^8.2.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.15.29",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

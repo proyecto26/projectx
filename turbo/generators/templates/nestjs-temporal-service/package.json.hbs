@@ -1,0 +1,89 @@
+{
+  "name": "{{serviceName}}",
+  "version": "0.0.1",
+  "description": "{{description}}",
+  "author": "",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "nest build",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "start": "nest start",
+    "start:dev": "nest start --watch --exec \"node --watch\"",
+    "start:debug": "nest start --watch --exec \"node --watch --inspect=0.0.0.0:{{debugPort}}\"",
+    "start:prod": "node dist/main",
+    "lint": "biome check .",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
+  },
+  "dependencies": {
+    "@nestjs/common": "11.1.12",
+    "@nestjs/config": "4.0.2",
+    "@nestjs/core": "11.1.12",
+    "@nestjs/platform-express": "11.1.12",
+    "@nestjs/swagger": "11.2.5",
+    "@projectx/core": "workspace:*",
+    "@projectx/db": "workspace:*",
+    "@projectx/models": "workspace:*",
+    "@projectx/workflows": "workspace:*",
+{{#if includeEmail}}
+    "@projectx/email": "workspace:*",
+{{/if}}
+{{#if includePayment}}
+    "@projectx/payment": "workspace:*",
+{{/if}}
+    "@temporalio/common": "1.14.1",
+    "@temporalio/workflow": "1.14.1",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.14.3",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.2",
+    "@golevelup/ts-jest": "1.2.0",
+    "@nestjs/cli": "^11.0.16",
+    "@nestjs/schematics": "^11.0.9",
+    "@nestjs/testing": "^11.1.12",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.0.9",
+    "@types/supertest": "^6.0.3",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "globals": "^17.0.0",
+    "jest": "^30.2.0",
+    "pino-pretty": "13.1.1",
+    "prettier": "^3.8.0",
+    "source-map-support": "^0.5.21",
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.6",
+    "ts-loader": "^9.5.4",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.53.0"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  }
+}

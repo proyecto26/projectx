@@ -251,8 +251,8 @@ turbo run build --graph
 ### Dependency Issues
 
 ```bash
-# Clean and reinstall
-rm -rf node_modules pnpm-lock.yaml
+# Clean and reinstall (cross-platform)
+npx rimraf node_modules pnpm-lock.yaml
 pnpm install
 ```
 

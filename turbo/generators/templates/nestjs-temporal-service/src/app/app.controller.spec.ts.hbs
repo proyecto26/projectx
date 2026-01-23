@@ -1,0 +1,42 @@
+import { Test, TestingModule } from "@nestjs/testing";
+import { ConfigService } from "@nestjs/config";
+import { ClientService } from "@projectx/workflows";
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+
+describe("AppController", () => {
+  let appController: AppController;
+
+  const mockClientService = {
+    client: {
+      workflow: {
+        start: jest.fn(),
+      },
+    },
+  };
+
+  const mockConfigService = {
+    get: jest.fn().mockReturnValue("{{serviceName}}"),
+  };
+
+  beforeEach(async () => {
+    const app: TestingModule = await Test.createTestingModule({
+      controllers: [AppController],
+      providers: [
+        AppService,
+        { provide: ClientService, useValue: mockClientService },
+        { provide: ConfigService, useValue: mockConfigService },
+      ],
+    }).compile();
+
+    appController = app.get<AppController>(AppController);
+  });
+
+  describe("root", () => {
+    it("should return health check message", () => {
+      expect(appController.getHello()).toEqual({
+        message: "{{pascalCase serviceName}} service is running!",
+      });
+    });
+  });
+});

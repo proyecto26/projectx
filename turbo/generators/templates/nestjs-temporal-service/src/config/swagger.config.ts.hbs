@@ -1,0 +1,7 @@
+import { registerAs } from "@nestjs/config";
+
+export default registerAs("swagger", () => ({
+  title: "{{pascalCase serviceName}} API",
+  description: "{{description}}",
+  version: "1.0",
+}));

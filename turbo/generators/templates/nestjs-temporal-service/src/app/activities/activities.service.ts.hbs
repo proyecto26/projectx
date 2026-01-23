@@ -1,0 +1,55 @@
+import { Injectable, Logger } from "@nestjs/common";
+{{#if includeEmail}}
+import { Inject } from "@nestjs/common";
+import { EmailService } from "@projectx/email";
+{{/if}}
+
+@Injectable()
+export class ActivitiesService {
+  readonly logger = new Logger(ActivitiesService.name);
+
+  constructor(
+{{#if includeEmail}}
+    @Inject(EmailService) private readonly emailService: EmailService,
+{{/if}}
+  ) {}
+
+  /**
+   * Example activity for the {{workflowName}} workflow.
+   * Activities are the building blocks of workflows - they perform the actual work.
+   *
+   * @param data - Input data for the activity
+   * @returns Result of the activity execution
+   */
+  async {{workflowName}}Activity(data: Record<string, unknown>) {
+    this.logger.log(`Executing {{workflowName}} activity with data: ${JSON.stringify(data)}`);
+
+    // TODO: Implement your activity logic here
+    // Activities can:
+    // - Call external APIs
+    // - Access databases (via injected services)
+    // - Send emails/notifications
+    // - Process files
+    // - Any non-deterministic operation
+
+    return {
+      success: true,
+      processedAt: new Date().toISOString(),
+      data,
+    };
+  }
+{{#if includeEmail}}
+
+  /**
+   * Send notification email activity.
+   */
+  async sendNotificationEmail(to: string, subject: string, content: string) {
+    this.logger.log(`Sending notification email to: ${to}`);
+
+    // TODO: Implement email sending using emailService
+    // await this.emailService.send({ to, subject, content });
+
+    return { sent: true, to };
+  }
+{{/if}}
+}

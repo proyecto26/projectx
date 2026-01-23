@@ -1,0 +1,11 @@
+import { Injectable, Logger } from "@nestjs/common";
+
+@Injectable()
+export class AppService {
+  private readonly logger = new Logger(AppService.name);
+
+  getHello(): { message: string } {
+    this.logger.log("Health check requested");
+    return { message: "{{pascalCase serviceName}} service is running!" };
+  }
+}
