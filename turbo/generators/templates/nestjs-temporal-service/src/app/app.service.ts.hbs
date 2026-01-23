@@ -1,0 +1,70 @@
+import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { ClientService } from "@projectx/workflows";
+import { WorkflowExecutionAlreadyStartedError } from "@temporalio/common";
+import { v4 as uuidv4 } from "uuid";
+
+import { {{workflowName}}{{pascalCase serviceName}}Workflow } from "../workflows";
+
+@Injectable()
+export class AppService {
+  readonly logger = new Logger(AppService.name);
+  private readonly taskQueue: string;
+
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly clientService: ClientService,
+  ) {
+    const taskQueue = this.configService.get<string>("temporal.taskQueue");
+    if (!taskQueue) {
+      throw new Error("Task queue not found");
+    }
+    this.taskQueue = taskQueue;
+  }
+
+  getHello(): { message: string } {
+    return { message: "{{pascalCase serviceName}} service is running!" };
+  }
+
+  getWorkflowClient() {
+    const workflowClient = this.clientService.client?.workflow;
+    if (!workflowClient) {
+      throw new HttpException(
+        "The workflow client was not initialized correctly",
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+    return workflowClient;
+  }
+
+  async start{{pascalCase workflowName}}Workflow(data: Record<string, unknown>) {
+    const workflowId = `{{workflowName}}-${uuidv4()}`;
+    this.logger.log(`Starting {{workflowName}} workflow: ${workflowId}`);
+
+    try {
+      await this.getWorkflowClient().start({{workflowName}}{{pascalCase serviceName}}Workflow, {
+        args: [data],
+        taskQueue: this.taskQueue,
+        workflowId,
+      });
+
+      return {
+        message: "Workflow started successfully",
+        workflowId,
+      };
+    } catch (error) {
+      if (error instanceof WorkflowExecutionAlreadyStartedError) {
+        this.logger.warn(`Workflow ${workflowId} already started`);
+        return {
+          message: "Workflow already running",
+          workflowId,
+        };
+      }
+      throw new HttpException(
+        "Error starting workflow",
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        { cause: error },
+      );
+    }
+  }
+}

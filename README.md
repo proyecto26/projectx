@@ -165,6 +165,163 @@ For detailed information about the project, please refer to:
 ```
 </details>
 
+## Code Generators 🏗️
+
+ProjectX includes powerful Turborepo generators to scaffold new services quickly and consistently.
+
+### Available Generators
+
+| Command | Description |
+|---------|-------------|
+| `pnpm gen:service` | Create a basic NestJS microservice (like `product`) |
+| `pnpm gen:temporal-service` | Create a NestJS service with Temporal workflows (like `auth`, `order`) |
+| `pnpm gen:workflow` | Add a new workflow to an existing Temporal-enabled service |
+
+### Creating a New Service
+
+#### Basic Service (without Temporal)
+```bash
+pnpm gen:service
+```
+This will prompt you for:
+- Service name (e.g., `inventory`, `notification`)
+- Port number (auto-suggests next available)
+- Description
+- Optional modules (Email, Payment)
+
+#### Temporal-Enabled Service
+```bash
+pnpm gen:temporal-service
+```
+Additional prompts:
+- Initial workflow name (e.g., `process`, `handle`)
+
+### Adding a Workflow to Existing Service
+```bash
+pnpm gen:workflow
+```
+Select the target service and provide workflow details.
+
+### What Gets Generated
+
+**Basic Service:**
+```
+apps/{serviceName}/
+├── src/
+│   ├── app/
+│   │   ├── app.module.ts
+│   │   ├── app.controller.ts
+│   │   └── app.service.ts
+│   ├── config/
+│   │   ├── app.config.ts
+│   │   ├── env.config.ts
+│   │   └── swagger.config.ts
+│   └── main.ts
+├── test/
+├── package.json
+└── tsconfig.json
+```
+
+**Temporal Service (additional):**
+```
+├── src/
+│   ├── app/activities/
+│   │   ├── activities.module.ts
+│   │   └── activities.service.ts
+│   ├── config/
+│   │   └── temporal.config.ts
+│   └── workflows/
+│       ├── index.ts
+│       └── {workflowName}.workflow.ts
+```
+
+### Auto-Configuration
+
+The generators automatically:
+- Add `dev:{serviceName}` and `build:{serviceName}` scripts to root `package.json`
+- Update `docker-compose.yml` with the new service configuration
+- Configure the builder to include the new service in the build pipeline
+
+### Post-Generation Steps
+
+1. Add the environment variable to `.env`:
+   ```bash
+   {SERVICE_NAME}_PORT={port}
+   ```
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+3. Start the service:
+   ```bash
+   pnpm dev:{serviceName}
+   ```
+
+## ProjectX CLI 🖥️
+
+ProjectX includes an interactive CLI tool for a more user-friendly experience when generating services and customizing the template.
+
+### Running the CLI
+
+```bash
+# Interactive mode (recommended)
+pnpm cli
+
+# Or run specific commands
+pnpm cli generate service
+pnpm cli generate temporal-service
+pnpm cli generate workflow
+pnpm cli init
+pnpm cli info
+```
+
+### CLI Commands
+
+| Command | Description |
+|---------|-------------|
+| `projectx` | Interactive mode - select what to do |
+| `projectx generate [type]` | Generate service or workflow |
+| `projectx init` | Initialize/customize project for your needs |
+| `projectx info` | Display project information |
+
+### Initialize Command
+
+The `init` command helps you customize the template for your own project:
+
+```bash
+pnpm cli init
+```
+
+This allows you to:
+- **Rename the project**: Updates all package names and references from `@projectx/*` to `@your-project/*`
+- **Clean up example services**: Remove auth, order, product services to start fresh
+- **Update Docker configuration**: Adjust docker-compose.yml for your project name
+
+### Example Workflow
+
+```bash
+# 1. Clone the template
+git clone https://github.com/proyecto26/projectx.git my-app
+cd my-app
+
+# 2. Customize for your project
+pnpm install
+pnpm cli init
+# - Enter your project name
+# - Select customizations (rename, cleanup, etc.)
+
+# 3. Generate your first service
+pnpm cli generate temporal-service
+# - Enter service name: "orders"
+# - Select port: 8084
+# - Add Email module: Yes
+# - Initial workflow: "processOrder"
+
+# 4. Start development
+docker-compose up -d
+pnpm dev
+```
+
 ## Development Tools 🔧
 
 ### Monorepo Management
