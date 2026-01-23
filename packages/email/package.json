@@ -18,7 +18,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "rimraf dist && tsup src/index.ts --format cjs,esm --splitting --sourcemap && tsc -p tsconfig.json --emitDeclarationOnly --outDir dist",
+    "build": "tsup src/index.ts --format cjs,esm --splitting --sourcemap --clean && tsc -p tsconfig.json --emitDeclarationOnly --outDir dist",
     "dev": "tsc -w -p tsconfig.json",
     "lint": "biome check .",
     "test": "echo 'no tests'"
