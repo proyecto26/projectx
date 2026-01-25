@@ -2,14 +2,21 @@ import { defineSignal, defineUpdate } from "@temporalio/workflow";
 
 export * from "./state";
 
-export enum WorkflowTypes {
-  Order = "Order",
+export class UnkownException extends Error {
+  constructor(message?: string) {
+    super(message);
+    Object.setPrototypeOf(this, new.target.prototype);
+    this.name = UnkownException.name;
+  }
 }
 
-export type WorkflowParentData = {
-  workflowId: string;
-  runId: string;
-};
+export class CancelledException extends Error {
+  constructor(message?: string) {
+    super(message);
+    Object.setPrototypeOf(this, new.target.prototype);
+    this.name = CancelledException.name;
+  }
+}
 
 // DEFINE SIGNALS
 /**

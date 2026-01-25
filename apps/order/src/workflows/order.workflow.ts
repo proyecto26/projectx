@@ -1,5 +1,6 @@
 // Typescript alias issue while importing files from other libraries from workflows.
 import {
+  CancelledException,
   cancelWorkflowSignal,
   createOrderUpdate,
   getOrderStateQuery,
@@ -7,8 +8,8 @@ import {
   ORDER_TIMEOUT,
   OrderProcessPaymentStatus,
   type OrderWorkflowData,
-  OrderWorkflowNonRetryableErrors,
   paymentWebHookEventSignal,
+  UnkownException,
 } from "@projectx/core/workflows";
 import { OrderStatus, type OrderStatusResponseDto } from "@projectx/models";
 import {
@@ -35,7 +36,7 @@ const {
     maximumInterval: "10s",
     maximumAttempts: 10,
     backoffCoefficient: 1.5,
-    nonRetryableErrorTypes: [OrderWorkflowNonRetryableErrors.UNKNOWN_ERROR],
+    nonRetryableErrorTypes: [UnkownException.name],
   },
 });
 
@@ -60,7 +61,7 @@ export async function createOrder(
     log.info("Requesting order cancellation");
     if (!state?.orderId) {
       throw ApplicationFailure.nonRetryable(
-        OrderWorkflowNonRetryableErrors.CANCELLED,
+        CancelledException.name,
         "Order cancelled",
       );
     }
@@ -94,7 +95,7 @@ export async function createOrder(
 
   if (!orderCreated || !state?.orderId) {
     throw ApplicationFailure.nonRetryable(
-      OrderWorkflowNonRetryableErrors.UNKNOWN_ERROR,
+      UnkownException.name,
       "Order creation timed out",
     );
   }
@@ -111,7 +112,7 @@ export async function createOrder(
       await reportPaymentFailed(state.orderId as number);
       state.status = OrderStatus.Failed;
       throw ApplicationFailure.nonRetryable(
-        OrderWorkflowNonRetryableErrors.UNKNOWN_ERROR,
+        UnkownException.name,
         "Payment failed",
       );
     }

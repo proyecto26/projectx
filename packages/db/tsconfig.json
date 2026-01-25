@@ -10,7 +10,8 @@
     "target": "ES2021",
     "skipLibCheck": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "types": ["node"]
   },
   "include": ["src/**/*", "generated/**/*"],
   "exclude": [
