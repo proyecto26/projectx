@@ -1,8 +1,25 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
 import type { OrderWorkflowData } from "@projectx/core";
-import { OrderRepositoryService, PaymentRepositoryService } from "@projectx/db";
+import {
+  OrderRepositoryService,
+  PaymentRepositoryService,
+  PrismaService,
+} from "@projectx/db";
 import { OrderStatus, OrderSummaryDto, PaymentStatus } from "@projectx/models";
 import { StripeService } from "@projectx/payment";
+import type {
+  AdminOrderCountsDto,
+  AdminOrderDetailDto,
+  AdminOrderListQueryDto,
+  AdminOrderListResponseDto,
+  AdminStatsDto,
+} from "./dto";
 
 @Injectable()
 export class OrderService {
@@ -13,6 +30,8 @@ export class OrderService {
     public readonly orderRepositoryService: OrderRepositoryService,
     @Inject(PaymentRepositoryService)
     public readonly paymentRepositoryService: PaymentRepositoryService,
+    @Inject(PrismaService)
+    private readonly prisma: PrismaService,
   ) {}
 
   async createOrder({ user, order }: OrderWorkflowData) {
@@ -142,7 +161,7 @@ export class OrderService {
     const subtotal =
       order.items?.reduce(
         (acc, item) =>
-          acc + (item.product?.estimatedPrice || 0) * item.quantity,
+          acc + Number(item.product?.estimatedPrice || 0) * item.quantity,
         0,
       ) || 0;
 
@@ -204,5 +223,314 @@ export class OrderService {
     });
 
     return orderSummary;
+  }
+
+  async getAdminStats(): Promise<AdminStatsDto> {
+    this.logger.log("getAdminStats()");
+
+    // Get aggregate statistics in parallel
+    const [orderStats, customerCount, deliveredOrders] = await Promise.all([
+      this.prisma.order.aggregate({
+        _sum: { totalPrice: true },
+        _avg: { totalPrice: true },
+        _count: true,
+      }),
+      this.prisma.order.findMany({
+        select: { userId: true },
+        distinct: ["userId"],
+      }),
+      this.prisma.order.findMany({
+        where: {
+          status: OrderStatus.Delivered,
+        },
+        select: {
+          createdAt: true,
+          updatedAt: true,
+        },
+      }),
+    ]);
+
+    // Count orders by status
+    const [pendingCount, completedCount] = await Promise.all([
+      this.prisma.order.count({
+        where: { status: OrderStatus.Pending },
+      }),
+      this.prisma.order.count({
+        where: { status: OrderStatus.Delivered },
+      }),
+    ]);
+
+    const totalOrders = orderStats._count || 0;
+    const totalRevenue = Number(orderStats._sum.totalPrice || 0);
+    const averageOrderValue = Number(orderStats._avg.totalPrice || 0);
+    const totalCustomers = customerCount.length;
+    const conversionRate =
+      totalOrders > 0 ? (completedCount / totalOrders) * 100 : 0;
+    const pendingPercentage =
+      totalOrders > 0 ? (pendingCount / totalOrders) * 100 : 0;
+
+    // Calculate average delivery time
+    let avgDeliveryTime: number | undefined;
+    if (deliveredOrders.length > 0) {
+      const totalDeliveryTime = deliveredOrders.reduce((acc, order) => {
+        const deliveryTimeMs =
+          order.updatedAt.getTime() - order.createdAt.getTime();
+        return acc + deliveryTimeMs;
+      }, 0);
+      avgDeliveryTime =
+        totalDeliveryTime / deliveredOrders.length / (1000 * 60 * 60); // Convert to hours
+    }
+
+    return {
+      totalRevenue,
+      averageOrderValue,
+      pendingOrders: pendingCount,
+      pendingPercentage,
+      completedOrders: completedCount,
+      totalCustomers,
+      conversionRate,
+      avgDeliveryTime,
+    };
+  }
+
+  async getAdminOrderList(
+    query: AdminOrderListQueryDto,
+  ): Promise<AdminOrderListResponseDto> {
+    this.logger.log("getAdminOrderList()", query);
+
+    const page = query.page || 1;
+    const limit = query.limit || 10;
+    const skip = (page - 1) * limit;
+
+    // Build where clause
+    const where: Record<string, unknown> = {};
+
+    // Filter by status
+    if (query.status && query.status !== "all") {
+      where.status = query.status as OrderStatus;
+    }
+
+    // Search filter
+    if (query.search) {
+      where.OR = [
+        { referenceId: { contains: query.search, mode: "insensitive" } },
+        { user: { email: { contains: query.search, mode: "insensitive" } } },
+        {
+          user: {
+            firstName: { contains: query.search, mode: "insensitive" },
+          },
+        },
+        { user: { lastName: { contains: query.search, mode: "insensitive" } } },
+      ];
+    }
+
+    // Fetch orders with pagination
+    const [orders, total] = await Promise.all([
+      this.prisma.order.findMany({
+        where,
+        include: {
+          user: {
+            select: {
+              email: true,
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: limit,
+      }),
+      this.prisma.order.count({ where }),
+    ]);
+
+    // Transform to DTO
+    const orderList = orders.map((order) => ({
+      id: order.id,
+      referenceId: order.referenceId,
+      customerName:
+        `${order.user.firstName || ""} ${order.user.lastName || ""}`.trim() ||
+        "N/A",
+      customerEmail: order.user.email,
+      type: "Standard", // Default type, can be enhanced later
+      status: order.status,
+      amount: Number(order.totalPrice),
+      date: order.createdAt,
+    }));
+
+    return {
+      orders: orderList,
+      total,
+      page,
+      limit,
+    };
+  }
+
+  async getAdminOrderCounts(): Promise<AdminOrderCountsDto> {
+    this.logger.log("getAdminOrderCounts()");
+
+    const [total, pending, confirmed, shipped, completed] = await Promise.all([
+      this.prisma.order.count(),
+      this.prisma.order.count({ where: { status: OrderStatus.Pending } }),
+      this.prisma.order.count({ where: { status: OrderStatus.Confirmed } }),
+      this.prisma.order.count({ where: { status: OrderStatus.Shipped } }),
+      this.prisma.order.count({ where: { status: OrderStatus.Delivered } }),
+    ]);
+
+    // In production = Confirmed + Shipped
+    const inProduction = confirmed + shipped;
+
+    return {
+      total,
+      pending,
+      inProduction,
+      completed,
+    };
+  }
+
+  async getAdminOrderDetail(id: number): Promise<AdminOrderDetailDto> {
+    this.logger.log(`getAdminOrderDetail(${id})`);
+
+    const order = await this.prisma.order.findUnique({
+      where: { id },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+        user: {
+          select: {
+            email: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
+        payment: true,
+      },
+    });
+
+    if (!order) {
+      throw new NotFoundException(`Order with ID ${id} not found`);
+    }
+
+    // Calculate subtotal from line items
+    const subtotal =
+      order.items?.reduce(
+        (acc, item) =>
+          acc + Number(item.product?.estimatedPrice || 0) * item.quantity,
+        0,
+      ) || 0;
+
+    // Transform items to DTO format
+    const items = order.items.map((item) => ({
+      id: item.id,
+      productId: item.productId,
+      productName: item.product?.name || "Unknown Product",
+      quantity: item.quantity,
+      price: Number(item.product?.estimatedPrice || 0),
+      total: Number(item.product?.estimatedPrice || 0) * item.quantity,
+    }));
+
+    // Transform customer info
+    const customer = {
+      email: order.user.email,
+      firstName: order.user.firstName || undefined,
+      lastName: order.user.lastName || undefined,
+    };
+
+    // Transform payment info if exists
+    let payment:
+      | {
+          status: PaymentStatus;
+          amount: number;
+          provider: string;
+          transactionId?: string;
+          paymentMethod?: string;
+          billingAddress?: string;
+        }
+      | undefined;
+    if (order.payment) {
+      payment = {
+        status: order.payment.status as PaymentStatus,
+        amount: Number(order.payment.amount),
+        provider: order.payment.provider,
+        transactionId: order.payment.transactionId || undefined,
+        paymentMethod: order.payment.paymentMethod || undefined,
+        billingAddress: order.payment.billingAddress || undefined,
+      };
+    }
+
+    return {
+      id: order.id,
+      referenceId: order.referenceId,
+      status: order.status as OrderStatus,
+      totalPrice: Number(order.totalPrice),
+      subtotal,
+      shippingCost: Number(order.shippingCost || 0),
+      taxAmount: Number(order.taxAmount || 0),
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+      shippingAddress: order.shippingAddress || undefined,
+      items,
+      customer,
+      payment,
+    };
+  }
+
+  async updateOrderStatus(
+    id: number,
+    status: OrderStatus,
+  ): Promise<AdminOrderDetailDto> {
+    this.logger.log(`updateOrderStatus(${id}, ${status})`);
+
+    // Check if order exists
+    const existingOrder = await this.prisma.order.findUnique({
+      where: { id },
+    });
+
+    if (!existingOrder) {
+      throw new NotFoundException(`Order with ID ${id} not found`);
+    }
+
+    // Update the order status
+    await this.orderRepositoryService.updateOrderStatus(id, status);
+
+    // Return the updated order details
+    return this.getAdminOrderDetail(id);
+  }
+
+  async cancelOrder(id: number): Promise<{ message: string }> {
+    this.logger.log(`cancelOrder(${id})`);
+
+    // Check if order exists
+    const existingOrder = await this.prisma.order.findUnique({
+      where: { id },
+    });
+
+    if (!existingOrder) {
+      throw new NotFoundException(`Order with ID ${id} not found`);
+    }
+
+    // Prevent cancellation of already delivered or cancelled orders
+    if (
+      existingOrder.status === OrderStatus.Delivered ||
+      existingOrder.status === OrderStatus.Cancelled
+    ) {
+      throw new BadRequestException(
+        `Cannot cancel order with status ${existingOrder.status}`,
+      );
+    }
+
+    // Update order status to Cancelled
+    await this.orderRepositoryService.updateOrderStatus(
+      id,
+      OrderStatus.Cancelled,
+    );
+
+    // TODO: Consider refunding payment if it was already processed
+    // TODO: Send email notification to customer about cancellation
+
+    return { message: "Order cancelled successfully" };
   }
 }

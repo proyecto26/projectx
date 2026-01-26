@@ -18,9 +18,6 @@ export default [
     // Auth routes
     route("logout", "./routes/logout.tsx"),
 
-    // Admin
-    route("admin", "./routes/admin.tsx"),
-
     // Checkout + Email templates (dynamic)
     route("checkout/:referenceId", "./routes/checkout.tsx"),
     route("email/:template", "./routes/email.tsx"),
@@ -38,5 +35,13 @@ export default [
 
     // Profile
     route("profile", "./routes/profile.tsx"),
+  ]),
+
+  // Admin
+  layout("./routes/admin/layout.tsx", [
+    ...prefix("admin", [
+      route("/", "./routes/admin/index.tsx"),
+      route("orders", "./routes/admin/orders.tsx"),
+    ]),
   ]),
 ] satisfies RouteConfig;
