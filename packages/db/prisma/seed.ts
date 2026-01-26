@@ -12,19 +12,82 @@ const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
-async function createDefaultUser() {
-  const defaultUser = await prisma.user.upsert({
-    where: { email: "admin@projectx.com" },
-    update: {},
+// Admin users to seed
+const adminUsers = [
+  {
+    email: "admin@projectx.com",
+    username: "admin",
+    firstName: "Admin",
+    lastName: "User",
+  },
+];
+
+async function createRoles() {
+  // Create Admin role
+  const adminRole = await prisma.role.upsert({
+    where: { id: 1 },
+    update: { name: "Admin", description: "Administrator with full access" },
     create: {
-      email: "admin@projectx.com",
-      username: "admin",
-      firstName: "Admin",
-      lastName: "User",
-      status: UserStatus.Active,
+      name: "Admin",
+      description: "Administrator with full access",
     },
   });
-  return defaultUser;
+  console.log("Admin role ready:", adminRole.name);
+
+  // Create User role
+  const userRole = await prisma.role.upsert({
+    where: { id: 2 },
+    update: { name: "User", description: "Regular user with basic access" },
+    create: {
+      name: "User",
+      description: "Regular user with basic access",
+    },
+  });
+  console.log("User role ready:", userRole.name);
+
+  return { adminRole, userRole };
+}
+
+async function createAdminUsers(adminRoleId: number) {
+  const createdUsers = [];
+
+  for (const userData of adminUsers) {
+    // Create or update user
+    const user = await prisma.user.upsert({
+      where: { email: userData.email },
+      update: {
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+      },
+      create: {
+        email: userData.email,
+        username: userData.username,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        status: UserStatus.Active,
+      },
+    });
+
+    // Assign admin role to user (upsert to avoid duplicates)
+    await prisma.userRole.upsert({
+      where: {
+        userId_roleId: {
+          userId: user.id,
+          roleId: adminRoleId,
+        },
+      },
+      update: {},
+      create: {
+        userId: user.id,
+        roleId: adminRoleId,
+      },
+    });
+
+    console.log(`Admin user ready: ${user.email}`);
+    createdUsers.push(user);
+  }
+
+  return createdUsers;
 }
 
 const products: Omit<Prisma.ProductCreateInput, "user">[] = [
@@ -111,9 +174,14 @@ async function main() {
   try {
     console.log("Starting seed...");
 
-    // Create default admin user if not exists
-    const adminUser = await createDefaultUser();
-    console.log("Default admin user ready:", adminUser.email);
+    // Create roles first
+    console.log("Creating roles...");
+    const { adminRole } = await createRoles();
+
+    // Create admin users and assign roles
+    console.log("Creating admin users...");
+    const users = await createAdminUsers(adminRole.id);
+    const primaryAdmin = users[0]; // Use first admin for product ownership
 
     // Create products
     console.log("Creating products...");
@@ -127,7 +195,7 @@ async function main() {
           ...productData,
           user: {
             connect: {
-              id: adminUser.id,
+              id: primaryAdmin.id,
             },
           },
         },

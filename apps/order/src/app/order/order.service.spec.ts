@@ -1,7 +1,12 @@
 import { createMock } from "@golevelup/ts-jest";
 import { Logger } from "@nestjs/common";
 import { Test, type TestingModule } from "@nestjs/testing";
-import { OrderRepositoryService } from "@projectx/db";
+import {
+  OrderRepositoryService,
+  PaymentRepositoryService,
+  PrismaService,
+} from "@projectx/db";
+import { StripeService } from "@projectx/payment";
 
 import { OrderService } from "./order.service";
 
@@ -16,6 +21,18 @@ describe("OrderService", () => {
         {
           provide: OrderRepositoryService,
           useValue: createMock<OrderRepositoryService>(),
+        },
+        {
+          provide: PaymentRepositoryService,
+          useValue: createMock<PaymentRepositoryService>(),
+        },
+        {
+          provide: StripeService,
+          useValue: createMock<StripeService>(),
+        },
+        {
+          provide: PrismaService,
+          useValue: createMock<PrismaService>(),
         },
         { provide: Logger, useValue: createMock<Logger>() },
       ],
