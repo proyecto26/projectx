@@ -26,11 +26,6 @@ export type OrderProcessPaymentState = {
   status: OrderProcessPaymentStatus;
 };
 
-export enum OrderWorkflowNonRetryableErrors {
-  UNKNOWN_ERROR = "UNKNOWN_ERROR_NON_RETRY",
-  CANCELLED = "CANCELLED",
-}
-
 /**
  * Represents a payment webhook event received from third-party payment providers
  * such as Stripe, MercadoPago, PayU, Wompi, etc.

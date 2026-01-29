@@ -259,7 +259,7 @@ The generators automatically:
 
 ## ProjectX CLI 🖥️
 
-ProjectX includes an interactive CLI tool for a more user-friendly experience when generating services and customizing the template.
+ProjectX includes an interactive CLI tool for a more developer-friendly experience when generating services and customizing the template.
 
 ### Running the CLI
 
@@ -279,10 +279,10 @@ pnpm cli info
 
 | Command | Description |
 |---------|-------------|
-| `projectx` | Interactive mode - select what to do |
-| `projectx generate [type]` | Generate service or workflow |
-| `projectx init` | Initialize/customize project for your needs |
-| `projectx info` | Display project information |
+| `pnpm cli` | Interactive mode - select what to do |
+| `pnpm cli generate [type]` | Generate service or workflow |
+| `pnpm cli init` | Initialize/customize project for your needs |
+| `pnpm cli info` | Display project information |
 
 ### Initialize Command
 

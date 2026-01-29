@@ -11,7 +11,8 @@
     "emitDecoratorMetadata": true,
     "useDefineForClassFields": false,
     "skipLibCheck": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": ["node"]
   },
   "include": ["src/**/*"],
   "exclude": [

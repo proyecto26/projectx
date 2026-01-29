@@ -1,11 +1,12 @@
 import {
   getLoginStateQuery,
   LOGIN_WORKFLOW_TIMEOUT,
+  LoginCodeExpiredException,
   LoginWorkflowCodeStatus,
   type LoginWorkflowData,
-  LoginWorkflowNonRetryableErrors,
   type LoginWorkflowState,
   LoginWorkflowStatus,
+  UnkownException,
   verifyLoginCodeUpdate,
 } from "@projectx/core/workflows";
 import {
@@ -28,7 +29,7 @@ const { sendLoginEmail } = proxyActivities<ActivitiesService>({
     maximumInterval: "10s",
     maximumAttempts: 10,
     backoffCoefficient: 1.5,
-    nonRetryableErrorTypes: [LoginWorkflowNonRetryableErrors.UNKNOWN_ERROR],
+    nonRetryableErrorTypes: [UnkownException.name],
   },
 });
 
@@ -39,7 +40,7 @@ const { verifyLoginCode } = proxyActivities<ActivitiesService>({
     maximumInterval: "10s",
     maximumAttempts: 10,
     backoffCoefficient: 2,
-    nonRetryableErrorTypes: [LoginWorkflowNonRetryableErrors.UNKNOWN_ERROR],
+    nonRetryableErrorTypes: [UnkownException.name],
   },
 });
 
@@ -88,7 +89,7 @@ export async function loginUserWorkflow(
       log.error(`User login code expired, email: ${data.email}`);
       throw ApplicationFailure.nonRetryable(
         "User login code expired",
-        LoginWorkflowNonRetryableErrors.LOGIN_CODE_EXPIRED,
+        LoginCodeExpiredException.name,
       );
     }
     return;

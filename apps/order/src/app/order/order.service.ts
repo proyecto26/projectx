@@ -18,6 +18,26 @@ export class OrderService {
   async createOrder({ user, order }: OrderWorkflowData) {
     this.logger.log(`createOrder(${user.id})`, order);
 
+    // Idempotency check: Return existing order if already created (handles retries)
+    const existingOrder =
+      await this.orderRepositoryService.getOrderByReferenceId(
+        order.referenceId,
+      );
+
+    if (existingOrder?.payment?.transactionId) {
+      this.logger.warn(
+        `Order with referenceId ${order.referenceId} already exists. Returning existing data.`,
+      );
+      // Retrieve existing payment intent to get client secret
+      const existingPaymentIntent = await this.stripeService.getPaymentIntent(
+        existingOrder.payment.transactionId,
+      );
+      return {
+        order: existingOrder,
+        clientSecret: existingPaymentIntent.client_secret,
+      };
+    }
+
     // Calculate initial breakdown (business logic)
     // In a real app, these might come from a pricing service
     const shippingCost = 10.0;
@@ -32,9 +52,13 @@ export class OrderService {
     });
 
     // Create payment intent with Stripe
+    const amountInCents = Math.round(Number(newOrder.totalPrice) * 100);
+    this.logger.log(
+      `createOrder(${user.id}) - totalPrice: ${newOrder.totalPrice}, amountInCents: ${amountInCents}`,
+    );
     const paymentIntent = await this.stripeService.createPaymentIntent(
       {
-        amount: Math.round(Number(newOrder.totalPrice) * 100), // Convert to cents
+        amount: amountInCents, // Convert to cents
         metadata: {
           userId: user.id.toString(),
           referenceId: order.referenceId,
