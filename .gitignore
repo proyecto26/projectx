@@ -61,3 +61,7 @@ storybook-static
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Temporal Skills
+**/remotion-best-practices/
+packages/videos/
