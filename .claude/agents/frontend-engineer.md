@@ -3,8 +3,9 @@ name: frontend-engineer
 description: React Router v7 SSR expert for the web application. Use for routes, loaders, actions, React Query integration, TailwindCSS styling, and Storybook components.
 tools: Read, Write, Edit, Glob, Grep, Bash(pnpm:*)
 skills:
-  - react-router
+  - react-router-v7
   - turborepo
+  - agent-browser
 model: sonnet
 ---
 
