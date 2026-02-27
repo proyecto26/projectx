@@ -27,6 +27,10 @@
     "temporal-docs": {
       "transport": "http",
       "url": "https://temporal.mcp.kapa.ai"
+    },
+    "temporal-playground": {
+      "command": "node",
+      "args": [".agents/skills/temporal-playground/server/dist/cli.js"]
     }
   }
 }

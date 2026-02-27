@@ -33,18 +33,23 @@
     "prisma:seed": "pnpm --filter @projectx/db run prisma:seed",
     "storybook": "turbo run dev --filter=storybook",
     "storybook:build": "turbo run build --filter=storybook",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "playground": "node .agents/skills/temporal-playground/server/dist/cli.js",
+    "playground:build": "cd .agents/skills/temporal-playground/server && npx tsup && cd ../ui && npx vite build",
+    "playground:dev": "cd .agents/skills/temporal-playground/ui && npx vite"
   },
   "dependencies": {
     "@types/express": "5.0.6"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",
+    "@playwright/test": "^1.58.0",
     "@turbo/gen": "^2.7.5",
     "@types/webpack": "^5.28.5",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "pino-pretty": "13.1.1",
+    "playwright": "^1.58.0",
     "tsconfig-paths-webpack-plugin": "^4.2.0",
     "turbo": "^2.7.5",
     "typescript": "^5.9.3"

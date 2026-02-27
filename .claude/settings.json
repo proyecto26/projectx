@@ -1,0 +1,6 @@
+{
+  "enabledPlugins": {
+    "playground-skill@playground-sync": true,
+    "playground-sync@playground-sync": true
+  }
+}
