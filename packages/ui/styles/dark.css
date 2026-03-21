@@ -1,64 +1,131 @@
-html.dark {
-  --theme-color-primary: #8ab4f8; /* Blue 300 */
-  --theme-color-primary-rgb: 138, 180, 248;
+html.dark,
+[data-theme="dark"] {
+  /* ── Core palette (from Pencil design system - dark mode) ── */
+  --background: #0A0A0B;
+  --foreground: #FFFFFF;
+  --card: #111113;
+  --card-foreground: #FFFFFF;
+  --surface: #0F0F11;
+  --surface-elevated: #18181B;
+
+  /* Primary */
+  --primary: #6366F1;
+  --primary-foreground: #FFFFFF;
+
+  /* Secondary */
+  --secondary: #1A1A1D;
+  --secondary-foreground: #FFFFFF;
+
+  /* Muted */
+  --muted: #1A1A1D;
+  --muted-foreground: #8B8B90;
+
+  /* Accent */
+  --accent: #1E1B4B;
+  --accent-foreground: #A5B4FC;
+
+  /* Borders & Inputs */
+  --border: #1F1F23;
+  --border-secondary: #2A2A2E;
+  --input: #1A1A1D;
+  --input-border: #3F3F46;
+
+  /* Status colors */
+  --success: #22C55E;
+  --success-foreground: #FFFFFF;
+  --success-muted: #22C55E18;
+
+  --warning: #F59E0B;
+  --warning-foreground: #FFFFFF;
+  --warning-muted: #F59E0B18;
+
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+
+  --info: #06B6D4;
+
+  /* Badges */
+  --badge-info: #1E3A5F;
+  --badge-info-foreground: #60A5FA;
+
+  /* Rating */
+  --rating: #FBBF24;
+
+  /* Navigation */
+  --nav-active: #818CF8;
+  --nav-hover: #27272A;
+
+  /* Sidebar */
+  --sidebar: #111113;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-accent: #1A1A1D;
+  --sidebar-muted: #6B6B70;
+
+  /* Seller */
+  --seller-bg: #064E3B;
+  --seller-primary: #34D399;
+
+  /* ── Legacy theme variables (mapped to new tokens) ── */
+  --theme-color-primary: #818CF8;
+  --theme-color-primary-rgb: 129, 140, 248;
   --theme-color-primary-contrast: #000000;
   --theme-color-primary-contrast-rgb: 0, 0, 0;
-  --theme-color-primary-shade: #7aa2e0;
-  --theme-color-primary-tint: #98bef9;
+  --theme-color-primary-shade: #6366F1;
+  --theme-color-primary-tint: #A5B4FC;
 
-  --theme-color-secondary: #9aa0a6; /* Gray 400 */
-  --theme-color-secondary-rgb: 154, 160, 166;
-  --theme-color-secondary-contrast: #000000;
-  --theme-color-secondary-contrast-rgb: 0, 0, 0;
-  --theme-color-secondary-shade: #889097;
-  --theme-color-secondary-tint: #a7adb3;
+  --theme-color-secondary: #1A1A1D;
+  --theme-color-secondary-rgb: 26, 26, 29;
+  --theme-color-secondary-contrast: #FFFFFF;
+  --theme-color-secondary-contrast-rgb: 255, 255, 255;
+  --theme-color-secondary-shade: #111113;
+  --theme-color-secondary-tint: #27272A;
 
-  --theme-color-tertiary: #81c995; /* Green 300 */
-  --theme-color-tertiary-rgb: 129, 201, 149;
+  --theme-color-tertiary: #22C55E;
+  --theme-color-tertiary-rgb: 34, 197, 94;
   --theme-color-tertiary-contrast: #000000;
   --theme-color-tertiary-contrast-rgb: 0, 0, 0;
-  --theme-color-tertiary-shade: #71b07f;
-  --theme-color-tertiary-tint: #90d1a4;
+  --theme-color-tertiary-shade: #16A34A;
+  --theme-color-tertiary-tint: #4ADE80;
 
-  --theme-color-success: #66bb6a; /* Green 400 */
-  --theme-color-success-rgb: 102, 187, 106;
+  --theme-color-success: #22C55E;
+  --theme-color-success-rgb: 34, 197, 94;
   --theme-color-success-contrast: #000000;
   --theme-color-success-contrast-rgb: 0, 0, 0;
-  --theme-color-success-shade: #5ba460;
-  --theme-color-success-tint: #77c482;
+  --theme-color-success-shade: #16A34A;
+  --theme-color-success-tint: #4ADE80;
 
-  --theme-color-warning: #fdd663; /* Yellow 300 */
-  --theme-color-warning-rgb: 253, 214, 99;
+  --theme-color-warning: #FBBF24;
+  --theme-color-warning-rgb: 251, 191, 36;
   --theme-color-warning-contrast: #000000;
   --theme-color-warning-contrast-rgb: 0, 0, 0;
-  --theme-color-warning-shade: #dfbc58;
-  --theme-color-warning-tint: #fde07c;
+  --theme-color-warning-shade: #F59E0B;
+  --theme-color-warning-tint: #FCD34D;
 
-  --theme-color-danger: #f28b82; /* Red 300 */
-  --theme-color-danger-rgb: 242, 139, 130;
+  --theme-color-danger: #F87171;
+  --theme-color-danger-rgb: 248, 113, 113;
   --theme-color-danger-contrast: #000000;
   --theme-color-danger-contrast-rgb: 0, 0, 0;
-  --theme-color-danger-shade: #d97b73;
-  --theme-color-danger-tint: #f4a199;
+  --theme-color-danger-shade: #EF4444;
+  --theme-color-danger-tint: #FCA5A5;
 
-  --theme-color-dark: #202124; /* Gray 900 */
-  --theme-color-dark-rgb: 32, 33, 36;
-  --theme-color-dark-contrast: #ffffff;
+  --theme-color-dark: #0A0A0B;
+  --theme-color-dark-rgb: 10, 10, 11;
+  --theme-color-dark-contrast: #FFFFFF;
   --theme-color-dark-contrast-rgb: 255, 255, 255;
-  --theme-color-dark-shade: #1c1d1f;
-  --theme-color-dark-tint: #38393b;
+  --theme-color-dark-shade: #000000;
+  --theme-color-dark-tint: #111113;
 
-  --theme-color-medium: #5f6368; /* Gray 600 */
-  --theme-color-medium-rgb: 95, 99, 104;
-  --theme-color-medium-contrast: #ffffff;
-  --theme-color-medium-contrast-rgb: 255, 255, 255;
-  --theme-color-medium-shade: #54575c;
-  --theme-color-medium-tint: #6e7277;
+  --theme-color-medium: #8B8B90;
+  --theme-color-medium-rgb: 139, 139, 144;
+  --theme-color-medium-contrast: #000000;
+  --theme-color-medium-contrast-rgb: 0, 0, 0;
+  --theme-color-medium-shade: #6B6B70;
+  --theme-color-medium-tint: #A1A1A6;
 
-  --theme-color-light: #303134; /* Gray 800 */
-  --theme-color-light-rgb: 48, 49, 52;
-  --theme-color-light-contrast: #ffffff;
+  --theme-color-light: #1A1A1D;
+  --theme-color-light-rgb: 26, 26, 29;
+  --theme-color-light-contrast: #FFFFFF;
   --theme-color-light-contrast-rgb: 255, 255, 255;
-  --theme-color-light-shade: #2a2b2e;
-  --theme-color-light-tint: #46474a;
+  --theme-color-light-shade: #111113;
+  --theme-color-light-tint: #27272A;
 }

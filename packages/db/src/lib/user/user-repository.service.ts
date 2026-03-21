@@ -1,5 +1,10 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { type CreateUserDto, UserDto, UserStatus } from "@projectx/models";
+import {
+  type CreateUserDto,
+  type UpdateUserDto,
+  UserDto,
+  UserStatus,
+} from "@projectx/models";
 import { plainToInstance } from "class-transformer";
 
 import { PrismaService } from "../prisma.service";
@@ -34,6 +39,17 @@ export class UserRepositoryService {
     if (!user) {
       return null;
     }
+    return plainToInstance(UserDto, user, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async updateUser(userId: number, data: UpdateUserDto): Promise<UserDto> {
+    this.logger.verbose(`updateUser(${userId})`);
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data,
+    });
     return plainToInstance(UserDto, user, {
       excludeExtraneousValues: true,
     });

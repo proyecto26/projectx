@@ -1,10 +1,12 @@
 import {
+  Body,
   Controller,
   ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
   NotFoundException,
+  Patch,
   UseGuards,
 } from "@nestjs/common";
 import {
@@ -15,7 +17,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { AuthenticatedUser, type AuthUser, JwtAuthGuard } from "@projectx/core";
-import { UserDto, UserStatus } from "@projectx/models";
+import { UpdateUserDto, UserDto, UserStatus } from "@projectx/models";
 
 import { UserService } from "./user.service";
 
@@ -50,5 +52,35 @@ export class UserController {
       );
     }
     return user;
+  }
+
+  @ApiOperation({
+    summary: "Update user profile",
+    description:
+      "This endpoint allows a user to update their profile information",
+  })
+  @ApiOkResponse({
+    description: "The user profile was updated successfully",
+    type: UserDto,
+  })
+  @ApiForbiddenResponse({
+    description: "The user is not active or not authenticated",
+  })
+  @Patch()
+  @HttpCode(HttpStatus.OK)
+  async updateProfile(
+    @AuthenticatedUser() userDto: AuthUser,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    const user = await this.userService.findOne(userDto);
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+    if (user.status !== UserStatus.Active) {
+      throw new ForbiddenException(
+        `User is not active in the system, status: ${user.status}`,
+      );
+    }
+    return this.userService.updateProfile(user.id, updateUserDto);
   }
 }

@@ -1,3 +1,5 @@
+import type { BadgeVariant } from "@projectx/ui";
+import { Badge, MetricCard, SearchBar } from "@projectx/ui";
 import {
   Bell,
   Clock,
@@ -12,7 +14,6 @@ import {
   PieChart,
   Printer,
   RotateCcw,
-  Search,
   Settings,
   ShoppingCart,
   Star,
@@ -50,22 +51,22 @@ interface AdminOrdersPageProps {
   };
 }
 
-function getStatusBadgeClass(status: string) {
+function getStatusBadgeVariant(status: string): BadgeVariant {
   switch (status) {
     case "Delivered":
-      return "badge-success";
+      return "success";
     case "Shipped":
-      return "badge-info";
+      return "info";
     case "Confirmed":
-      return "badge-warning"; // "Processing" equivalent
+      return "warning";
     case "Pending":
-      return "badge-ghost";
+      return "warning";
     case "Cancelled":
-      return "badge-error";
+      return "error";
     case "Failed":
-      return "badge-error";
+      return "error";
     default:
-      return "badge-ghost";
+      return "info";
   }
 }
 
@@ -84,67 +85,6 @@ function formatDate(date: Date | string): string {
     day: "numeric",
     year: "numeric",
   });
-}
-
-interface StatCardProps {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  change?: string;
-  subtitle: string;
-  stars?: number;
-}
-
-function StatCard({
-  icon,
-  label,
-  value,
-  change,
-  subtitle,
-  stars,
-}: StatCardProps) {
-  return (
-    <div className="card bg-base-100 shadow-sm transition-shadow hover:shadow-md">
-      <div className="card-body p-5">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="inline-block rounded-lg bg-primary/10 p-2">
-              {icon}
-            </div>
-            <h3 className="mt-3 font-medium text-base-content/60 text-xs uppercase tracking-wide">
-              {label}
-            </h3>
-            <p className="mt-1 font-bold font-mono text-2xl text-base-content">
-              {value}
-            </p>
-            <div className="mt-2 flex items-center gap-2">
-              <p className="text-base-content/60 text-xs">{subtitle}</p>
-            </div>
-            {stars !== undefined && (
-              <div className="mt-2 flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    className={`h-3 w-3 ${
-                      star <= Math.floor(stars)
-                        ? "fill-warning text-warning"
-                        : "text-base-content/20"
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-          {change && (
-            <div className="flex items-center gap-1 text-success">
-              <TrendingUp className="h-4 w-4" />
-              <span className="font-semibold text-sm">{change}</span>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
 }
 
 export function AdminOrdersPage({
@@ -312,7 +252,7 @@ export function AdminOrdersPage({
   return (
     <div className="flex h-screen bg-base-300">
       {/* Sidebar */}
-      <aside className="flex w-[280px] flex-col border-base-300 border-r bg-base-100">
+      <aside className="hidden w-[280px] flex-col border-base-300 border-r bg-base-100 lg:flex">
         {/* Brand */}
         <div className="border-base-300 border-b p-6">
           <h1 className="font-bold font-mono text-2xl text-base-content">
@@ -344,9 +284,11 @@ export function AdminOrdersPage({
               <ShoppingCart className="h-5 w-5" />
               <span className="font-medium text-sm">Orders</span>
               {counts && counts.pending > 0 && (
-                <div className="badge badge-primary badge-sm ml-auto">
-                  {counts.pending}
-                </div>
+                <Badge
+                  variant="count"
+                  count={counts.pending}
+                  className="ml-auto"
+                />
               )}
             </Link>
             <button
@@ -390,7 +332,7 @@ export function AdminOrdersPage({
             >
               <Bell className="h-5 w-5" />
               <span className="font-medium text-sm">Notifications</span>
-              <div className="badge badge-error badge-sm ml-auto">5</div>
+              <Badge variant="count" count={5} className="ml-auto" />
             </button>
           </div>
         </nav>
@@ -428,35 +370,35 @@ export function AdminOrdersPage({
       {/* Main Content */}
       <main className="flex flex-1 flex-col overflow-hidden">
         {/* Header */}
-        <header className="border-base-300 border-b bg-base-100 px-8 py-6">
+        <header className="border-base-300 border-b bg-base-100 px-4 py-4 lg:px-8 lg:py-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="font-bold font-mono text-2xl text-base-content">
-                Orders Management
+              <h1 className="font-bold font-mono text-[22px] text-base-content lg:text-2xl">
+                Orders
               </h1>
-              <p className="mt-1 text-base-content/60 text-sm">
-                Track and manage all customer orders
+              <p className="mt-1 text-[13px] text-base-content/60 lg:text-sm">
+                Manage customer orders
               </p>
             </div>
 
             <div className="flex gap-2">
-              <button type="button" className="btn btn-sm btn-ghost gap-2">
-                <Filter className="h-4 w-4" />
-                Filter
-              </button>
-              <button type="button" className="btn btn-sm btn-ghost gap-2">
+              <button type="button" className="btn btn-sm btn-outline gap-2">
                 <Download className="h-4 w-4" />
                 Export
+              </button>
+              <button type="button" className="btn btn-sm btn-primary gap-2">
+                <Filter className="h-4 w-4" />
+                New Order
               </button>
             </div>
           </div>
         </header>
 
         {/* Content Area */}
-        <div className="flex-1 space-y-6 overflow-auto p-8">
-          {/* Stats Cards */}
+        <div className="flex-1 space-y-4 overflow-auto p-4 lg:space-y-6 lg:p-8">
+          {/* Stats Cards - desktop only */}
           {statsLoading || countsLoading ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="hidden grid-cols-1 gap-4 sm:grid-cols-2 lg:grid lg:grid-cols-4">
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
@@ -472,37 +414,37 @@ export function AdminOrdersPage({
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <StatCard
-                icon={<ShoppingCart className="h-5 w-5 text-primary" />}
+            <div className="hidden grid-cols-1 gap-4 sm:grid-cols-2 lg:grid lg:grid-cols-4">
+              <MetricCard
+                icon={ShoppingCart}
                 label="Total Orders"
                 value={(counts?.total || 0).toLocaleString()}
-                subtitle="All time orders"
+                trendLabel="All time orders"
               />
-              <StatCard
-                icon={<Clock className="h-5 w-5 text-secondary" />}
+              <MetricCard
+                icon={Clock}
                 label="Pending"
                 value={(counts?.pending || 0).toString()}
-                subtitle="Needs attention"
+                trendLabel="Needs attention"
               />
-              <StatCard
-                icon={<Package className="h-5 w-5 text-warning" />}
+              <MetricCard
+                icon={Package}
                 label="In Production"
                 value={(counts?.inProduction || 0).toString()}
-                subtitle="Being processed"
+                trendLabel="Being processed"
               />
-              <StatCard
-                icon={<TrendingUp className="h-5 w-5 text-success" />}
+              <MetricCard
+                icon={TrendingUp}
                 label="Completed"
                 value={(counts?.completed || 0).toLocaleString()}
-                subtitle="Successfully delivered"
+                trendLabel="Successfully delivered"
               />
             </div>
           )}
 
-          {/* Performance Metrics */}
+          {/* Performance Metrics - desktop only */}
           {statsLoading ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="hidden grid-cols-1 gap-4 sm:grid-cols-2 lg:grid lg:grid-cols-4">
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
@@ -518,30 +460,30 @@ export function AdminOrdersPage({
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <StatCard
-                icon={<TrendingUp className="h-5 w-5 text-success" />}
+            <div className="hidden grid-cols-1 gap-4 sm:grid-cols-2 lg:grid lg:grid-cols-4">
+              <MetricCard
+                icon={TrendingUp}
                 label="Fulfillment Rate"
                 value={`${fulfillmentRate}%`}
-                subtitle="Last 30 days"
+                trendLabel="Last 30 days"
               />
-              <StatCard
-                icon={<Clock className="h-5 w-5 text-info" />}
+              <MetricCard
+                icon={Clock}
                 label="Avg Production Time"
                 value={`${avgProductionTime} days`}
-                subtitle="Order to delivery"
+                trendLabel="Order to delivery"
               />
-              <StatCard
-                icon={<RotateCcw className="h-5 w-5 text-warning" />}
+              <MetricCard
+                icon={RotateCcw}
                 label="Total Revenue"
                 value={formatCurrency(stats?.totalRevenue || 0)}
-                subtitle="All time"
+                trendLabel="All time"
               />
-              <StatCard
-                icon={<Star className="h-5 w-5 text-warning" />}
+              <MetricCard
+                icon={Star}
                 label="Avg Order Value"
                 value={formatCurrency(stats?.averageOrderValue || 0)}
-                subtitle="Per order"
+                trendLabel="Per order"
               />
             </div>
           )}
@@ -550,38 +492,36 @@ export function AdminOrdersPage({
           <div className="card bg-base-100 shadow-sm">
             <div className="card-body p-0">
               {/* Table Header */}
-              <div className="border-base-300 border-b p-5">
+              <div className="border-base-300 border-b p-4 lg:p-5">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-4">
                     <h3 className="font-semibold text-base-content text-lg">
                       All Orders
                     </h3>
-                    <div className="badge badge-primary badge-lg">
-                      {ordersLoading ? "..." : totalOrders}
-                    </div>
+                    {!ordersLoading && (
+                      <Badge variant="count" count={totalOrders} />
+                    )}
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <label className="input input-sm input-bordered flex items-center gap-2">
-                      <input
-                        type="text"
-                        placeholder="Search orders..."
-                        className="grow"
-                        value={searchQuery}
-                        onChange={(e) => handleSearch(e.target.value)}
-                      />
-                      <Search className="h-4 w-4 opacity-70" />
-                    </label>
+                  <div className="flex w-full items-center gap-2 sm:w-auto">
+                    <SearchBar
+                      placeholder="Search orders..."
+                      value={searchQuery}
+                      onChange={handleSearch}
+                      className="w-full"
+                    />
                   </div>
                 </div>
 
-                {/* Tabs */}
-                <div className="tabs tabs-boxed mt-4 bg-base-200">
+                {/* Tabs - horizontally scrollable on mobile */}
+                <div className="scrollbar-none mt-4 flex gap-2 overflow-x-auto pb-1">
                   {tabs.map((tab) => (
                     <button
                       key={tab.value}
                       type="button"
-                      className={`tab ${statusFilter === tab.value ? "tab-active" : ""}`}
+                      className={`btn btn-sm flex-shrink-0 ${
+                        statusFilter === tab.value ? "btn-primary" : "btn-ghost"
+                      }`}
                       onClick={() => handleStatusFilter(tab.value)}
                     >
                       {tab.label}
@@ -621,8 +561,100 @@ export function AdminOrdersPage({
                 )}
               </div>
 
-              {/* Table */}
-              <div className="overflow-x-auto">
+              {/* Mobile Order Cards - visible on mobile only */}
+              <div className="lg:hidden">
+                {ordersLoading ? (
+                  <div className="p-8 text-center">
+                    <span className="loading loading-spinner loading-lg" />
+                    <p className="mt-4 text-base-content/60">
+                      Loading orders...
+                    </p>
+                  </div>
+                ) : orders.length === 0 ? (
+                  <div className="p-8 text-center">
+                    <p className="text-base-content/60">No orders found</p>
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-ghost mt-4"
+                        onClick={() => handleSearch("")}
+                      >
+                        Clear search
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-3 p-4">
+                    {orders.map((order) => (
+                      <button
+                        key={order.id}
+                        type="button"
+                        className="w-full space-y-3 rounded-lg border border-base-300 bg-base-100 p-4 text-left transition-colors hover:bg-base-200"
+                        onClick={() => handleViewDetails(order.id)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-mono text-base-content/60 text-sm">
+                            #{order.referenceId}
+                          </span>
+                          <Badge
+                            variant={getStatusBadgeVariant(order.status)}
+                            label={order.status}
+                          />
+                        </div>
+                        <p className="font-medium text-sm">
+                          {order.customerName}
+                        </p>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-base-content/50">
+                            {formatDate(order.date)}
+                          </span>
+                          <span className="font-bold">
+                            {formatCurrency(order.amount)}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Mobile Pagination footer */}
+                {!ordersLoading && orders.length > 0 && (
+                  <div className="border-base-300 border-t p-4 text-center">
+                    <p className="text-[12px] text-base-content/60">
+                      Showing {(currentPage - 1) * 10 + 1}-
+                      {Math.min(currentPage * 10, totalOrders)} of {totalOrders}{" "}
+                      orders
+                    </p>
+                    <div className="join mt-3">
+                      <button
+                        type="button"
+                        className="join-item btn btn-sm"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                      >
+                        «
+                      </button>
+                      <button
+                        type="button"
+                        className="join-item btn btn-sm btn-disabled pointer-events-none"
+                      >
+                        {currentPage} / {totalPages}
+                      </button>
+                      <button
+                        type="button"
+                        className="join-item btn btn-sm"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                      >
+                        »
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Desktop Table - hidden on mobile */}
+              <div className="hidden overflow-x-auto lg:block">
                 {ordersLoading ? (
                   <div className="p-8 text-center">
                     <span className="loading loading-spinner loading-lg" />
@@ -715,11 +747,10 @@ export function AdminOrdersPage({
                             </div>
                           </td>
                           <td>
-                            <div
-                              className={`badge ${getStatusBadgeClass(order.status)} badge-sm`}
-                            >
-                              {order.status}
-                            </div>
+                            <Badge
+                              variant={getStatusBadgeVariant(order.status)}
+                              label={order.status}
+                            />
                           </td>
                           <td>
                             <span className="font-mono font-semibold text-sm">
@@ -799,9 +830,9 @@ export function AdminOrdersPage({
                 )}
               </div>
 
-              {/* Pagination */}
+              {/* Desktop Pagination */}
               {!ordersLoading && orders.length > 0 && (
-                <div className="border-base-300 border-t p-5">
+                <div className="hidden border-base-300 border-t p-5 lg:block">
                   <div className="flex items-center justify-between">
                     <span className="text-base-content/60 text-sm">
                       Showing {(currentPage - 1) * 10 + 1} to{" "}
@@ -907,11 +938,10 @@ export function AdminOrdersPage({
                   </div>
                   <div>
                     <p className="text-base-content/60 text-sm">Status</p>
-                    <div
-                      className={`badge ${getStatusBadgeClass(orderDetail.status)}`}
-                    >
-                      {orderDetail.status}
-                    </div>
+                    <Badge
+                      variant={getStatusBadgeVariant(orderDetail.status)}
+                      label={orderDetail.status}
+                    />
                   </div>
                   <div>
                     <p className="text-base-content/60 text-sm">Created</p>

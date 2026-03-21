@@ -61,11 +61,3 @@ storybook-static
 
 # Claude Code local settings
 .claude/settings.local.json
-
-# OpenSpec - active changes (specs are committed)
-openspec/changes/
-
-# Remotion Skills
-**/remotion-best-practices/**
-**/remotion-video-creator.md
-packages/videos/

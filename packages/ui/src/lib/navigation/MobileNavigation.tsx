@@ -2,7 +2,7 @@
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Link, useNavigation } from "react-router-dom";
+import { Link, useNavigation } from "react-router";
 
 import CloseIcon from "../icons/Close";
 import MenuIcon from "../icons/Menu";
@@ -35,7 +35,7 @@ export function MobileNavigation({
         className="relative"
         aria-label="Open navigation"
       >
-        <MenuIcon className="h-6 w-6 stroke-slate-500" />
+        <MenuIcon className="h-6 w-6 stroke-(--muted-foreground)" />
       </button>
       <AnimatePresence>
         {isOpen && (
@@ -45,7 +45,7 @@ export function MobileNavigation({
             open={isOpen}
             initial={false}
             onClose={setIsOpen}
-            className="fixed inset-0 z-50 flex items-start overflow-y-auto bg-slate-900/50 pr-10 backdrop-blur lg:hidden"
+            className="fixed inset-0 z-50 flex items-start overflow-y-auto bg-black/50 pr-10 backdrop-blur lg:hidden"
             aria-label="Navigation"
           >
             <DialogPanel
@@ -72,7 +72,7 @@ export function MobileNavigation({
               initial="closed"
               animate="open"
               exit="closed"
-              className="min-h-full w-full max-w-xs bg-white px-4 pt-[0.6rem] pb-12 sm:px-6 dark:bg-slate-900"
+              className="min-h-full w-full max-w-xs bg-(--background) px-4 pt-[0.6rem] pb-12 sm:px-6"
             >
               <div className="flex items-center justify-between">
                 <button
@@ -80,13 +80,13 @@ export function MobileNavigation({
                   onClick={() => setIsOpen(false)}
                   aria-label="Close navigation"
                 >
-                  <CloseIcon className="h-6 w-6 stroke-slate-500" />
+                  <CloseIcon className="h-6 w-6 stroke-(--muted-foreground)" />
                 </button>
                 <Link to="/" aria-label="Home page">
                   <img
                     alt="Logo"
                     src={logoImgSrc}
-                    className="h-9 w-9 rounded-full fill-slate-700 dark:fill-sky-100"
+                    className="h-9 w-9 rounded-full"
                   />
                 </Link>
               </div>

@@ -24,17 +24,22 @@ export default [
 
     // Marketplace & product
     route("marketplace", "./routes/marketplace.tsx"),
-    route("product", "./routes/product.tsx"),
+    route("product/:id", "./routes/product.$id.tsx"),
 
     // Orders
     ...prefix("order/:orderId", [
       route("detail", "./routes/order/detail.tsx"),
       route("history", "./routes/order/history.tsx"),
       route("summary", "./routes/order/summary.tsx"),
+      route("confirmation", "./routes/order/confirmation.tsx"),
     ]),
 
     // Profile
     route("profile", "./routes/profile.tsx"),
+
+    // Legal
+    route("terms", "./routes/terms.tsx"),
+    route("privacy", "./routes/privacy.tsx"),
   ]),
 
   // Admin

@@ -1,4 +1,12 @@
 import {
+  Badge,
+  MetricCard,
+  MetricCardV2,
+  ProgressBar,
+  SectionHeader,
+  TableRow,
+} from "@projectx/ui";
+import {
   Activity,
   AlertTriangle,
   Award,
@@ -223,99 +231,25 @@ const dashboardData = {
   ],
 };
 
-interface StatCardProps {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  change?: string;
-  trend?: "up" | "down";
-  subtitle: string;
-  urgent?: boolean;
-}
+type OrderStatus = "Completed" | "Processing" | "Pending" | "Cancelled";
 
-function StatCard({
-  icon,
-  label,
-  value,
-  change,
-  trend,
-  subtitle,
-  urgent,
-}: StatCardProps) {
-  const isPositive = trend === "up";
-  const showChange = change && trend;
-
-  return (
-    <div className="card bg-base-100 shadow-sm transition-shadow hover:shadow-md">
-      <div className="card-body p-5">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <div
-                className={`rounded-lg p-2 ${urgent ? "bg-warning/10" : "bg-primary/10"}`}
-              >
-                {icon}
-              </div>
-              {urgent && (
-                <div className="badge badge-warning badge-sm gap-1">
-                  <AlertTriangle className="h-3 w-3" />
-                  Urgent
-                </div>
-              )}
-            </div>
-            <h3 className="mt-3 font-medium text-base-content/60 text-xs uppercase tracking-wide">
-              {label}
-            </h3>
-            <p className="mt-1 font-bold font-mono text-2xl text-base-content">
-              {value}
-            </p>
-            <div className="mt-2 flex items-center gap-2">
-              <p className="text-base-content/60 text-xs">{subtitle}</p>
-            </div>
-          </div>
-          {showChange && (
-            <div
-              className={`flex items-center gap-1 ${isPositive ? "text-success" : "text-error"}`}
-            >
-              {isPositive ? (
-                <TrendingUp className="h-4 w-4" />
-              ) : (
-                <TrendingDown className="h-4 w-4" />
-              )}
-              <span className="font-semibold text-sm">{change}</span>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-interface SectionHeaderProps {
-  title: string;
-  icon: React.ReactNode;
-  description?: string;
-}
-
-function SectionHeader({ title, icon, description }: SectionHeaderProps) {
-  return (
-    <div className="mb-4 flex items-center gap-3">
-      <div className="rounded-lg bg-primary/10 p-2">{icon}</div>
-      <div>
-        <h2 className="font-bold text-base-content text-lg">{title}</h2>
-        {description && (
-          <p className="text-base-content/60 text-xs">{description}</p>
-        )}
-      </div>
-    </div>
-  );
+function getOrderStatusColor(
+  status: string,
+): "success" | "info" | "warning" | "error" {
+  const map: Record<OrderStatus, "success" | "info" | "warning" | "error"> = {
+    Completed: "success",
+    Processing: "info",
+    Pending: "warning",
+    Cancelled: "error",
+  };
+  return map[status as OrderStatus] ?? "primary";
 }
 
 export function AdminDashboardPage() {
   return (
     <div className="flex h-screen bg-base-300">
-      {/* Sidebar */}
-      <aside className="flex w-[280px] flex-col border-base-300 border-r bg-base-100">
+      {/* Sidebar - hidden on mobile, visible on lg+ */}
+      <aside className="hidden border-base-300 border-r bg-base-100 lg:flex lg:w-[260px] lg:flex-col">
         {/* Brand */}
         <div className="border-base-300 border-b p-6">
           <h1 className="font-bold font-mono text-2xl text-base-content">
@@ -346,7 +280,7 @@ export function AdminDashboardPage() {
             >
               <ShoppingCart className="h-5 w-5" />
               <span className="font-medium text-sm">Orders</span>
-              <div className="badge badge-primary badge-sm ml-auto">23</div>
+              <Badge variant="count" count={23} className="ml-auto" />
             </Link>
             <button
               type="button"
@@ -389,7 +323,7 @@ export function AdminDashboardPage() {
             >
               <Bell className="h-5 w-5" />
               <span className="font-medium text-sm">Notifications</span>
-              <div className="badge badge-error badge-sm ml-auto">5</div>
+              <Badge variant="count" count={5} className="ml-auto" />
             </button>
           </div>
         </nav>
@@ -425,76 +359,81 @@ export function AdminDashboardPage() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex flex-1 flex-col overflow-hidden">
+      <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
         {/* Header */}
-        <header className="border-base-300 border-b bg-base-100 px-8 py-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <header className="border-base-300 border-b bg-base-100 px-4 py-4 lg:px-8 lg:py-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="font-bold font-mono text-2xl text-base-content">
-                Dashboard Overview
+              {/* Page title: always visible on mobile, also on desktop */}
+              <h1 className="font-bold font-mono text-[22px] text-base-content lg:text-2xl">
+                Dashboard
               </h1>
-              <p className="mt-1 text-base-content/60 text-sm">
-                Real-time business performance metrics
+              <p className="mt-1 text-[13px] text-base-content/60 lg:text-sm">
+                Real-time metrics
               </p>
             </div>
 
-            <div className="flex gap-2">
-              {["Today", "7 Days", "30 Days", "Quarter"].map((period) => (
-                <button
-                  key={period}
-                  type="button"
-                  className={`btn btn-sm ${
-                    period === "7 Days" ? "btn-primary" : "btn-ghost"
-                  }`}
-                >
-                  {period}
-                </button>
-              ))}
+            {/* Period filter buttons - scrollable on mobile */}
+            <div className="overflow-x-auto">
+              <div className="flex flex-nowrap gap-2">
+                {["Today", "7 Days", "30 Days", "Quarter"].map((period) => (
+                  <button
+                    key={period}
+                    type="button"
+                    className={`btn btn-sm shrink-0 ${
+                      period === "7 Days" ? "btn-primary" : "btn-ghost"
+                    }`}
+                  >
+                    {period}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </header>
 
         {/* Content Area */}
-        <div className="flex-1 space-y-8 overflow-auto p-8">
+        <div className="flex-1 space-y-5 overflow-auto p-4 lg:space-y-8 lg:p-8">
           {/* Section 1: Sales & Revenue */}
           <section>
             <SectionHeader
+              icon={DollarSign}
               title="Sales & Revenue"
-              icon={<DollarSign className="h-5 w-5 text-primary" />}
-              description="Track your revenue performance and growth"
+              subtitle="Track your revenue performance and growth"
+              className="mb-3 lg:mb-4"
             />
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <StatCard
-                icon={<DollarSign className="h-5 w-5 text-primary" />}
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+              <MetricCard
                 label="Total Revenue"
                 value={dashboardData.salesRevenue.totalRevenue.value}
-                change={dashboardData.salesRevenue.totalRevenue.change}
-                trend={dashboardData.salesRevenue.totalRevenue.trend}
-                subtitle={dashboardData.salesRevenue.totalRevenue.subtitle}
+                icon={DollarSign}
+                trendLabel={`${dashboardData.salesRevenue.totalRevenue.change} ${dashboardData.salesRevenue.totalRevenue.subtitle}`}
+                trendIcon={TrendingUp}
+                className="w-full"
               />
-              <StatCard
-                icon={<BarChart3 className="h-5 w-5 text-primary" />}
+              <MetricCard
                 label="GMV"
                 value={dashboardData.salesRevenue.gmv.value}
-                change={dashboardData.salesRevenue.gmv.change}
-                trend={dashboardData.salesRevenue.gmv.trend}
-                subtitle={dashboardData.salesRevenue.gmv.subtitle}
+                icon={BarChart3}
+                trendLabel={`${dashboardData.salesRevenue.gmv.change} ${dashboardData.salesRevenue.gmv.subtitle}`}
+                trendIcon={TrendingUp}
+                className="w-full"
               />
-              <StatCard
-                icon={<ShoppingBag className="h-5 w-5 text-primary" />}
+              <MetricCard
                 label="Average Order Value"
                 value={dashboardData.salesRevenue.aov.value}
-                change={dashboardData.salesRevenue.aov.change}
-                trend={dashboardData.salesRevenue.aov.trend}
-                subtitle={dashboardData.salesRevenue.aov.subtitle}
+                icon={ShoppingBag}
+                trendLabel={`${dashboardData.salesRevenue.aov.change} ${dashboardData.salesRevenue.aov.subtitle}`}
+                trendIcon={TrendingUp}
+                className="w-full"
               />
-              <StatCard
-                icon={<TrendingUp className="h-5 w-5 text-success" />}
+              <MetricCard
                 label="Revenue Growth"
                 value={dashboardData.salesRevenue.revenueGrowth.value}
-                change={dashboardData.salesRevenue.revenueGrowth.change}
-                trend={dashboardData.salesRevenue.revenueGrowth.trend}
-                subtitle={dashboardData.salesRevenue.revenueGrowth.subtitle}
+                icon={TrendingUp}
+                trendLabel={`${dashboardData.salesRevenue.revenueGrowth.change} ${dashboardData.salesRevenue.revenueGrowth.subtitle}`}
+                trendIcon={TrendingUp}
+                className="w-full"
               />
             </div>
           </section>
@@ -502,59 +441,55 @@ export function AdminDashboardPage() {
           {/* Section 2: Orders Snapshot */}
           <section>
             <SectionHeader
+              icon={ShoppingCart}
               title="Orders Snapshot"
-              icon={<ShoppingCart className="h-5 w-5 text-primary" />}
-              description="Monitor order volume and fulfillment"
+              subtitle="Monitor order volume and fulfillment"
+              className="mb-3 lg:mb-4"
             />
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
               <div className="lg:col-span-2">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  <StatCard
-                    icon={<ShoppingCart className="h-5 w-5 text-primary" />}
+                <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 lg:gap-4">
+                  <MetricCard
                     label="Orders Today"
                     value={dashboardData.ordersSnapshot.ordersToday.value}
-                    change={dashboardData.ordersSnapshot.ordersToday.change}
-                    trend={dashboardData.ordersSnapshot.ordersToday.trend}
-                    subtitle={dashboardData.ordersSnapshot.ordersToday.subtitle}
+                    icon={ShoppingCart}
+                    trendLabel={`${dashboardData.ordersSnapshot.ordersToday.change} ${dashboardData.ordersSnapshot.ordersToday.subtitle}`}
+                    trendIcon={TrendingUp}
+                    className="w-full"
                   />
-                  <StatCard
-                    icon={<Package className="h-5 w-5 text-primary" />}
+                  <MetricCard
                     label="Orders This Week"
                     value={dashboardData.ordersSnapshot.ordersThisWeek.value}
-                    change={dashboardData.ordersSnapshot.ordersThisWeek.change}
-                    trend={dashboardData.ordersSnapshot.ordersThisWeek.trend}
-                    subtitle={
-                      dashboardData.ordersSnapshot.ordersThisWeek.subtitle
-                    }
+                    icon={Package}
+                    trendLabel={`${dashboardData.ordersSnapshot.ordersThisWeek.change} ${dashboardData.ordersSnapshot.ordersThisWeek.subtitle}`}
+                    trendIcon={TrendingUp}
+                    className="w-full"
                   />
-                  <StatCard
-                    icon={<AlertTriangle className="h-5 w-5 text-warning" />}
+                  <MetricCardV2
                     label="Pending Orders"
                     value={dashboardData.ordersSnapshot.pendingOrders.value}
-                    subtitle={
+                    icon={AlertTriangle}
+                    subtext={
                       dashboardData.ordersSnapshot.pendingOrders.subtitle
                     }
-                    urgent={dashboardData.ordersSnapshot.pendingOrders.urgent}
+                    badge={<Badge variant="urgent" label="Urgent" />}
+                    className="w-full"
                   />
-                  <StatCard
-                    icon={<Target className="h-5 w-5 text-success" />}
+                  <MetricCard
                     label="Fulfillment Rate"
                     value={dashboardData.ordersSnapshot.fulfillmentRate.value}
-                    change={dashboardData.ordersSnapshot.fulfillmentRate.change}
-                    trend={dashboardData.ordersSnapshot.fulfillmentRate.trend}
-                    subtitle={
-                      dashboardData.ordersSnapshot.fulfillmentRate.subtitle
-                    }
+                    icon={Target}
+                    trendLabel={`${dashboardData.ordersSnapshot.fulfillmentRate.change} ${dashboardData.ordersSnapshot.fulfillmentRate.subtitle}`}
+                    trendIcon={TrendingUp}
+                    className="w-full"
                   />
-                  <StatCard
-                    icon={<Clock className="h-5 w-5 text-primary" />}
+                  <MetricCard
                     label="Avg Delivery Time"
                     value={dashboardData.ordersSnapshot.avgDeliveryTime.value}
-                    change={dashboardData.ordersSnapshot.avgDeliveryTime.change}
-                    trend={dashboardData.ordersSnapshot.avgDeliveryTime.trend}
-                    subtitle={
-                      dashboardData.ordersSnapshot.avgDeliveryTime.subtitle
-                    }
+                    icon={Clock}
+                    trendLabel={`${dashboardData.ordersSnapshot.avgDeliveryTime.change} ${dashboardData.ordersSnapshot.avgDeliveryTime.subtitle}`}
+                    trendIcon={TrendingDown}
+                    className="w-full"
                   />
                 </div>
               </div>
@@ -567,30 +502,13 @@ export function AdminDashboardPage() {
                   </h3>
                   <div className="space-y-3">
                     {dashboardData.orderStatusDistribution.map((item) => (
-                      <div key={item.status}>
-                        <div className="mb-1 flex items-center justify-between text-xs">
-                          <span className="text-base-content/70">
-                            {item.status}
-                          </span>
-                          <span className="font-mono font-semibold">
-                            {item.count}
-                          </span>
-                        </div>
-                        <div className="h-2 w-full rounded-full bg-base-200">
-                          <div
-                            className={`h-2 rounded-full ${
-                              item.status === "Completed"
-                                ? "bg-success"
-                                : item.status === "Processing"
-                                  ? "bg-info"
-                                  : item.status === "Pending"
-                                    ? "bg-warning"
-                                    : "bg-error"
-                            }`}
-                            style={{ width: `${item.percentage}%` }}
-                          />
-                        </div>
-                      </div>
+                      <ProgressBar
+                        key={item.status}
+                        label={item.status}
+                        value={item.count}
+                        max={360}
+                        color={getOrderStatusColor(item.status)}
+                      />
                     ))}
                   </div>
                 </div>
@@ -601,66 +519,58 @@ export function AdminDashboardPage() {
           {/* Section 3: Customer Insights */}
           <section>
             <SectionHeader
+              icon={Users}
               title="Customer Insights"
-              icon={<Users className="h-5 w-5 text-primary" />}
-              description="Understand your customer base and behavior"
+              subtitle="Understand your customer base and behavior"
+              className="mb-3 lg:mb-4"
             />
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <StatCard
-                icon={<Users className="h-5 w-5 text-primary" />}
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 lg:gap-4">
+              <MetricCard
                 label="Total Customers"
                 value={dashboardData.customerInsights.totalCustomers.value}
-                change={dashboardData.customerInsights.totalCustomers.change}
-                trend={dashboardData.customerInsights.totalCustomers.trend}
-                subtitle={
-                  dashboardData.customerInsights.totalCustomers.subtitle
-                }
+                icon={Users}
+                trendLabel={`${dashboardData.customerInsights.totalCustomers.change} ${dashboardData.customerInsights.totalCustomers.subtitle}`}
+                trendIcon={TrendingUp}
+                className="w-full"
               />
-              <StatCard
-                icon={<UserCircle className="h-5 w-5 text-success" />}
+              <MetricCardV2
                 label="New Customers"
                 value={dashboardData.customerInsights.newCustomers.value}
-                subtitle={dashboardData.customerInsights.newCustomers.subtitle}
+                icon={UserCircle}
+                subtext={dashboardData.customerInsights.newCustomers.subtitle}
+                className="w-full"
               />
-              <StatCard
-                icon={<Activity className="h-5 w-5 text-info" />}
+              <MetricCard
                 label="Returning Customers"
                 value={dashboardData.customerInsights.returningCustomers.value}
-                change={
-                  dashboardData.customerInsights.returningCustomers.change
-                }
-                trend={dashboardData.customerInsights.returningCustomers.trend}
-                subtitle={
-                  dashboardData.customerInsights.returningCustomers.subtitle
-                }
+                icon={Activity}
+                trendLabel={`${dashboardData.customerInsights.returningCustomers.change} ${dashboardData.customerInsights.returningCustomers.subtitle}`}
+                trendIcon={TrendingUp}
+                className="w-full"
               />
-              <StatCard
-                icon={<DollarSign className="h-5 w-5 text-primary" />}
+              <MetricCard
                 label="CAC"
                 value={dashboardData.customerInsights.cac.value}
-                change={dashboardData.customerInsights.cac.change}
-                trend={dashboardData.customerInsights.cac.trend}
-                subtitle={dashboardData.customerInsights.cac.subtitle}
+                icon={DollarSign}
+                trendLabel={`${dashboardData.customerInsights.cac.change} ${dashboardData.customerInsights.cac.subtitle}`}
+                trendIcon={TrendingDown}
+                className="w-full"
               />
-              <StatCard
-                icon={<Award className="h-5 w-5 text-warning" />}
+              <MetricCard
                 label="CLV"
                 value={dashboardData.customerInsights.clv.value}
-                change={dashboardData.customerInsights.clv.change}
-                trend={dashboardData.customerInsights.clv.trend}
-                subtitle={dashboardData.customerInsights.clv.subtitle}
+                icon={Award}
+                trendLabel={`${dashboardData.customerInsights.clv.change} ${dashboardData.customerInsights.clv.subtitle}`}
+                trendIcon={TrendingUp}
+                className="w-full"
               />
-              <StatCard
-                icon={<Target className="h-5 w-5 text-success" />}
+              <MetricCard
                 label="Repeat Purchase Rate"
                 value={dashboardData.customerInsights.repeatPurchaseRate.value}
-                change={
-                  dashboardData.customerInsights.repeatPurchaseRate.change
-                }
-                trend={dashboardData.customerInsights.repeatPurchaseRate.trend}
-                subtitle={
-                  dashboardData.customerInsights.repeatPurchaseRate.subtitle
-                }
+                icon={Target}
+                trendLabel={`${dashboardData.customerInsights.repeatPurchaseRate.change} ${dashboardData.customerInsights.repeatPurchaseRate.subtitle}`}
+                trendIcon={TrendingUp}
+                className="w-full"
               />
             </div>
           </section>
@@ -668,95 +578,105 @@ export function AdminDashboardPage() {
           {/* Section 4: Product Performance */}
           <section>
             <SectionHeader
+              icon={Package}
               title="Product Performance"
-              icon={<Package className="h-5 w-5 text-primary" />}
-              description="Track top sellers and inventory alerts"
+              subtitle="Track top sellers and inventory alerts"
+              className="mb-3 lg:mb-4"
             />
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-              {/* Top Products Table */}
+              {/* Top Products - table on desktop, card list on mobile */}
               <div className="card bg-base-100 shadow-sm lg:col-span-2">
-                <div className="card-body p-5">
+                <div className="card-body p-4 lg:p-5">
                   <h3 className="mb-4 font-semibold text-base-content text-sm">
                     Top 5 Selling Products
                   </h3>
-                  <div className="overflow-x-auto">
-                    <table className="table-sm table">
-                      <thead>
-                        <tr className="border-base-300 border-b">
-                          <th className="font-semibold text-xs uppercase">
-                            Product
-                          </th>
-                          <th className="text-right font-semibold text-xs uppercase">
-                            Units Sold
-                          </th>
-                          <th className="text-right font-semibold text-xs uppercase">
-                            Revenue
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {dashboardData.productPerformance.topProducts.map(
-                          (product, index) => (
-                            <tr key={product.name} className="hover">
-                              <td>
-                                <div className="flex items-center gap-2">
-                                  <div className="badge badge-sm badge-primary">
-                                    {index + 1}
-                                  </div>
-                                  <span className="text-sm">
-                                    {product.name}
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="text-right font-mono">
-                                {product.units}
-                              </td>
-                              <td className="text-right font-mono font-semibold">
-                                {product.revenue}
-                              </td>
-                            </tr>
-                          ),
-                        )}
-                      </tbody>
-                    </table>
+
+                  {/* Desktop table header */}
+                  <div className="hidden items-center gap-3 border-base-300 border-b px-4 py-2 lg:flex">
+                    <div className="h-7 w-7 shrink-0" />
+                    <span className="flex-1 font-semibold text-base-content/60 text-xs uppercase">
+                      Product
+                    </span>
+                    <span className="w-[100px] shrink-0 text-right font-semibold text-base-content/60 text-xs uppercase">
+                      Units Sold
+                    </span>
+                    <span className="w-[100px] shrink-0 text-right font-semibold text-base-content/60 text-xs uppercase">
+                      Revenue
+                    </span>
+                  </div>
+
+                  {/* Desktop table rows */}
+                  <div className="hidden overflow-x-auto lg:block">
+                    {dashboardData.productPerformance.topProducts.map(
+                      (product, index) => (
+                        <TableRow
+                          key={product.name}
+                          rank={index + 1}
+                          name={product.name}
+                          units={product.units}
+                          revenue={product.revenue}
+                          className="w-full"
+                        />
+                      ),
+                    )}
+                  </div>
+
+                  {/* Mobile card list */}
+                  <div className="space-y-2 lg:hidden">
+                    {dashboardData.productPerformance.topProducts.map(
+                      (product, index) => (
+                        <div
+                          key={product.name}
+                          className="flex items-center gap-3 rounded-lg bg-base-200/50 px-3 py-2.5"
+                        >
+                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-base-300 font-bold font-mono text-base-content/60 text-xs">
+                            {index + 1}
+                          </span>
+                          <span className="flex-1 truncate font-medium text-base-content text-sm">
+                            {product.name}
+                          </span>
+                          <div className="flex shrink-0 flex-col items-end gap-0.5">
+                            <span className="font-semibold text-base-content text-xs">
+                              {product.revenue}
+                            </span>
+                            <span className="text-base-content/50 text-xs">
+                              {product.units} units
+                            </span>
+                          </div>
+                        </div>
+                      ),
+                    )}
                   </div>
                 </div>
               </div>
 
               {/* Product Stats */}
-              <div className="space-y-4">
-                <StatCard
-                  icon={<AlertTriangle className="h-5 w-5 text-warning" />}
+              <div className="space-y-3 lg:space-y-4">
+                <MetricCardV2
                   label="Low Stock Alerts"
                   value={dashboardData.productPerformance.lowStockAlerts.value}
-                  subtitle={
+                  icon={AlertTriangle}
+                  subtext={
                     dashboardData.productPerformance.lowStockAlerts.subtitle
                   }
-                  urgent={
-                    dashboardData.productPerformance.lowStockAlerts.urgent
-                  }
+                  badge={<Badge variant="urgent" label="Urgent" />}
+                  className="w-full"
                 />
-                <StatCard
-                  icon={<Eye className="h-5 w-5 text-primary" />}
+                <MetricCard
                   label="Product Views"
                   value={dashboardData.productPerformance.productViews.value}
-                  change={dashboardData.productPerformance.productViews.change}
-                  trend={dashboardData.productPerformance.productViews.trend}
-                  subtitle={
-                    dashboardData.productPerformance.productViews.subtitle
-                  }
+                  icon={Eye}
+                  trendLabel={`${dashboardData.productPerformance.productViews.change} ${dashboardData.productPerformance.productViews.subtitle}`}
+                  trendIcon={TrendingUp}
+                  className="w-full"
                 />
-                <StatCard
-                  icon={<MousePointer className="h-5 w-5 text-success" />}
+                <MetricCard
                   label="Conversion Rate"
                   value={dashboardData.productPerformance.conversionRate.value}
-                  change={
-                    dashboardData.productPerformance.conversionRate.change
-                  }
-                  trend={dashboardData.productPerformance.conversionRate.trend}
-                  subtitle={
-                    dashboardData.productPerformance.conversionRate.subtitle
-                  }
+                  icon={MousePointer}
+                  trendLabel={`${dashboardData.productPerformance.conversionRate.change} ${dashboardData.productPerformance.conversionRate.subtitle}`}
+                  trendIcon={TrendingUp}
+                  className="w-full"
                 />
               </div>
             </div>
@@ -765,58 +685,44 @@ export function AdminDashboardPage() {
           {/* Section 5: Marketing & Traffic */}
           <section>
             <SectionHeader
+              icon={BarChart3}
               title="Marketing & Traffic"
-              icon={<BarChart3 className="h-5 w-5 text-primary" />}
-              description="Monitor visitor engagement and sources"
+              subtitle="Monitor visitor engagement and sources"
+              className="mb-3 lg:mb-4"
             />
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
               <div className="lg:col-span-2">
-                <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <StatCard
-                    icon={<Eye className="h-5 w-5 text-primary" />}
+                <div className="mb-3 grid grid-cols-2 gap-3 lg:mb-4 lg:gap-4">
+                  <MetricCard
                     label="Total Visits"
                     value={dashboardData.marketingTraffic.totalVisits.value}
-                    change={dashboardData.marketingTraffic.totalVisits.change}
-                    trend={dashboardData.marketingTraffic.totalVisits.trend}
-                    subtitle={
-                      dashboardData.marketingTraffic.totalVisits.subtitle
-                    }
+                    icon={Eye}
+                    trendLabel={`${dashboardData.marketingTraffic.totalVisits.change} ${dashboardData.marketingTraffic.totalVisits.subtitle}`}
+                    trendIcon={TrendingUp}
+                    className="w-full"
                   />
-                  <StatCard
-                    icon={<Target className="h-5 w-5 text-success" />}
+                  <MetricCard
                     label="Store Conversion Rate"
                     value={
                       dashboardData.marketingTraffic.storeConversionRate.value
                     }
-                    change={
-                      dashboardData.marketingTraffic.storeConversionRate.change
-                    }
-                    trend={
-                      dashboardData.marketingTraffic.storeConversionRate.trend
-                    }
-                    subtitle={
-                      dashboardData.marketingTraffic.storeConversionRate
-                        .subtitle
-                    }
+                    icon={Target}
+                    trendLabel={`${dashboardData.marketingTraffic.storeConversionRate.change} ${dashboardData.marketingTraffic.storeConversionRate.subtitle}`}
+                    trendIcon={TrendingUp}
+                    className="w-full"
                   />
                 </div>
 
                 {/* Cart Abandonment */}
-                <StatCard
-                  icon={<ShoppingCart className="h-5 w-5 text-warning" />}
+                <MetricCard
                   label="Cart Abandonment Rate"
                   value={
                     dashboardData.marketingTraffic.cartAbandonmentRate.value
                   }
-                  change={
-                    dashboardData.marketingTraffic.cartAbandonmentRate.change
-                  }
-                  trend={
-                    dashboardData.marketingTraffic.cartAbandonmentRate.trend
-                  }
-                  subtitle={
-                    dashboardData.marketingTraffic.cartAbandonmentRate.subtitle
-                  }
+                  icon={ShoppingCart}
+                  trendLabel={`${dashboardData.marketingTraffic.cartAbandonmentRate.change} ${dashboardData.marketingTraffic.cartAbandonmentRate.subtitle}`}
+                  trendIcon={TrendingDown}
+                  className="w-full"
                 />
               </div>
 
@@ -829,27 +735,13 @@ export function AdminDashboardPage() {
                   <div className="space-y-4">
                     {dashboardData.marketingTraffic.trafficSources.map(
                       (source) => (
-                        <div key={source.source}>
-                          <div className="mb-1 flex items-center justify-between text-xs">
-                            <span className="text-base-content/70">
-                              {source.source}
-                            </span>
-                            <div className="flex items-center gap-2">
-                              <span className="font-mono text-base-content/60">
-                                {source.visits}
-                              </span>
-                              <span className="font-mono font-semibold">
-                                {source.percentage}%
-                              </span>
-                            </div>
-                          </div>
-                          <div className="h-2 w-full rounded-full bg-base-200">
-                            <div
-                              className="h-2 rounded-full bg-primary"
-                              style={{ width: `${source.percentage}%` }}
-                            />
-                          </div>
-                        </div>
+                        <ProgressBar
+                          key={source.source}
+                          label={source.source}
+                          value={source.percentage}
+                          max={100}
+                          color="primary"
+                        />
                       ),
                     )}
                   </div>
@@ -861,14 +753,15 @@ export function AdminDashboardPage() {
           {/* Section 6: Account Health */}
           <section>
             <SectionHeader
+              icon={Activity}
               title="Account Health"
-              icon={<Activity className="h-5 w-5 text-primary" />}
-              description="Monitor your seller performance metrics"
+              subtitle="Monitor your seller performance metrics"
+              className="mb-3 lg:mb-4"
             />
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {/* Seller Rating */}
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+              {/* Seller Rating - kept inline as unique star-rating display */}
               <div className="card bg-base-100 shadow-sm transition-shadow hover:shadow-md">
-                <div className="card-body p-5">
+                <div className="card-body p-4 lg:p-5">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="inline-block rounded-lg bg-warning/10 p-2">
@@ -909,31 +802,29 @@ export function AdminDashboardPage() {
                 </div>
               </div>
 
-              <StatCard
-                icon={<Target className="h-5 w-5 text-success" />}
+              <MetricCard
                 label="Order Defect Rate"
                 value={dashboardData.accountHealth.orderDefectRate.value}
-                change={dashboardData.accountHealth.orderDefectRate.change}
-                trend={dashboardData.accountHealth.orderDefectRate.trend}
-                subtitle={dashboardData.accountHealth.orderDefectRate.subtitle}
+                icon={Target}
+                trendLabel={`${dashboardData.accountHealth.orderDefectRate.change} ${dashboardData.accountHealth.orderDefectRate.subtitle}`}
+                trendIcon={TrendingDown}
+                className="w-full"
               />
-              <StatCard
-                icon={<Clock className="h-5 w-5 text-info" />}
+              <MetricCard
                 label="Avg Response Time"
                 value={dashboardData.accountHealth.avgResponseTime.value}
-                change={dashboardData.accountHealth.avgResponseTime.change}
-                trend={dashboardData.accountHealth.avgResponseTime.trend}
-                subtitle={dashboardData.accountHealth.avgResponseTime.subtitle}
+                icon={Clock}
+                trendLabel={`${dashboardData.accountHealth.avgResponseTime.change} ${dashboardData.accountHealth.avgResponseTime.subtitle}`}
+                trendIcon={TrendingDown}
+                className="w-full"
               />
-              <StatCard
-                icon={<Award className="h-5 w-5 text-success" />}
+              <MetricCard
                 label="Customer Satisfaction"
                 value={dashboardData.accountHealth.customerSatisfaction.value}
-                change={dashboardData.accountHealth.customerSatisfaction.change}
-                trend={dashboardData.accountHealth.customerSatisfaction.trend}
-                subtitle={
-                  dashboardData.accountHealth.customerSatisfaction.subtitle
-                }
+                icon={Award}
+                trendLabel={`${dashboardData.accountHealth.customerSatisfaction.change} ${dashboardData.accountHealth.customerSatisfaction.subtitle}`}
+                trendIcon={TrendingUp}
+                className="w-full"
               />
             </div>
           </section>

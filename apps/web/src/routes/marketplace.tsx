@@ -17,32 +17,75 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export const loader = async () => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const url = new URL(request.url);
+  const category = url.searchParams.get("category") ?? undefined;
+  const search = url.searchParams.get("search") ?? undefined;
+
   try {
-    const response = await axios.get<ProductDto[]>(`${productAPIUrl}/product`, {
-      timeout: 5000,
-    });
+    const [productsRes, categoriesRes] = await Promise.all([
+      axios.get<{ products: ProductDto[]; total: number }>(
+        `${productAPIUrl}/product`,
+        {
+          params: { category, search, limit: 12 },
+          timeout: 5000,
+        },
+      ),
+      axios.get<string[]>(`${productAPIUrl}/product/categories`, {
+        timeout: 5000,
+      }),
+    ]);
     return {
-      products: response.data,
+      products: productsRes.data.products,
+      total: productsRes.data.total,
+      categories: categoriesRes.data,
+      initialCategory: category,
+      initialSearch: search,
     };
   } catch (error) {
-    console.error(error);
+    console.error(
+      "Marketplace loader error:",
+      error instanceof Error ? error.message : error,
+    );
     return {
       products: [],
+      total: 0,
+      categories: [],
+      initialCategory: category,
+      initialSearch: search,
     };
   }
 };
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  const { products: initialProducts } = loaderData;
-  const { data: products } = useProducts({
-    initialData: initialProducts?.map((product: ProductDto) => ({
+  const {
+    products: initialProducts,
+    categories,
+    initialCategory,
+    initialSearch,
+  } = loaderData;
+
+  const safeProducts = Array.isArray(initialProducts) ? initialProducts : [];
+  const { data: productsData } = useProducts({
+    initialData: safeProducts.map((product: ProductDto) => ({
       ...product,
       createdAt: new Date(product.createdAt),
       updatedAt: new Date(product.updatedAt),
     })) as ProductDto[],
+    category: initialCategory,
+    search: initialSearch,
   });
+
+  const products = productsData?.pages
+    ? productsData.pages.flatMap((p) => p.products ?? [])
+    : (initialProducts ?? []);
+
   return (
-    <MarketplacePage products={products?.pages ? products?.pages[0] : []} />
+    <MarketplacePage
+      products={products}
+      categories={categories ?? []}
+      initialCategory={initialCategory}
+      initialSearch={initialSearch}
+    />
   );
 }

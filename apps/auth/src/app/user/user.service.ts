@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import type { AuthUser } from "@projectx/core";
 import { UserRepositoryService } from "@projectx/db";
+import type { UpdateUserDto } from "@projectx/models";
 
 @Injectable()
 export class UserService {
@@ -17,5 +18,10 @@ export class UserService {
 
   getOrCreate(...params: Parameters<typeof this.userService.getOrCreate>) {
     return this.userService.getOrCreate(...params);
+  }
+
+  updateProfile(userId: number, data: UpdateUserDto) {
+    this.logger.log(`updateProfile(${userId})`);
+    return this.userService.updateUser(userId, data);
   }
 }
