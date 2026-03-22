@@ -104,19 +104,6 @@ Skills are defined in `.agents/skills/` and symlinked to each AI assistant's con
 | `temporal` | Temporal workflow orchestration |
 | `turborepo` | Monorepo management |
 | `temporal-playground` | Visual workflow builder with LiteGraph.js + temporal-docs MCP |
-| `agent-browser` | Browser automation |
-
-### OpenSpec Skills (Auto-registered)
-| Skill | Description |
-|-------|-------------|
-| `openspec-new-change` | Start a new structured change |
-| `openspec-continue-change` | Create the next artifact |
-| `openspec-ff-change` | Fast-forward all artifacts |
-| `openspec-apply-change` | Implement tasks from a change |
-| `openspec-verify-change` | Verify implementation |
-| `openspec-archive-change` | Archive completed change |
-| `openspec-explore` | Thinking partner for exploring ideas |
-| `openspec-sync-specs` | Sync delta specs to main specs |
 
 ### Interactive Playgrounds
 - **Temporal Workflow Builder**: `pnpm playground` then open `http://localhost:4343/` — Visual node-based workflow designer with LiteGraph.js and Claude chat integration via temporal-playground MCP

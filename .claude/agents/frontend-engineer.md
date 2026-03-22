@@ -5,7 +5,6 @@ tools: Read, Write, Edit, Glob, Grep, Bash(pnpm:*)
 skills:
   - react-router-v7
   - turborepo
-  - agent-browser
 model: sonnet
 ---
 
