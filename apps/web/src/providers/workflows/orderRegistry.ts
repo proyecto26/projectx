@@ -53,8 +53,8 @@ export function createOrderRegistry({
     OrderWorkflowResult
   >({
     startUrl: ordersUrl,
-    streamUrl: (id) => `${ordersUrl()}/stream/${id}`,
-    cancelUrl: (id) => `${ordersUrl()}/${id}`,
+    streamUrl: (id) => `${ordersUrl()}/stream/${encodeURIComponent(id)}`,
+    cancelUrl: (id) => `${ordersUrl()}/${encodeURIComponent(id)}`,
     headers,
     body: ({ input }) => input,
   });
@@ -66,10 +66,13 @@ export function createOrderRegistry({
     id: string;
     signal?: AbortSignal;
   }): Promise<OrderWorkflowState> => {
-    const response = await fetch(`${ordersUrl()}/status/${id}`, {
-      headers: headers(),
-      signal,
-    });
+    const response = await fetch(
+      `${ordersUrl()}/status/${encodeURIComponent(id)}`,
+      {
+        headers: headers(),
+        signal,
+      },
+    );
     if (!response.ok) {
       throw new WorkflowClientError("Could not read the order status", {
         status: response.status,

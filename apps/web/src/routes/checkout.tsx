@@ -17,9 +17,16 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export const loader = async ({ params }: Route.LoaderArgs) => {
   invariant(params?.referenceId, "referenceId is required");
   const { referenceId } = params;
+  // It ends up in authenticated requests to the API
+  if (!UUID_PATTERN.test(referenceId)) {
+    throw new Response("Order not found", { status: 404 });
+  }
   return {
     referenceId,
   };
