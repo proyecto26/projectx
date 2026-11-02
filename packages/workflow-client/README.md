@@ -152,6 +152,21 @@ function Checkout({ id, input }: { id: string; input: OrderInput }) {
 > [!TIP]
 > Use a new id for each operation and the same id when retrying it, so two purchases are two workflows and a double click is one.
 
+### When a workflow is final
+
+`isFinal` tells the client when a workflow is over for your users, using your own states. It receives each new state, and when it returns `true` the client stops following the workflow, sets its status to `finished` and runs `onFinish`.
+
+```ts
+const isFinal = ({ status }: OrderState) =>
+  status === "Confirmed" || status === "Failed" || status === "Cancelled";
+```
+
+- **With polling you need it.** Polling only reads your query, so it can't see an execution close, and it keeps asking until `isFinal` returns `true` or your endpoint answers with an error such as a 404.
+- **With streams it's optional.** The stream sends a `finish` event when the execution closes. Use `isFinal` to end sooner, for example when an order is paid but the workflow still has work to do.
+
+> [!IMPORTANT]
+> Include your failure and cancellation states. If a workflow closes with a state `isFinal` doesn't cover, polling keeps asking for it.
+
 ## Many workflows at once 🗂️
 
 A component's workflow stops being followed when it unmounts. To follow workflows from anywhere, restore them after a reload, and run several kinds at once, describe each kind with `defineWorkflow` and give them to one client per user:
