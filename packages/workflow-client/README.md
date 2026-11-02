@@ -25,7 +25,7 @@ useWorkflow ─ WorkflowSession ─ polling ─ your endpoint ─ query ─ Work
 ## Features ✨
 
 - 🔁 **Follow any workflow** by querying it, with no changes to the workflow.
-- 🗂️ **Many workflows at once:** `useWorkflows` reads them together, like `useQueries`.
+- 🗂️ **Many workflows of many kinds:** `useWorkflows` reads them together, like `useQueries`, and filters by kind.
 - 🔔 **Run your code when one ends,** such as a toast, then clear it from the store.
 - 💾 **Survives reloads:** workflows are restored and followed again, without repeating `onFinish` for those already finished.
 - 📡 **Optional live state** with Server-Sent Events and [Temporal Workflow Streams](https://github.com/temporalio/sdk-typescript/tree/main/contrib/workflow-streams), with a fallback to polling.
@@ -154,81 +154,120 @@ function Checkout({ id, input }: { id: string; input: OrderInput }) {
 
 ## Many workflows at once 🗂️
 
-A component's workflow stops being followed when it unmounts. To follow workflows from anywhere, restore them after a reload and run several at once, use a registry with one instance per user and workflow type:
+A component's workflow stops being followed when it unmounts. To follow workflows from anywhere, restore them after a reload, and run several kinds at once, describe each kind with `defineWorkflow` and give them to one client per user:
 
-```tsx
-import { WorkflowRegistry } from "@proyecto26/temporal-workflow-client";
-import { WorkflowRegistryProvider } from "@proyecto26/temporal-workflow-client/react";
+```ts
+import { defineWorkflow, WorkflowClient } from "@proyecto26/temporal-workflow-client";
 
-const orders = new WorkflowRegistry<OrderState, OrderInput, unknown>({
+// Plain data, usually at the top of a module
+export const orderWorkflow = defineWorkflow<OrderState, OrderInput, unknown>({
+  type: "order",
   transport,
   isFinal,
-  storage: window.localStorage,
-  storageKey: `orders:${user.email}`,
   onFinish: ({ state }) => toast(`Order ${state?.status}`),
   removeOnFinish: true,
 });
 
-<WorkflowRegistryProvider registry={orders}>
-  <App />
-</WorkflowRegistryProvider>;
+const client = new WorkflowClient({
+  workflows: [orderWorkflow, paymentWorkflow],
+  storage: window.localStorage,
+  storageKey: `workflows:${user.email}`,
+});
 ```
 
-The provider calls `registry.hydrate()` after the first render, so server and client render the same HTML. Effects in child components run before that, so check `registry.isHydrated` before starting a workflow that could already be stored.
+The definition is what tells the kinds apart, and it brings its types with it. Each one has its own transport, so workflows without streams can simply poll, and its own `onFinish`.
 
 > [!NOTE]
-> Everything `state` and `result` hold is written to `storage`. Leave out of them whatever shouldn't stay in the browser.
+> Everything `state` and `result` hold is written to `storage`, with one key per type such as `workflows:ana@example.com:order`. Leave out of them whatever shouldn't stay in the browser.
 
-### `useWorkflow`
-
-One workflow of the registry, from any component below the provider:
+### In React
 
 ```tsx
-const order = useWorkflow<OrderState, OrderInput, unknown>({ id });
+import {
+  useWorkflow,
+  useWorkflows,
+  WorkflowClientProvider,
+} from "@proyecto26/temporal-workflow-client/react";
+
+<WorkflowClientProvider client={client}>
+  <App />
+</WorkflowClientProvider>;
+
+// One workflow, from any component below the provider
+const order = useWorkflow({ workflow: orderWorkflow, id });
+
+// All the workflows of a kind, or the ones you ask for, like `useQueries`
+const orders = useWorkflows({ workflow: orderWorkflow });
+const some = useWorkflows({ workflow: orderWorkflow, ids });
+
+// Every kind, each one with its `type`
+const all = useWorkflows();
+const running = all.filter(({ status }) => status === "running");
 ```
 
-### `useWorkflows`
+The provider calls `client.hydrate()` after the first render, so server and client render the same HTML. Effects in child components run before that, so check `client.isHydrated` before starting a workflow that could already be stored. `useWorkflowClient()` returns the client.
 
-Several workflows, like `useQueries`. Each one keeps being followed on its own:
+`combine` derives a value, and is what you want for a badge. Keep it stable with `useCallback` or out of the component:
 
 ```tsx
-const combine = (workflows: ReadonlyArray<WorkflowSessionSnapshot<OrderState, unknown>>) => ({
-  active: workflows.filter(({ status }) => status === "running").length,
-  failed: workflows.filter(({ error }) => error),
-});
+const countRunning = (workflows: ReadonlyArray<{ status: string }>) =>
+  workflows.filter(({ status }) => status === "running").length;
 
-function OrdersBadge({ ids }: { ids: string[] }) {
-  // `ids` is optional, all the workflows of the registry by default
-  const { active } = useWorkflows<OrderState, OrderInput, unknown, ReturnType<typeof combine>>({
-    ids,
-    combine, // Keep it stable with useCallback or out of the component
-  });
+function OrdersBadge() {
+  const active = useWorkflows({ workflow: orderWorkflow, combine: countRunning });
   return active > 0 ? <span>{active} orders in progress</span> : null;
 }
 ```
 
-### `useWorkflowList`
+### In JavaScript, with or without React
 
-All the snapshots of a registry, with no options:
+Nothing changes but the generics. Without React, the client does the same:
 
-```tsx
-const orders = useWorkflowList<OrderState, OrderInput, unknown>();
+```js
+import { defineWorkflow, WorkflowClient } from "@proyecto26/temporal-workflow-client";
+
+const orderWorkflow = defineWorkflow({ type: "order", transport, isFinal });
+const client = new WorkflowClient({ workflows: [orderWorkflow] });
+
+client.hydrate();
+client.subscribe(() => render(client.list({ type: "order" })));
+client.session(orderWorkflow, "order-1").start(input);
+```
+
+### When your transport needs the user
+
+Definitions live in a module, and clients are per user. `transport` can be a function of what you give to the client as `context`, and `lookup` receives it too:
+
+```ts
+const orderWorkflow = defineWorkflow<OrderState, OrderInput, unknown, { getToken: () => string }>({
+  type: "order",
+  transport: ({ context }) =>
+    createHttpStreamTransport({
+      api: "/api/orders",
+      headers: () => ({ Authorization: `Bearer ${context.getToken()}` }),
+    }),
+});
+
+const client = new WorkflowClient({
+  workflows: [orderWorkflow],
+  context: { getToken },
+});
 ```
 
 ### When a workflow ends
 
 `onFinish` runs your code, and with `removeOnFinish` the workflow is then cleared from the store and from `storage`, so it's no longer followed. Components showing it keep their state until they unmount.
 
-Because this browser forgets it, call `registry.find(id)` before starting one again from a URL that can be reloaded. It asks your backend through the `lookup` option, and answers `"found"` or `"missing"` without repeating `onFinish`.
+Because this browser forgets it, call `client.find(orderWorkflow, id)` before starting one again from a URL that can be reloaded. It asks your backend through the `lookup` option, and answers `"found"` or `"missing"` without repeating `onFinish`.
 
 ### When the backend rejects a workflow
 
-A workflow rejected when starting is removed from the registry, and the component that started it keeps the error. The package doesn't interpret status codes such as a 409, because your backend decides what is allowed.
+A workflow rejected when starting is removed from the client, and the component that started it keeps the error. The package doesn't interpret status codes such as a 409, because your backend decides what is allowed.
 
 To read the error from another view, such as after a redirect, set `removeOnReject: false`, and clear it when you're done:
 
 ```tsx
-const { error, remove } = useWorkflow<OrderState, OrderInput, unknown>({ id });
+const { error, remove } = useWorkflow({ workflow: orderWorkflow, id });
 
 useEffect(() => {
   if (error) showError(error);
@@ -332,25 +371,36 @@ import {
   createFallbackTransport,
   createHttpStreamTransport,
   createLimitedTransport,
+  defineWorkflow,
 } from "@proyecto26/temporal-workflow-client";
 
-const stream = createHttpStreamTransport<OrderState, OrderInput>({
-  api: "/api/orders",
-  headers: () => ({ Authorization: `Bearer ${getToken()}` }),
+export const orderWorkflow = defineWorkflow<OrderState, OrderInput, unknown>({
+  type: "order",
+  isFinal,
+  transport: ({ limiter }) => {
+    const stream = createHttpStreamTransport<OrderState, OrderInput, unknown>({
+      api: "/api/orders",
+      headers: () => ({ Authorization: `Bearer ${getToken()}` }),
+    });
+    return createLimitedTransport(
+      // Polls if the stream fails before sending anything, such as behind a proxy
+      createFallbackTransport(stream, polling),
+      // Polls above the limit of streams of the client, see below
+      polling,
+      { limiter },
+    );
+  },
 });
-
-// Polls if the stream fails before sending anything, such as behind a proxy
-const withFallback = createFallbackTransport(stream, polling);
-// Polls above 4 open streams, see below
-const transport = createLimitedTransport(withFallback, polling);
 ```
 
 By default the stream transport uses `POST /api/orders` to start, `GET /api/orders/:id/stream` to read and `DELETE /api/orders/:id` to cancel, sending `{ id, input }` as the body. Change them with `startUrl`, `streamUrl`, `cancelUrl` and `body`.
 
 > [!WARNING]
-> Each open stream holds a browser connection. Over HTTP/1.1 browsers allow about 6 per origin, so 6 streams leave every other request to that API waiting. `createLimitedTransport` follows the workflows above `maxStreams` with polling, and moves them to a stream when one ends. It counts one registry, so tabs and registries using the same API share those connections. Serving the API over HTTP/2 removes this limit.
+> Each open stream holds a browser connection. Over HTTP/1.1 browsers allow about 6 per origin, so 6 streams leave every other request to that API waiting. `createLimitedTransport` follows the workflows above the limit with polling, and moves them to a stream when one ends. `limiter` shares that limit between all the kinds of a client, set with `maxStreams`, 4 by default. Other tabs using the same API aren't counted. Serving the API over HTTP/2 removes this limit.
 
 ## Without React ⚙️
+
+For one workflow, use a session directly:
 
 ```ts
 import { WorkflowSession } from "@proyecto26/temporal-workflow-client";
@@ -365,6 +415,8 @@ const unsubscribe = session.subscribe(() => {
 await session.start(input);
 ```
 
+For many, use [a client](#in-javascript-with-or-without-react).
+
 ## API reference 📖
 
 ### Hooks
@@ -373,10 +425,9 @@ Import them from `@proyecto26/temporal-workflow-client/react`.
 
 | Hook | Use it for | Options |
 |---|---|---|
-| `useWorkflow(options)` | One workflow | `{ id }` from the provider's registry, `{ id, registry }`, `{ session }`, or `{ id, transport, ... }` for one tied to the component |
-| `useWorkflows(options?)` | Several workflows and a derived value | `ids`, `combine`, `registry` |
-| `useWorkflowList(registry?)` | All the snapshots of a registry | |
-| `useWorkflowRegistry()` | The registry of the provider | |
+| `useWorkflow(options)` | One workflow | `{ workflow, id, client? }`, `{ session }`, or `{ id, transport, ... }` for one tied to the component |
+| `useWorkflows(options?)` | Several workflows and a derived value | `{ workflow, ids?, combine?, client? }`, or `{ type?, ids?, combine?, client? }` for every kind |
+| `useWorkflowClient()` | The client of the provider | |
 
 `useWorkflow` and `WorkflowSession` expose the same values:
 
@@ -389,6 +440,7 @@ Import them from `@proyecto26/temporal-workflow-client/react`.
 | `isCancelling` | A cancellation was requested and the workflow hasn't finished |
 | `executionStatus` | How the execution closed, such as `COMPLETED` or `FAILED`. Streams only |
 | `offset` | Position to resume from. Streams only |
+| `type` | The kind of workflow, when it comes from a client |
 | `requestedId` | The id it was requested with, if the backend decided another |
 | `start(input)` | Starts and follows. It never starts a second workflow for the same session |
 | `resume()` | Follows a workflow already running |
@@ -405,26 +457,37 @@ Options: `id`, `transport`, `isFinal`, `reconnect`, `resolveId`, `onState`, `onF
 
 `reconnect` accepts `initialDelayMs` (1 second), `maxDelayMs` (30 seconds), `maxAttempts` (unlimited) and `isFatal`. By default 4xx responses are fatal, except 408 and 429.
 
-### `WorkflowRegistry`
+### `defineWorkflow`
 
 Options are those of `WorkflowSession`, except `id`, plus:
 
 | Option | Description |
 |---|---|
-| `storage`, `storageKey` | Keep the workflows across reloads. Use one key per user |
+| `type` | Identifies this kind of workflow in the client |
+| `transport` | A transport, or a function of `{ context, limiter }` that builds it |
 | `ttlMs` | Removes workflows without changes for this long, 24 hours by default, also while the app stays open |
 | `removeOnFinish` | Forgets a workflow after `onFinish` |
 | `removeOnReject` | Forgets a workflow the backend rejected when starting. `true` by default |
-| `lookup` | Reads a workflow from your backend, needed by `find` |
+| `lookup` | Reads a workflow from your backend, needed by `find`. Receives `{ id, signal, context }` |
 | `resolveId` | Reads the id decided by the backend from the start response. The session moves to that id and the requested one keeps working. Two sessions are never merged: if another one already has that id, the session fails |
+| `onError` | Also receives `{ remove }`, to forget this workflow |
+
+### `WorkflowClient`
+
+| Option | Description |
+|---|---|
+| `workflows` | Every kind of workflow, needed to restore the stored ones |
+| `context` | What the definitions need from the app |
+| `storage`, `storageKey` | Keep the workflows across reloads. Use one key per user |
+| `maxStreams` | Streams open at once across all the kinds, 4 by default. Used through `limiter` |
 
 | Method | Description |
 |---|---|
-| `session(id)` | The session of a workflow, creating it the first time |
-| `has(id)` | Whether it's kept here |
-| `find(id, { signal }?)` | Asks the backend for a workflow that isn't here. Answers `"found"` or `"missing"` |
-| `remove(id)` | Stops following a workflow and forgets it. The workflow keeps running |
-| `list()` | Snapshots of all the workflows |
+| `session(workflow, id)` | The session of a workflow, creating it the first time |
+| `has(workflow, id)` | Whether it's kept here |
+| `find(workflow, id, { signal }?)` | Asks the backend for a workflow that isn't here. Answers `"found"` or `"missing"` |
+| `remove(workflow, id)` | Stops following a workflow and forgets it. The workflow keeps running |
+| `list({ workflow?, type?, predicate? }?)` | Snapshots of the workflows, each one with its `type` |
 | `subscribe(listener)` | Runs when any of them changes |
 | `hydrate()` | Restores stored workflows and follows the unfinished ones |
 | `isHydrated` | Whether `hydrate` ran |
@@ -438,6 +501,7 @@ Options are those of `WorkflowSession`, except `id`, plus:
 | `createHttpStreamTransport` | Your server uses `toWorkflowStreamResponse` |
 | `createFallbackTransport` | You want to stream, and poll if the stream fails before sending anything |
 | `createLimitedTransport` | You can have more workflows than connections to spare |
+| `createStreamLimiter` | You want to share that limit without a client |
 
 Or implement `WorkflowTransport` to use WebSockets or your own API client:
 

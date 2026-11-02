@@ -9,15 +9,14 @@ import {
 import { type ReactNode, StrictMode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { WorkflowRegistry } from "../registry";
+import { defineWorkflow, WorkflowClient } from "../client";
 import type {
   WorkflowEvent,
   WorkflowSubscribeOptions,
   WorkflowTransport,
 } from "../types";
-import { WorkflowRegistryProvider } from "./context";
+import { WorkflowClientProvider } from "./context";
 import { useWorkflow } from "./useWorkflow";
-import { useWorkflowList } from "./useWorkflowList";
 import { useWorkflows } from "./useWorkflows";
 
 afterEach(cleanup);
@@ -107,14 +106,18 @@ describe("useWorkflow", () => {
     expect(result.current.id).toBe("b");
   });
 
-  it("uses the registry of the provider and keeps following on unmount", async () => {
+  it("uses the client of the provider and keeps following on unmount", async () => {
     const storage = new Map<string, string>();
     const transport = transportWith(async function* ({ signal }) {
       yield { type: "state", state: "live" };
       await hang(signal);
     });
-    const registry = new WorkflowRegistry<string, unknown, string>({
+    const workflow = defineWorkflow<string, unknown, string>({
+      type: "test",
       transport,
+    });
+    const client = new WorkflowClient({
+      workflows: [workflow],
       storageKey: "key",
       storage: {
         getItem: (key) => storage.get(key) ?? null,
@@ -124,29 +127,29 @@ describe("useWorkflow", () => {
     });
     const seen: string[] = [];
     const Child = () => {
-      const workflow = useWorkflow<string, unknown, string>({ id: "a" });
-      const list = useWorkflowList<string, unknown, string>();
-      seen.push(`${workflow.state}:${list.length}`);
-      return <button type="button" onClick={() => workflow.start({})} />;
+      const current = useWorkflow({ workflow, id: "a" });
+      const list = useWorkflows({ workflow });
+      seen.push(`${current.state}:${list.length}`);
+      return <button type="button" onClick={() => current.start({})} />;
     };
     const app = render(
-      <WorkflowRegistryProvider registry={registry}>
+      <WorkflowClientProvider client={client}>
         <Child />
-      </WorkflowRegistryProvider>,
+      </WorkflowClientProvider>,
     );
-    expect(registry.isHydrated).toBe(true);
+    expect(client.isHydrated).toBe(true);
 
     await act(async () => {
       app.container.querySelector("button")?.click();
     });
     await waitFor(() => expect(seen.at(-1)).toBe("live:1"));
-    expect(storage.get("key")).toContain("live");
+    expect(storage.get("key:test")).toContain("live");
 
     // Only the provider going away stops it
     app.rerender(
-      <WorkflowRegistryProvider registry={registry}>
+      <WorkflowClientProvider client={client}>
         <div />
-      </WorkflowRegistryProvider>,
+      </WorkflowClientProvider>,
     );
     expect(transport.subscribe.mock.calls.at(-1)?.[0].signal.aborted).toBe(
       false,
@@ -157,23 +160,25 @@ describe("useWorkflow", () => {
     );
   });
 
-  it("removes a workflow from its registry, keeping the state on screen", async () => {
+  it("removes a workflow from its client, keeping the state on screen", async () => {
     const transport = transportWith(async function* ({ signal }) {
       yield { type: "state", state: "one" };
       await hang(signal);
     });
-    const registry = new WorkflowRegistry<string, unknown, string>({
+    const workflow = defineWorkflow<string, unknown, string>({
+      type: "test",
       transport,
     });
+    const client = new WorkflowClient({ workflows: [workflow] });
     const { result } = renderHook(() =>
-      useWorkflow<string, unknown, string>({ id: "a", registry }),
+      useWorkflow({ workflow, id: "a", client }),
     );
     await act(() => result.current.start({}));
     await waitFor(() => expect(result.current.state).toBe("one"));
 
     act(() => result.current.remove());
 
-    expect(registry.has("a")).toBe(false);
+    expect(client.has(workflow, "a")).toBe(false);
     expect(result.current.state).toBe("one");
     expect(transport.subscribe.mock.calls.at(-1)?.[0].signal.aborted).toBe(
       true,
@@ -182,16 +187,24 @@ describe("useWorkflow", () => {
 
   it("explains what is missing", () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
-    expect(() => renderHook(() => useWorkflow({ id: "a" }))).toThrow(
-      "WorkflowRegistryProvider",
-    );
+    expect(() =>
+      renderHook(() =>
+        useWorkflow({
+          workflow: defineWorkflow({
+            type: "test",
+            transport: transportWith(async function* () {}),
+          }),
+          id: "a",
+        }),
+      ),
+    ).toThrow("WorkflowClientProvider");
     spy.mockRestore();
   });
 });
 
 describe("useWorkflows", () => {
   type State = { status: string };
-  const makeRegistry = () => {
+  const makeClient = () => {
     const listeners = new Map<string, (state: State) => void>();
     const transport: WorkflowTransport<State> = {
       start: vi.fn(async () => ({ status: "Pending" })),
@@ -207,24 +220,24 @@ describe("useWorkflows", () => {
           yield { type: "finish", state, status: "COMPLETED" };
         })(),
     };
-    return { registry: new WorkflowRegistry<State>({ transport }), listeners };
+    const workflow = defineWorkflow<State>({ type: "order", transport });
+    const other = defineWorkflow<State>({ type: "payment", transport });
+    const client = new WorkflowClient({ workflows: [workflow, other] });
+    return { client, workflow, other, listeners };
   };
 
   it("reads all the workflows, a subset in order, and a combined value", async () => {
-    const { registry, listeners } = makeRegistry();
-    registry.session("a").resume();
-    registry.session("b").resume();
-    registry.session("c").resume();
+    const { client, workflow, listeners } = makeClient();
+    client.session(workflow, "a").resume();
+    client.session(workflow, "b").resume();
+    client.session(workflow, "c").resume();
     const combine = (items: ReadonlyArray<{ status: string }>) =>
       items.filter(({ status }) => status === "running").length;
 
     const { result } = renderHook(() => ({
-      all: useWorkflows<State>({ registry }),
-      subset: useWorkflows<State>({ registry, ids: ["c", "a", "unknown"] }),
-      running: useWorkflows<State, unknown, State, number>({
-        registry,
-        combine,
-      }),
+      all: useWorkflows({ workflow, client }),
+      subset: useWorkflows({ workflow, client, ids: ["c", "a", "unknown"] }),
+      running: useWorkflows({ workflow, client, combine }),
     }));
     expect(result.current.all.map(({ id }) => id)).toEqual(["a", "b", "c"]);
     expect(result.current.subset.map(({ id }) => id)).toEqual(["c", "a"]);
@@ -233,18 +246,37 @@ describe("useWorkflows", () => {
     await waitFor(() => expect(listeners.size).toBe(3));
     act(() => listeners.get("a")?.({ status: "Done" }));
     await waitFor(() => expect(result.current.running).toBe(2));
-    registry.stop();
+    client.stop();
+  });
+
+  it("filters by type or reads every type", () => {
+    const { client, workflow, other } = makeClient();
+    client.session(workflow, "a").resume();
+    client.session(other, "b").resume();
+
+    const { result } = renderHook(() => ({
+      orders: useWorkflows({ workflow, client }),
+      payments: useWorkflows({ type: "payment", client }),
+      all: useWorkflows({ client }),
+    }));
+    expect(result.current.orders.map(({ id }) => id)).toEqual(["a"]);
+    expect(result.current.payments.map(({ id }) => id)).toEqual(["b"]);
+    expect(result.current.all.map(({ type }) => type)).toEqual([
+      "order",
+      "payment",
+    ]);
+    client.stop();
   });
 
   it("keeps the same reference until something changes", () => {
-    const { registry } = makeRegistry();
-    registry.session("a").resume();
+    const { client, workflow } = makeClient();
+    client.session(workflow, "a").resume();
     const { result, rerender } = renderHook(() =>
-      useWorkflows<State>({ registry, ids: ["a"] }),
+      useWorkflows({ workflow, client, ids: ["a"] }),
     );
     const first = result.current;
     rerender();
     expect(result.current).toBe(first);
-    registry.stop();
+    client.stop();
   });
 });
