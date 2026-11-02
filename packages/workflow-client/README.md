@@ -1,24 +1,37 @@
 # @proyecto26/temporal-workflow-client
 
-Connect any JavaScript app to [Temporal](https://temporal.io/) workflows running in your backend, with live updates and no Temporal code in the browser.
+Connect any JavaScript app to [Temporal](https://temporal.io/) workflows running in your backend, with no Temporal code in the browser.
 
-Temporal has no official package for the frontend, and its client needs a server. So each app ends up writing its own endpoints, polling loop, reconnection and storage. This package gives you those parts, following the design of [`useChat`](https://ai-sdk.dev/docs/reference/ai-sdk-ui/use-chat) from the Vercel AI SDK: a store that knows nothing about your UI framework, a transport you can replace, a thin React hook and a helper for your server.
+Temporal has no official package for the frontend, and its client needs a server. So each app ends up writing its own endpoints, polling loop, reconnection and storage. This package gives you those parts, following the design of [`useChat`](https://ai-sdk.dev/docs/reference/ai-sdk-ui/use-chat) from the Vercel AI SDK: a store that knows nothing about your UI framework, a transport you can replace, and thin React hooks. Unlike a chat, a user can have many workflows running at once.
+
+Your workflows don't need anything special: if they answer a query, you can follow them. Add [Workflow Streams](#live-updates-with-workflow-streams-) only where you want updates as they happen.
 
 ```text
-Browser                               Your API                       Temporal
-useWorkflow ─ WorkflowSession ─ SSE ─ toWorkflowStreamResponse ─ gRPC ─ Workflow
-                                ╰ polling, if streaming isn't available
+Browser                               Your API                  Temporal
+useWorkflow ─ WorkflowSession ─ polling ─ your endpoint ─ query ─ Workflow
+                                ╰ or SSE ─ toWorkflowStreamResponse ─ stream
 ```
+
+## Contents
+
+- [Features](#features-)
+- [Installation](#installation-)
+- [Quick start](#quick-start-)
+- [Many workflows at once](#many-workflows-at-once-%EF%B8%8F)
+- [Live updates with Workflow Streams](#live-updates-with-workflow-streams-)
+- [Without React](#without-react-%EF%B8%8F)
+- [API reference](#api-reference-)
 
 ## Features ✨
 
-- 🔌 **Works with any backend:** use the included transports or write your own.
-- 📡 **Live state** with Server-Sent Events and [Temporal Workflow Streams](https://github.com/temporalio/sdk-typescript/tree/main/contrib/workflow-streams).
-- 🛟 **Polling fallback** when a proxy or an older workflow can't stream.
-- 🔁 **Reconnection** with backoff, resuming from the last position.
+- 🔁 **Follow any workflow** by querying it, with no changes to the workflow.
+- 🗂️ **Many workflows at once:** `useWorkflows` reads them together, like `useQueries`.
+- 🔔 **Run your code when one ends,** such as a toast, then clear it from the store.
 - 💾 **Survives reloads:** workflows are restored and followed again, without repeating `onFinish` for those already finished.
+- 📡 **Optional live state** with Server-Sent Events and [Temporal Workflow Streams](https://github.com/temporalio/sdk-typescript/tree/main/contrib/workflow-streams), with a fallback to polling.
 - 🔒 **Sends your tokens:** streams use `fetch`, because `EventSource` can't send an `Authorization` header.
 - ⚛️ **React hooks** that are safe with SSR and Strict Mode. React is optional.
+- 🔌 **Works with any backend:** use the included transports or write your own.
 - 🪶 **No Temporal or Node.js code** in the browser entry points.
 
 ## Installation 📦
@@ -31,11 +44,211 @@ npm install @proyecto26/temporal-workflow-client
 |---|---|---|
 | `@proyecto26/temporal-workflow-client` | Anywhere | Nothing |
 | `@proyecto26/temporal-workflow-client/react` | Browser and SSR | `react` 18 or 19 |
-| `@proyecto26/temporal-workflow-client/server` | Node.js 20.3+ | `@temporalio/client` and `@temporalio/workflow-streams` to read workflows |
+| `@proyecto26/temporal-workflow-client/server` | Node.js 20.3+ | `@temporalio/client`, and `@temporalio/workflow-streams` only to read streams |
+
+> [!NOTE]
+> Install the optional dependencies only for what you use. Following workflows by polling only needs this package in the browser, and any way of answering a query in your API.
 
 ## Quick start 🚀
 
-### 1. Publish the state from your workflow
+This follows a normal Temporal workflow, using a query and no streams.
+
+### 1. Your workflow answers a query
+
+```ts
+import { defineQuery, setHandler } from "@temporalio/workflow";
+
+export const getStateQuery = defineQuery<OrderState>("getState");
+
+export async function orderWorkflow(input: OrderInput) {
+  const state: OrderState = { status: "Pending" };
+  setHandler(getStateQuery, () => state);
+
+  await processPayment(input);
+  state.status = "Confirmed";
+}
+```
+
+### 2. Your API starts it and reads it
+
+Use your framework as usual. The client only needs an endpoint that starts the workflow, one that returns its state, and one that cancels it:
+
+```ts
+app.post("/api/orders", requireUser, async (req, res) => {
+  const handle = await temporalClient.workflow.start(orderWorkflow, {
+    workflowId: `order-${req.body.id}`,
+    taskQueue: config.temporal.taskQueue,
+    args: [req.body.input],
+  });
+  res.status(201).json({ workflowId: handle.workflowId });
+});
+
+app.get("/api/orders/:id", requireOwner, async (req, res) => {
+  const handle = temporalClient.workflow.getHandle(`order-${req.params.id}`);
+  res.json(await handle.query(getStateQuery));
+});
+
+app.delete("/api/orders/:id", requireOwner, async (req, res) => {
+  await temporalClient.workflow.getHandle(`order-${req.params.id}`).cancel();
+  res.status(204).end();
+});
+```
+
+> [!IMPORTANT]
+> This package doesn't authenticate anyone, and it doesn't decide what is allowed. Check that the user owns the workflow in every endpoint, and reject what your business rules don't allow. Temporal's [`workflowIdReusePolicy`](https://docs.temporal.io/workflow-execution/workflowid-runid#workflow-id-reuse-policy) is the place to say whether an id can run again.
+
+### 3. Follow it from React
+
+```tsx
+import { createPollingTransport, WorkflowClientError } from "@proyecto26/temporal-workflow-client";
+import { useWorkflow } from "@proyecto26/temporal-workflow-client/react";
+
+const request = async (url: string, init?: RequestInit) => {
+  const response = await fetch(url, init);
+  if (!response.ok) {
+    throw new WorkflowClientError("The request failed", { status: response.status });
+  }
+  return response;
+};
+
+const transport = createPollingTransport<OrderState, OrderInput, unknown>({
+  start: async ({ id, input, signal }) =>
+    (
+      await request("/api/orders", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ id, input }),
+        signal,
+      })
+    ).json(),
+  getState: async ({ id, signal }) =>
+    (await request(`/api/orders/${encodeURIComponent(id)}`, { signal })).json(),
+  cancel: async ({ id, signal }) => {
+    await request(`/api/orders/${encodeURIComponent(id)}`, { method: "DELETE", signal });
+  },
+  intervalMs: 3000,
+});
+
+function Checkout({ id, input }: { id: string; input: OrderInput }) {
+  const { status, state, error, start, cancel } = useWorkflow<OrderState, OrderInput, unknown>({
+    id,
+    transport,
+    // Polling can't see an execution close, so without this it never stops
+    isFinal: ({ status }) => status === "Confirmed" || status === "Failed",
+    onFinish: ({ state }) => console.log("Finished", state),
+  });
+
+  if (error) return <p>{error.message}</p>;
+  if (status === "idle") return <button onClick={() => start(input)}>Pay</button>;
+  return (
+    <>
+      <p>{state?.status ?? "Starting…"}</p>
+      <button onClick={cancel}>Cancel</button>
+    </>
+  );
+}
+```
+
+> [!TIP]
+> Use a new id for each operation and the same id when retrying it, so two purchases are two workflows and a double click is one.
+
+## Many workflows at once 🗂️
+
+A component's workflow stops being followed when it unmounts. To follow workflows from anywhere, restore them after a reload and run several at once, use a registry with one instance per user and workflow type:
+
+```tsx
+import { WorkflowRegistry } from "@proyecto26/temporal-workflow-client";
+import { WorkflowRegistryProvider } from "@proyecto26/temporal-workflow-client/react";
+
+const orders = new WorkflowRegistry<OrderState, OrderInput, unknown>({
+  transport,
+  isFinal,
+  storage: window.localStorage,
+  storageKey: `orders:${user.email}`,
+  onFinish: ({ state }) => toast(`Order ${state?.status}`),
+  removeOnFinish: true,
+});
+
+<WorkflowRegistryProvider registry={orders}>
+  <App />
+</WorkflowRegistryProvider>;
+```
+
+The provider calls `registry.hydrate()` after the first render, so server and client render the same HTML. Effects in child components run before that, so check `registry.isHydrated` before starting a workflow that could already be stored.
+
+> [!NOTE]
+> Everything `state` and `result` hold is written to `storage`. Leave out of them whatever shouldn't stay in the browser.
+
+### `useWorkflow`
+
+One workflow of the registry, from any component below the provider:
+
+```tsx
+const order = useWorkflow<OrderState, OrderInput, unknown>({ id });
+```
+
+### `useWorkflows`
+
+Several workflows, like `useQueries`. Each one keeps being followed on its own:
+
+```tsx
+const combine = (workflows: ReadonlyArray<WorkflowSessionSnapshot<OrderState, unknown>>) => ({
+  active: workflows.filter(({ status }) => status === "running").length,
+  failed: workflows.filter(({ error }) => error),
+});
+
+function OrdersBadge({ ids }: { ids: string[] }) {
+  // `ids` is optional, all the workflows of the registry by default
+  const { active } = useWorkflows<OrderState, OrderInput, unknown, ReturnType<typeof combine>>({
+    ids,
+    combine, // Keep it stable with useCallback or out of the component
+  });
+  return active > 0 ? <span>{active} orders in progress</span> : null;
+}
+```
+
+### `useWorkflowList`
+
+All the snapshots of a registry, with no options:
+
+```tsx
+const orders = useWorkflowList<OrderState, OrderInput, unknown>();
+```
+
+### When a workflow ends
+
+`onFinish` runs your code, and with `removeOnFinish` the workflow is then cleared from the store and from `storage`, so it's no longer followed. Components showing it keep their state until they unmount.
+
+Because this browser forgets it, call `registry.find(id)` before starting one again from a URL that can be reloaded. It asks your backend through the `lookup` option, and answers `"found"` or `"missing"` without repeating `onFinish`.
+
+### When the backend rejects a workflow
+
+A workflow rejected when starting is removed from the registry, and the component that started it keeps the error. The package doesn't interpret status codes such as a 409, because your backend decides what is allowed.
+
+To read the error from another view, such as after a redirect, set `removeOnReject: false`, and clear it when you're done:
+
+```tsx
+const { error, remove } = useWorkflow<OrderState, OrderInput, unknown>({ id });
+
+useEffect(() => {
+  if (error) showError(error);
+  return () => {
+    if (error) remove();
+  };
+}, [error, remove]);
+```
+
+It stays in memory until then or until `ttlMs`, and it's never written to `storage`.
+
+## Live updates with Workflow Streams 📡
+
+Polling is enough for many workflows. Add streams when a user is watching and waiting, or when a workflow publishes progress. You keep the same hooks and only change the transport.
+
+```bash
+npm install @temporalio/client @temporalio/workflow-streams
+```
+
+### 1. Publish from your workflow
 
 ```ts
 import { allHandlersFinished, condition, setHandler } from "@temporalio/workflow";
@@ -60,7 +273,10 @@ export async function orderWorkflow(input: OrderInput) {
 ```
 
 > [!WARNING]
-> A subscriber waiting for new items counts as a running update handler. Don't call `condition(allHandlersFinished)` in the middle of a workflow that has a stream unless you call `detachPollers()` first, or it waits until a new item is published.
+> A subscriber waiting for new items counts as a running update handler. Don't call `condition(allHandlersFinished)` in the middle of a workflow that has a stream unless you call `detachPollers()` first, or it waits until a new item is published. Workflow Streams is in Public Preview, so its API can change.
+
+> [!CAUTION]
+> Adding a stream to a workflow changes its history. If executions are running when you deploy it, guard it with [`patched()`](https://docs.temporal.io/develop/typescript/versioning#patching) or they will fail on replay.
 
 ### 2. Expose it from your API
 
@@ -107,103 +323,37 @@ app.get("/orders/:id/stream", requireOwner, async (req, res) => {
 });
 ```
 
-> [!IMPORTANT]
-> This package doesn't authenticate anyone. Check that the user owns the workflow **before** opening the stream, since it sends everything your query returns.
+Running workflows that don't publish anything are followed with queries over the same connection, so one endpoint can serve both.
 
-### 3. Use it from React
+### 3. Change the transport
 
-```tsx
-import { createHttpStreamTransport } from "@proyecto26/temporal-workflow-client";
-import { useWorkflow } from "@proyecto26/temporal-workflow-client/react";
+```ts
+import {
+  createFallbackTransport,
+  createHttpStreamTransport,
+  createLimitedTransport,
+} from "@proyecto26/temporal-workflow-client";
 
-const transport = createHttpStreamTransport<OrderState, OrderInput>({
+const stream = createHttpStreamTransport<OrderState, OrderInput>({
   api: "/api/orders",
   headers: () => ({ Authorization: `Bearer ${getToken()}` }),
 });
 
-function Checkout({ id, input }: { id: string; input: OrderInput }) {
-  const { status, state, error, start, cancel } = useWorkflow<OrderState, OrderInput>({
-    id,
-    transport,
-    isFinal: ({ status }) => status === "Confirmed" || status === "Failed",
-    onFinish: ({ state }) => console.log("Finished", state),
-  });
-
-  if (error) return <p>{error.message}</p>;
-  if (status === "idle") return <button onClick={() => start(input)}>Pay</button>;
-  return (
-    <>
-      <p>{state?.status ?? "Starting…"}</p>
-      <button onClick={cancel}>Cancel</button>
-    </>
-  );
-}
+// Polls if the stream fails before sending anything, such as behind a proxy
+const withFallback = createFallbackTransport(stream, polling);
+// Polls above 4 open streams, see below
+const transport = createLimitedTransport(withFallback, polling);
 ```
 
-By default the transport uses `POST /api/orders` to start, `GET /api/orders/:id/stream` to read and `DELETE /api/orders/:id` to cancel, sending `{ id, input }` as the body. Change them with `startUrl`, `streamUrl`, `cancelUrl` and `body`.
+By default the stream transport uses `POST /api/orders` to start, `GET /api/orders/:id/stream` to read and `DELETE /api/orders/:id` to cancel, sending `{ id, input }` as the body. Change them with `startUrl`, `streamUrl`, `cancelUrl` and `body`.
 
-## Keeping workflows across the app 🗂️
-
-A component's workflow stops being followed when it unmounts. To follow workflows from anywhere, and restore them after a reload, use a registry with one instance per user:
-
-```tsx
-import { WorkflowRegistry } from "@proyecto26/temporal-workflow-client";
-import { useWorkflow, useWorkflowList, WorkflowRegistryProvider } from "@proyecto26/temporal-workflow-client/react";
-
-const registry = new WorkflowRegistry<OrderState, OrderInput>({
-  transport,
-  isFinal,
-  storage: window.localStorage,
-  storageKey: `orders:${user.email}`,
-  ttlMs: 24 * 60 * 60 * 1000,
-  onFinish: ({ state }) => toast(`Order ${state?.status}`),
-});
-
-<WorkflowRegistryProvider registry={registry}>
-  <App />
-</WorkflowRegistryProvider>;
-
-// In any component below the provider
-const order = useWorkflow<OrderState, OrderInput>({ id });
-const orders = useWorkflowList<OrderState, OrderInput>();
-```
-
-The provider calls `registry.hydrate()` after the first render, so server and client render the same HTML. Effects in child components run before that, so check `registry.isHydrated` before starting a workflow that could already be stored.
-
-> [!NOTE]
-> Everything `state` and `result` hold is written to `storage`. Leave out of them whatever shouldn't stay in the browser.
-
-### Several workflows at once
-
-A user can have many workflows running. `useWorkflows` reads them like `useQueries`, and each one keeps its own connection or polling:
-
-```tsx
-const { pending, allFinished } = useWorkflows<OrderState, OrderInput, OrderResult, Summary>({
-  ids: orderIds, // Optional, all the workflows of the registry by default
-  combine, // Keep it stable with useCallback or out of the component
-});
-```
-
-Use one registry per workflow type, each with its own transport, so workflows without streams can simply poll.
-
-### Registry options
-
-| Option | What it does |
-|--------|--------------|
-| `removeOnFinish` | Forgets a workflow after `onFinish`, so it isn't stored anymore. Components showing it keep their state until they unmount. |
-| `lookup` | Reads a workflow from your backend. Needed by `registry.find(id)`, which restores a workflow that isn't here without firing `onFinish`, and answers `"missing"` on a 404. |
-| `resolveId` | Reads the id decided by the backend from the start response. The session moves to that id and the requested one keeps working. Two sessions are never merged: if another one already has that id, the session fails. |
-| `ttlMs` | Removes workflows without changes for this long, 24 hours by default, also while the app stays open. |
-
-A workflow rejected by the backend when starting is removed from the registry, and the component that started it keeps the error. The backend decides what is allowed, so this package doesn't interpret status codes such as a 409.
-
-> [!IMPORTANT]
-> With `removeOnFinish`, this browser forgets finished workflows. Call `registry.find(id)` before starting one again from a URL that can be reloaded, and reject repeated ids in your backend, for example with `WorkflowIdReusePolicy.REJECT_DUPLICATE`.
+> [!WARNING]
+> Each open stream holds a browser connection. Over HTTP/1.1 browsers allow about 6 per origin, so 6 streams leave every other request to that API waiting. `createLimitedTransport` follows the workflows above `maxStreams` with polling, and moves them to a stream when one ends. It counts one registry, so tabs and registries using the same API share those connections. Serving the API over HTTP/2 removes this limit.
 
 ## Without React ⚙️
 
 ```ts
-import { createHttpStreamTransport, WorkflowSession } from "@proyecto26/temporal-workflow-client";
+import { WorkflowSession } from "@proyecto26/temporal-workflow-client";
 
 const session = new WorkflowSession({ id: "order-1", transport, isFinal });
 
@@ -215,24 +365,79 @@ const unsubscribe = session.subscribe(() => {
 await session.start(input);
 ```
 
-## Transports 🚚
+## API reference 📖
+
+### Hooks
+
+Import them from `@proyecto26/temporal-workflow-client/react`.
+
+| Hook | Use it for | Options |
+|---|---|---|
+| `useWorkflow(options)` | One workflow | `{ id }` from the provider's registry, `{ id, registry }`, `{ session }`, or `{ id, transport, ... }` for one tied to the component |
+| `useWorkflows(options?)` | Several workflows and a derived value | `ids`, `combine`, `registry` |
+| `useWorkflowList(registry?)` | All the snapshots of a registry | |
+| `useWorkflowRegistry()` | The registry of the provider | |
+
+`useWorkflow` and `WorkflowSession` expose the same values:
+
+| Value | Description |
+|---|---|
+| `status` | `idle`, `starting`, `running`, `finished` or `error` |
+| `state` | Last state of the workflow |
+| `result` | What `transport.start` returned |
+| `error` | Why the session stopped |
+| `isCancelling` | A cancellation was requested and the workflow hasn't finished |
+| `executionStatus` | How the execution closed, such as `COMPLETED` or `FAILED`. Streams only |
+| `offset` | Position to resume from. Streams only |
+| `requestedId` | The id it was requested with, if the backend decided another |
+| `start(input)` | Starts and follows. It never starts a second workflow for the same session |
+| `resume()` | Follows a workflow already running |
+| `cancel()` | Requests the cancellation and keeps following until it ends |
+| `stop()` | Stops listening. The workflow keeps running |
+| `clearError()` | Clears the error |
+| `remove()` | `useWorkflow` only. Stops following it and forgets it. The workflow keeps running |
+
+`useWorkflow` also returns `isActive`, and accepts `resume: true` to follow a running workflow on mount.
+
+### `WorkflowSession`
+
+Options: `id`, `transport`, `isFinal`, `reconnect`, `resolveId`, `onState`, `onFinish`, `onError`.
+
+`reconnect` accepts `initialDelayMs` (1 second), `maxDelayMs` (30 seconds), `maxAttempts` (unlimited) and `isFatal`. By default 4xx responses are fatal, except 408 and 429.
+
+### `WorkflowRegistry`
+
+Options are those of `WorkflowSession`, except `id`, plus:
+
+| Option | Description |
+|---|---|
+| `storage`, `storageKey` | Keep the workflows across reloads. Use one key per user |
+| `ttlMs` | Removes workflows without changes for this long, 24 hours by default, also while the app stays open |
+| `removeOnFinish` | Forgets a workflow after `onFinish` |
+| `removeOnReject` | Forgets a workflow the backend rejected when starting. `true` by default |
+| `lookup` | Reads a workflow from your backend, needed by `find` |
+| `resolveId` | Reads the id decided by the backend from the start response. The session moves to that id and the requested one keeps working. Two sessions are never merged: if another one already has that id, the session fails |
+
+| Method | Description |
+|---|---|
+| `session(id)` | The session of a workflow, creating it the first time |
+| `has(id)` | Whether it's kept here |
+| `find(id, { signal }?)` | Asks the backend for a workflow that isn't here. Answers `"found"` or `"missing"` |
+| `remove(id)` | Stops following a workflow and forgets it. The workflow keeps running |
+| `list()` | Snapshots of all the workflows |
+| `subscribe(listener)` | Runs when any of them changes |
+| `hydrate()` | Restores stored workflows and follows the unfinished ones |
+| `isHydrated` | Whether `hydrate` ran |
+| `stop()` | Stops following all of them. `hydrate` follows them again |
+
+### Transports
 
 | Transport | Use it when |
 |---|---|
-| `createHttpStreamTransport` | Your server uses `toWorkflowStreamResponse` |
 | `createPollingTransport` | You only have an endpoint returning the state |
+| `createHttpStreamTransport` | Your server uses `toWorkflowStreamResponse` |
 | `createFallbackTransport` | You want to stream, and poll if the stream fails before sending anything |
-
-```ts
-const stream = createHttpStreamTransport<OrderState, OrderInput>({ api: "/api/orders" });
-const polling = createPollingTransport<OrderState, OrderInput>({
-  start: stream.start,
-  cancel: stream.cancel,
-  getState: ({ id, signal }) => fetchOrderStatus(id, signal),
-  intervalMs: 3000,
-});
-const transport = createFallbackTransport(stream, polling);
-```
+| `createLimitedTransport` | You can have more workflows than connections to spare |
 
 Or implement `WorkflowTransport` to use WebSockets or your own API client:
 
@@ -243,47 +448,6 @@ interface WorkflowTransport<TState, TInput, TResult = TState> {
   cancel(options: { id: string; signal?: AbortSignal }): Promise<void>;
 }
 ```
-
-### Many workflows with streams
-
-Each open stream holds a browser connection. Over HTTP/1.1 browsers allow about 6 per origin, so 6 streams leave every other request to that API waiting. `createLimitedTransport` follows the workflows above the limit with polling, and moves them to a stream when one ends:
-
-```ts
-const transport = createLimitedTransport(
-  createFallbackTransport(stream, polling),
-  polling,
-  { maxStreams: 4 }, // The default
-);
-```
-
-The limit counts one registry, so several tabs or registries using the same API share those connections. Serving the API over HTTP/2 removes this limit.
-
-## API 📖
-
-### `WorkflowSession` and `useWorkflow`
-
-Both expose the same values:
-
-| Value | Description |
-|---|---|
-| `status` | `idle`, `starting`, `running`, `finished` or `error` |
-| `state` | Last state of the workflow |
-| `result` | What `transport.start` returned |
-| `error` | Why the session stopped |
-| `isCancelling` | A cancellation was requested and the workflow hasn't finished |
-| `executionStatus` | How the execution closed, such as `COMPLETED` or `FAILED` |
-| `offset` | Position to resume from |
-| `start(input)` | Starts and follows. It never starts a second workflow for the same session |
-| `resume()` | Follows a workflow already running |
-| `cancel()` | Requests the cancellation and keeps following until it ends |
-| `stop()` | Stops listening. The workflow keeps running |
-| `clearError()` | Clears the error |
-
-`useWorkflow` also returns `isActive`, and accepts `resume: true` to follow a running workflow on mount.
-
-Options: `id`, `transport`, `isFinal`, `reconnect`, `onState`, `onFinish`, `onError`.
-
-`reconnect` accepts `initialDelayMs` (1 second), `maxDelayMs` (30 seconds), `maxAttempts` (unlimited) and `isFatal`. By default 4xx responses are fatal, except 408 and 429.
 
 ### `@proyecto26/temporal-workflow-client/server`
 

@@ -1,14 +1,18 @@
 {
   "name": "@proyecto26/temporal-workflows",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "NestJS module to run Temporal workers and clients",
   "license": "MIT",
+  "author": "Proyecto 26 <https://github.com/proyecto26>",
+  "homepage": "https://github.com/proyecto26/projectx/tree/develop/packages/workflows#readme",
+  "bugs": {
+    "url": "https://github.com/proyecto26/projectx/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/proyecto26/projectx.git",
     "directory": "packages/workflows"
   },
-  "private": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -27,7 +31,9 @@
     "build": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.json",
     "dev": "tsc -w -p tsconfig.json",
     "lint": "biome check .",
-    "test": "echo 'no tests'"
+    "test": "echo 'no tests'",
+    "prepack": "pnpm run build",
+    "check:package": "publint --strict && attw --pack . --profile node16"
   },
   "dependencies": {
     "tslib": "^2.9.1"
@@ -38,7 +44,9 @@
     "@nestjs/config": "4.0.2",
     "@temporalio/client": "1.25.0",
     "@temporalio/proto": "1.25.0",
-    "@temporalio/worker": "1.25.0"
+    "@temporalio/worker": "1.25.0",
+    "publint": "^0.3.25",
+    "@arethetypeswrong/cli": "^0.18.5"
   },
   "peerDependencies": {
     "@nestjs/common": "^10.0.0 || ^11.0.0",
@@ -49,5 +57,16 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "keywords": [
+    "temporal",
+    "workflow",
+    "nestjs",
+    "worker",
+    "durable-execution"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20.3.0"
   }
 }

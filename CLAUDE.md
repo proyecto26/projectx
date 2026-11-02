@@ -8,7 +8,7 @@ This is a modern full-stack e-commerce platform built with a microservices archi
 
 ### Monorepo
 - **Turborepo** for build orchestration and caching
-- **pnpm** (v9.12.3) as package manager
+- **pnpm** (v12) as package manager
 - **Node.js** v24
 
 ### Backend (NestJS Microservices)

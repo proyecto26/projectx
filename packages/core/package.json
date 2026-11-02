@@ -1,7 +1,7 @@
 {
   "name": "@projectx/core",
   "version": "0.0.1",
-  "private": false,
+  "private": true,
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

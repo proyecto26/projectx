@@ -442,6 +442,33 @@ describe("WorkflowRegistry cleanup and ids", () => {
     registry.stop();
   });
 
+  it("keeps a rejected workflow until it's removed with removeOnReject off", async () => {
+    const { transport } = finishes();
+    transport.start.mockRejectedValueOnce(
+      new WorkflowClientError("Asset is locked", { status: 409 }),
+    );
+    const storage = new Map<string, string>();
+    const registry = new WorkflowRegistry({
+      transport,
+      removeOnReject: false,
+      storage: {
+        getItem: (key) => storage.get(key) ?? null,
+        setItem: (key, value) => storage.set(key, value),
+        removeItem: (key) => storage.delete(key),
+      },
+    });
+    registry.hydrate();
+    await registry.session("a").start({});
+
+    expect(registry.has("a")).toBe(true);
+    expect(registry.list()[0]?.error?.message).toBe("Asset is locked");
+    expect(JSON.parse(storage.get("workflow-client") ?? "[]")).toEqual([]);
+
+    registry.remove("a");
+    expect(registry.has("a")).toBe(false);
+    registry.stop();
+  });
+
   it("uses the id decided by the backend, also after a reload", async () => {
     // biome-ignore lint/correctness/useYield: A stream that waits without events
     const started = fakeTransport(async function* ({ id, signal }) {

@@ -34,6 +34,11 @@
     "storybook": "turbo run dev --filter=storybook",
     "storybook:build": "turbo run build --filter=storybook",
     "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "check:packages": "pnpm --filter \"./packages/workflow*\" run check:package",
+    "changeset": "changeset",
+    "version-packages": "changeset version && pnpm install --lockfile-only",
+    "release": "changeset publish",
     "playground": "node .agents/skills/temporal-playground/server/dist/cli.js",
     "playground:build": "cd .agents/skills/temporal-playground/server && npx tsup && cd ../ui && npx vite build",
     "playground:dev": "cd .agents/skills/temporal-playground/ui && npx vite"
@@ -43,6 +48,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.11",
+    "@changesets/changelog-github": "^1.0.1",
+    "@changesets/cli": "^3.0.3",
     "@playwright/test": "^1.64.1",
     "@turbo/gen": "^2.11.10",
     "@types/webpack": "^5.28.5",
@@ -54,15 +61,10 @@
     "turbo": "^2.11.10",
     "typescript": "^5.9.3"
   },
-  "packageManager": "pnpm@9.12.3",
+  "packageManager": "pnpm@12.16.1",
   "lint-staged": {
     "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
       "biome check --write --no-errors-on-unmatched"
     ]
-  },
-  "pnpm": {
-    "overrides": {
-      "webpack": "5.112.2"
-    }
   }
 }
