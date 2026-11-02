@@ -4,6 +4,16 @@ Run [Temporal](https://temporal.io/) workers and clients inside a [NestJS](https
 
 Register a module with your activities and workflows, and it starts the worker with the app, retries while Temporal isn't ready yet, and shuts down cleanly.
 
+## Contents
+
+- [Features](#features-)
+- [Installation](#installation-)
+- [Quick start](#quick-start-)
+- [Importing from workflows](#importing-from-workflows-%EF%B8%8F)
+- [Options](#options-%EF%B8%8F)
+- [Helpers](#helpers-)
+- [Connect your frontend](#connect-your-frontend-%EF%B8%8F)
+
 ## Features ✨
 
 - 🧩 **`WorkflowsModule`** starts a worker from a NestJS provider holding your activities.
@@ -168,7 +178,7 @@ if (isWorkflowRunning(description)) {
 
 ## Connect your frontend 🖥️
 
-Use [`@proyecto26/temporal-workflow-client`](https://www.npmjs.com/package/@proyecto26/temporal-workflow-client) to follow these workflows from the browser with live updates.
+Use [`@proyecto26/temporal-workflow-client`](https://www.npmjs.com/package/@proyecto26/temporal-workflow-client) to follow these workflows from the browser with React hooks: by querying them, or with live updates if they publish to a stream.
 
 ## Sponsors 💜
 

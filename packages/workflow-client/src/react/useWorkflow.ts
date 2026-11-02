@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { WorkflowRegistry } from "../registry";
 import {
@@ -29,6 +29,8 @@ export type UseWorkflowHelpers<TState, TInput, TResult> =
     cancel: WorkflowSession<TState, TInput, TResult>["cancel"];
     stop: WorkflowSession<TState, TInput, TResult>["stop"];
     clearError: WorkflowSession<TState, TInput, TResult>["clearError"];
+    /** Stops following it and forgets it. The workflow keeps running. */
+    remove: () => void;
   };
 
 /** Connects a component to a workflow. */
@@ -100,6 +102,11 @@ export function useWorkflow<TState, TInput = unknown, TResult = TState>(
     return () => session.stop();
   }, [isOwned, session, shouldResume]);
 
+  const remove = useCallback(() => {
+    session.stop();
+    registry?.remove(session.id);
+  }, [registry, session]);
+
   return {
     ...snapshot,
     isActive: snapshot.status === "starting" || snapshot.status === "running",
@@ -108,5 +115,6 @@ export function useWorkflow<TState, TInput = unknown, TResult = TState>(
     cancel: session.cancel,
     stop: session.stop,
     clearError: session.clearError,
+    remove,
   };
 }

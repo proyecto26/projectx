@@ -157,6 +157,29 @@ describe("useWorkflow", () => {
     );
   });
 
+  it("removes a workflow from its registry, keeping the state on screen", async () => {
+    const transport = transportWith(async function* ({ signal }) {
+      yield { type: "state", state: "one" };
+      await hang(signal);
+    });
+    const registry = new WorkflowRegistry<string, unknown, string>({
+      transport,
+    });
+    const { result } = renderHook(() =>
+      useWorkflow<string, unknown, string>({ id: "a", registry }),
+    );
+    await act(() => result.current.start({}));
+    await waitFor(() => expect(result.current.state).toBe("one"));
+
+    act(() => result.current.remove());
+
+    expect(registry.has("a")).toBe(false);
+    expect(result.current.state).toBe("one");
+    expect(transport.subscribe.mock.calls.at(-1)?.[0].signal.aborted).toBe(
+      true,
+    );
+  });
+
   it("explains what is missing", () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
     expect(() => renderHook(() => useWorkflow({ id: "a" }))).toThrow(

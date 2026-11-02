@@ -31,6 +31,12 @@ export interface WorkflowRegistryOptions<TState, TInput, TResult>
   resolveId?: (result: TResult) => string | undefined;
   /** Forgets a workflow after `onFinish`. Components showing it keep their state. */
   removeOnFinish?: boolean;
+  /**
+   * Forgets a workflow the backend rejected when starting, keeping the error in
+   * the components using it. `true` by default. With `false` it stays until you
+   * call `remove`, so another view can read the error. It's never stored.
+   */
+  removeOnReject?: boolean;
   /** Reads a workflow from the backend, needed by `find`. */
   lookup?: (options: { id: string; signal?: AbortSignal }) => Promise<TState>;
 }
@@ -227,7 +233,12 @@ export class WorkflowRegistry<TState, TInput = unknown, TResult = TState> {
         this.#options.onError?.(error, snapshot);
         // The backend rejected it, so there is nothing to follow
         const { status, state, result } = snapshot;
-        if (status === "error" && state === undefined && result === undefined) {
+        if (
+          this.#options.removeOnReject !== false &&
+          status === "error" &&
+          state === undefined &&
+          result === undefined
+        ) {
           this.remove(snapshot.id);
         }
       },
