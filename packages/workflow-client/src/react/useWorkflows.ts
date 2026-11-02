@@ -1,45 +1,77 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import type { WorkflowRegistry } from "../registry";
-import type { WorkflowSessionSnapshot } from "../session";
-import { useWorkflowList } from "./useWorkflowList";
+import type {
+  WorkflowClient,
+  WorkflowDefinitionOf,
+  WorkflowSnapshot,
+} from "../client";
+import { useWorkflowClient } from "./context";
 
-export interface UseWorkflowsOptions<TState, TInput, TResult, TCombined> {
-  /** The workflows to read, in this order. Defaults to all of the registry. */
+interface UseWorkflowsBaseOptions<TSnapshot, TCombined> {
+  /** The workflows to read, in this order. Defaults to all of them. */
   ids?: ReadonlyArray<string>;
-  registry?: WorkflowRegistry<TState, TInput, TResult>;
+  /** Defaults to the client of `WorkflowClientProvider`. */
+  client?: WorkflowClient<never>;
   /**
    * Derives a value from the workflows. Keep it stable with `useCallback` or out
    * of the component if the reference of the value matters.
    */
-  combine?: (
-    workflows: ReadonlyArray<WorkflowSessionSnapshot<TState, TResult>>,
-  ) => TCombined;
+  combine?: (workflows: ReadonlyArray<TSnapshot>) => TCombined;
 }
 
-/** Reads several workflows of a registry at once, as `useQueries` does. */
+/** Reads the workflows of a kind at once, as `useQueries` does. */
 export function useWorkflows<
   TState,
   TInput = unknown,
   TResult = TState,
-  TCombined = ReadonlyArray<WorkflowSessionSnapshot<TState, TResult>>,
->({
+  TCombined = ReadonlyArray<WorkflowSnapshot<TState, TResult>>,
+>(
+  options: UseWorkflowsBaseOptions<
+    WorkflowSnapshot<TState, TResult>,
+    TCombined
+  > & { workflow: WorkflowDefinitionOf<TState, TInput, TResult> },
+): TCombined;
+/** Reads the workflows of every kind, each one with its `type`. */
+export function useWorkflows<TCombined = ReadonlyArray<WorkflowSnapshot>>(
+  options?: UseWorkflowsBaseOptions<WorkflowSnapshot, TCombined> & {
+    /** Only the workflows of this type. */
+    type?: string;
+  },
+): TCombined;
+export function useWorkflows({
+  workflow,
+  type = workflow?.type,
   ids,
-  registry,
+  client,
   combine,
-}: UseWorkflowsOptions<TState, TInput, TResult, TCombined> = {}): TCombined {
-  const list = useWorkflowList<TState, TInput, TResult>(registry);
+}: UseWorkflowsBaseOptions<WorkflowSnapshot, unknown> & {
+  workflow?: { type: string };
+  type?: string;
+} = {}) {
+  const contextClient = useWorkflowClient();
+  const current = client ?? contextClient;
+  const [list, setList] = useState(() => current?.list() ?? []);
+
+  useEffect(() => {
+    if (!current) return;
+    const publish = () => setList(current.list());
+    const unsubscribe = current.subscribe(publish);
+    publish();
+    return unsubscribe;
+  }, [current]);
+
   const idsKey = ids ? JSON.stringify(ids) : undefined;
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: idsKey stands for ids
   return useMemo(() => {
+    const ofType = type ? list.filter((w) => w.type === type) : list;
     const workflows = ids
       ? ids.flatMap(
-          (id) => list.find((w) => w.id === id || w.requestedId === id) ?? [],
+          (id) => ofType.find((w) => w.id === id || w.requestedId === id) ?? [],
         )
-      : list;
-    return (combine ? combine(workflows) : workflows) as TCombined;
-  }, [list, idsKey, combine]);
+      : ofType;
+    return combine ? combine(workflows) : workflows;
+  }, [list, type, idsKey, combine]);
 }

@@ -19,6 +19,8 @@ export interface WorkflowReconnectOptions {
 
 export interface WorkflowSessionSnapshot<TState, TResult = TState> {
   readonly id: string;
+  /** The kind of workflow, when it comes from a `WorkflowClient`. */
+  readonly type?: string;
   /** The id this workflow was requested with, if the backend decided another. */
   readonly requestedId?: string;
   readonly status: WorkflowSessionStatus;
@@ -48,6 +50,8 @@ export interface WorkflowSessionCallbacks<TState, TResult = TState> {
 export interface WorkflowSessionOptions<TState, TInput, TResult>
   extends WorkflowSessionCallbacks<TState, TResult> {
   id: string;
+  /** The kind of workflow, added to its snapshots. */
+  type?: string;
   transport: WorkflowTransport<TState, TInput, TResult>;
   /** Business states that end the session while the execution may still run. */
   isFinal?: (state: TState) => boolean;
@@ -98,6 +102,7 @@ export class WorkflowSession<TState, TInput = unknown, TResult = TState> {
       updatedAt: Date.now(),
       ...options.initialSnapshot,
       id: options.id,
+      ...(options.type ? { type: options.type } : {}),
     };
   }
 
@@ -166,7 +171,8 @@ export class WorkflowSession<TState, TInput = unknown, TResult = TState> {
     const { status, state, result } = this.#snapshot;
     if (status !== "idle" || state !== undefined || result !== undefined)
       return;
-    this.#update({ ...snapshot, id: this.id });
+    const { type } = this.#options;
+    this.#update({ ...snapshot, id: this.id, ...(type ? { type } : {}) });
   };
 
   /** Follows a workflow that is already running in the backend. */

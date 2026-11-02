@@ -22,7 +22,7 @@ import { THEME } from "./constants";
 import { getAuthSession } from "./cookies/auth.server";
 import { csrf } from "./cookies/session.server";
 import {
-  OrderWorkflowsProvider,
+  WorkflowsProvider,
   withAuthProvider,
   withCartProvider,
   withQueryClientProvider,
@@ -119,11 +119,11 @@ type AppProps = {
 function App({ csrfToken, email, accessToken }: AppProps) {
   // Connect Temporal workflows to your app
   return (
-    <OrderWorkflowsProvider accessToken={accessToken} email={email}>
+    <WorkflowsProvider accessToken={accessToken} email={email}>
       <AuthenticityTokenProvider token={csrfToken}>
         <Outlet />
       </AuthenticityTokenProvider>
-    </OrderWorkflowsProvider>
+    </WorkflowsProvider>
   );
 }
 

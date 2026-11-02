@@ -8,41 +8,32 @@ import {
   useEffect,
 } from "react";
 
-import type { WorkflowRegistry } from "../registry";
+import type { WorkflowClient } from "../client";
 
-// biome-ignore lint/suspicious/noExplicitAny: Each hook call narrows the types
-type AnyRegistry = WorkflowRegistry<any, any, any>;
-
-const WorkflowRegistryContext = createContext<AnyRegistry | undefined>(
+const WorkflowClientContext = createContext<WorkflowClient<never> | undefined>(
   undefined,
 );
 
-/** Shares a registry, following its workflows while this is mounted. */
-export function WorkflowRegistryProvider({
-  registry,
+/** Shares a client, following its workflows while this is mounted. */
+export function WorkflowClientProvider<TContext>({
+  client,
   children,
 }: {
-  registry: AnyRegistry;
+  client: WorkflowClient<TContext>;
   children?: ReactNode;
 }) {
   useEffect(() => {
-    registry.hydrate();
-    return () => registry.stop();
-  }, [registry]);
+    client.hydrate();
+    return () => client.stop();
+  }, [client]);
 
   return createElement(
-    WorkflowRegistryContext.Provider,
-    { value: registry },
+    WorkflowClientContext.Provider,
+    { value: client as unknown as WorkflowClient<never> },
     children,
   );
 }
 
-export function useWorkflowRegistry<
-  TState,
-  TInput = unknown,
-  TResult = TState,
->() {
-  return useContext(WorkflowRegistryContext) as
-    | WorkflowRegistry<TState, TInput, TResult>
-    | undefined;
+export function useWorkflowClient() {
+  return useContext(WorkflowClientContext);
 }

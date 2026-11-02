@@ -1,4 +1,5 @@
-export * from "./registry";
+export * from "./client";
+export type { WorkflowStorage } from "./registry";
 export * from "./session";
 export * from "./sse";
 export * from "./transports/fallback";

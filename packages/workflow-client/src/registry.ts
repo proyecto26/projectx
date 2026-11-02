@@ -19,6 +19,8 @@ export interface WorkflowStorage {
 
 export interface WorkflowRegistryOptions<TState, TInput, TResult>
   extends WorkflowSessionCallbacks<TState, TResult> {
+  /** The kind of workflow, added to its snapshots. */
+  type?: string;
   transport: WorkflowTransport<TState, TInput, TResult>;
   isFinal?: (state: TState) => boolean;
   reconnect?: WorkflowReconnectOptions;
@@ -217,9 +219,11 @@ export class WorkflowRegistry<TState, TInput = unknown, TResult = TState> {
   }
 
   #add(id: string) {
-    const { transport, isFinal, reconnect, onState, resolveId } = this.#options;
+    const { type, transport, isFinal, reconnect, onState, resolveId } =
+      this.#options;
     const session = new WorkflowSession<TState, TInput, TResult>({
       id,
+      type,
       transport,
       isFinal,
       reconnect,

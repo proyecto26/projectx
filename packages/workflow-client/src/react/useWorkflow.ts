@@ -2,19 +2,23 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import type { WorkflowRegistry } from "../registry";
+import type { WorkflowClient, WorkflowDefinitionOf } from "../client";
 import {
   WorkflowSession,
   type WorkflowSessionOptions,
   type WorkflowSessionSnapshot,
 } from "../session";
-import { useWorkflowRegistry } from "./context";
+import { useWorkflowClient } from "./context";
 
 export type UseWorkflowOptions<TState, TInput, TResult> =
   /** A session you create and own, it isn't stopped on unmount. */
   | { session: WorkflowSession<TState, TInput, TResult> }
-  /** A workflow kept by a registry, passed here or by the provider. */
-  | { id: string; registry?: WorkflowRegistry<TState, TInput, TResult> }
+  /** A workflow kept by a client, passed here or by the provider. */
+  | {
+      workflow: WorkflowDefinitionOf<TState, TInput, TResult>;
+      id: string;
+      client?: WorkflowClient<never>;
+    }
   /** A workflow tied to this component. It stops following on unmount. */
   | (WorkflowSessionOptions<TState, TInput, TResult> & {
       /** Follow a workflow already running when the component mounts. */
@@ -37,7 +41,7 @@ export type UseWorkflowHelpers<TState, TInput, TResult> =
 export function useWorkflow<TState, TInput = unknown, TResult = TState>(
   options: UseWorkflowOptions<TState, TInput, TResult>,
 ): UseWorkflowHelpers<TState, TInput, TResult> {
-  const contextRegistry = useWorkflowRegistry<TState, TInput, TResult>();
+  const contextClient = useWorkflowClient();
 
   // The session is created once per id, so it reads the latest options from a
   // ref refreshed on every render, avoiding stale callbacks and tokens.
@@ -46,19 +50,21 @@ export function useWorkflow<TState, TInput = unknown, TResult = TState>(
 
   const ownedOptions = "transport" in options ? options : undefined;
   const externalSession = "session" in options ? options.session : undefined;
-  const registry =
-    "transport" in options || "session" in options
-      ? undefined
-      : (options.registry ?? contextRegistry);
+  const definition = "workflow" in options ? options.workflow : undefined;
+  const client =
+    "workflow" in options ? (options.client ?? contextClient) : undefined;
+  const type = definition?.type;
   const id = "session" in options ? options.session.id : options.id;
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: Only a new workflow creates a new session
   const { session, isOwned } = useMemo(() => {
     if (externalSession) return { session: externalSession, isOwned: false };
-    if (registry) return { session: registry.session(id), isOwned: false };
+    if (definition && client) {
+      return { session: client.session(definition, id), isOwned: false };
+    }
     if (!ownedOptions) {
       throw new Error(
-        "useWorkflow needs a session, a transport, or a registry from WorkflowRegistryProvider",
+        "useWorkflow needs a session, a transport, or a workflow with a client from WorkflowClientProvider",
       );
     }
     const read = () =>
@@ -78,7 +84,7 @@ export function useWorkflow<TState, TInput = unknown, TResult = TState>(
       }),
       isOwned: true,
     };
-  }, [externalSession, registry, id]);
+  }, [externalSession, client, type, id]);
 
   // Rendering asks for a snapshot through state instead of useSyncExternalStore,
   // as useChat does, so updates don't interrupt navigation renders.
@@ -104,8 +110,8 @@ export function useWorkflow<TState, TInput = unknown, TResult = TState>(
 
   const remove = useCallback(() => {
     session.stop();
-    registry?.remove(session.id);
-  }, [registry, session]);
+    if (definition) client?.remove(definition, session.id);
+  }, [client, definition, session]);
 
   return {
     ...snapshot,
