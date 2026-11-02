@@ -364,3 +364,243 @@ describe("WorkflowRegistry", () => {
     expect(registry.list()).toEqual([]);
   });
 });
+
+describe("WorkflowRegistry cleanup and ids", () => {
+  const memoryStorage = (): WorkflowStorage & { value?: string } => ({
+    getItem() {
+      return this.value ?? null;
+    },
+    setItem(_key, value) {
+      this.value = value;
+    },
+    removeItem() {
+      this.value = undefined;
+    },
+  });
+  const finishes = () =>
+    fakeTransport(async function* () {
+      yield { type: "finish", state: { status: "Done" }, status: "COMPLETED" };
+    });
+
+  it("removes a finished workflow after onFinish, keeping its session usable", async () => {
+    const { transport } = finishes();
+    const storage = memoryStorage();
+    const seenInOnFinish: boolean[] = [];
+    const registry: WorkflowRegistry<State, unknown, { orderId: number }> =
+      new WorkflowRegistry({
+        transport,
+        storage,
+        removeOnFinish: true,
+        onFinish: () => seenInOnFinish.push(registry.has("a")),
+      });
+    registry.hydrate();
+    const session = registry.session("a");
+    await session.start({});
+    await vi.waitFor(() => expect(registry.has("a")).toBe(false));
+    registry.stop();
+
+    expect(seenInOnFinish).toEqual([true]);
+    expect(session.getSnapshot().state).toEqual({ status: "Done" });
+    expect(registry.list()).toEqual([]);
+    expect(JSON.parse(storage.value ?? "")).toEqual([]);
+  });
+
+  it("drops finished workflows stored before enabling removeOnFinish", () => {
+    const { transport } = finishes();
+    const storage = memoryStorage();
+    storage.value = JSON.stringify([
+      { id: "a", status: "finished", updatedAt: Date.now() },
+    ]);
+    const registry = new WorkflowRegistry({
+      transport,
+      storage,
+      removeOnFinish: true,
+    });
+    registry.hydrate();
+    registry.stop();
+    expect(registry.list()).toEqual([]);
+  });
+
+  it("removes a workflow the backend rejected, keeping the error visible", async () => {
+    const { transport } = finishes();
+    transport.start.mockRejectedValueOnce(
+      new WorkflowClientError("Asset is locked", { status: 409 }),
+    );
+    const onError = vi.fn();
+    const registry = new WorkflowRegistry({ transport, onError });
+    const session = registry.session("a");
+    await session.start({});
+
+    expect(registry.has("a")).toBe(false);
+    expect(session.getSnapshot().error?.message).toBe("Asset is locked");
+    expect(onError).toHaveBeenCalledTimes(1);
+
+    // Trying again brings it back
+    session.clearError();
+    await session.start({});
+    expect(registry.has("a")).toBe(true);
+    registry.stop();
+  });
+
+  it("uses the id decided by the backend, also after a reload", async () => {
+    // biome-ignore lint/correctness/useYield: A stream that waits without events
+    const started = fakeTransport(async function* ({ id, signal }) {
+      subscribed.push(id);
+      await hang(signal);
+    });
+    const subscribed: string[] = [];
+    const transport = {
+      ...started.transport,
+      start: vi.fn(async () => ({ referenceId: "server" })),
+    };
+    const storage = memoryStorage();
+    const options = {
+      transport,
+      storage,
+      resolveId: ({ referenceId }: { referenceId: string }) => referenceId,
+    };
+    const registry = new WorkflowRegistry<
+      State,
+      unknown,
+      { referenceId: string }
+    >(options);
+    registry.hydrate();
+    const session = registry.session("client");
+    await session.start({});
+    await vi.waitFor(() => expect(subscribed).toEqual(["server"]));
+
+    expect(session.id).toBe("server");
+    expect(registry.session("client")).toBe(session);
+    expect(registry.session("server")).toBe(session);
+    expect(registry.list().map(({ id }) => id)).toEqual(["server"]);
+    registry.stop();
+
+    const reloaded = new WorkflowRegistry<
+      State,
+      unknown,
+      { referenceId: string }
+    >(options);
+    reloaded.hydrate();
+    expect(reloaded.session("client").id).toBe("server");
+    expect(reloaded.list()).toHaveLength(1);
+    reloaded.stop();
+  });
+
+  it("doesn't merge two workflows that get the same id", async () => {
+    const { transport: base } = finishes();
+    const transport = {
+      ...base,
+      start: vi.fn(async () => ({ referenceId: "server" })),
+      subscribe: ({ signal }: WorkflowSubscribeOptions) =>
+        // biome-ignore lint/correctness/useYield: A stream that waits without events
+        (async function* (): AsyncGenerator<WorkflowEvent<State>> {
+          await hang(signal);
+        })(),
+    };
+    const registry = new WorkflowRegistry<
+      State,
+      unknown,
+      { referenceId: string }
+    >({
+      transport,
+      resolveId: ({ referenceId }) => referenceId,
+    });
+    await registry.session("first").start({});
+    const second = registry.session("second");
+    await second.start({});
+
+    expect(second.getSnapshot().status).toBe("error");
+    expect(registry.session("first").id).toBe("server");
+    registry.stop();
+  });
+
+  it("removes expired workflows while the app stays open", () => {
+    vi.useFakeTimers();
+    try {
+      // biome-ignore lint/correctness/useYield: A stream that waits without events
+      const { transport } = fakeTransport(async function* ({ signal }) {
+        await hang(signal);
+      });
+      const registry = new WorkflowRegistry({ transport, ttlMs: 1_000 });
+      registry.hydrate();
+      registry.session("a").resume();
+      expect(registry.has("a")).toBe(true);
+      vi.advanceTimersByTime(2_500);
+      expect(registry.has("a")).toBe(false);
+      registry.stop();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  describe("find", () => {
+    const hanging = () =>
+      // biome-ignore lint/correctness/useYield: A stream that waits without events
+      fakeTransport(async function* ({ signal }) {
+        await hang(signal);
+      });
+
+    it("restores a finished workflow without firing onFinish", async () => {
+      const { transport } = hanging();
+      const onFinish = vi.fn();
+      const registry = new WorkflowRegistry({
+        transport,
+        onFinish,
+        removeOnFinish: true,
+        isFinal: ({ status }: State) => status === "Done",
+        lookup: async () => ({ status: "Done" }),
+      });
+      const session = registry.session("a");
+
+      await expect(registry.find("a")).resolves.toBe("found");
+      expect(session.getSnapshot()).toMatchObject({
+        status: "finished",
+        state: { status: "Done" },
+      });
+      expect(onFinish).not.toHaveBeenCalled();
+      expect(registry.has("a")).toBe(false);
+    });
+
+    it("follows a workflow that is still running", async () => {
+      const { transport } = hanging();
+      const registry = new WorkflowRegistry({
+        transport,
+        isFinal: ({ status }: State) => status === "Done",
+        lookup: async () => ({ status: "Pending" }),
+      });
+      await registry.find("a");
+      expect(registry.session("a").getSnapshot().status).toBe("running");
+      registry.stop();
+    });
+
+    it("tells apart a missing workflow from a failed request", async () => {
+      const { transport } = hanging();
+      const lookup = vi
+        .fn<() => Promise<State>>()
+        .mockRejectedValueOnce(new WorkflowClientError("No", { status: 404 }))
+        .mockRejectedValueOnce(
+          new WorkflowClientError("Down", { status: 500 }),
+        );
+      const registry = new WorkflowRegistry({ transport, lookup });
+      await expect(registry.find("a")).resolves.toBe("missing");
+      await expect(registry.find("a")).rejects.toThrow("Down");
+    });
+
+    it("doesn't ask the backend for a workflow it already has", async () => {
+      const { transport } = hanging();
+      const lookup = vi.fn(async () => ({ status: "Pending" }));
+      const registry = new WorkflowRegistry({ transport, lookup });
+      registry.session("a").resume();
+      await expect(registry.find("a")).resolves.toBe("found");
+      expect(lookup).not.toHaveBeenCalled();
+      registry.stop();
+    });
+
+    it("needs a lookup option", async () => {
+      const { transport } = hanging();
+      await expect(
+        new WorkflowRegistry({ transport }).find("a"),
+      ).rejects.toThrow("lookup");
+    });
+  });
+});

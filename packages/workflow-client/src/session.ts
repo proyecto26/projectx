@@ -19,6 +19,8 @@ export interface WorkflowReconnectOptions {
 
 export interface WorkflowSessionSnapshot<TState, TResult = TState> {
   readonly id: string;
+  /** The id this workflow was requested with, if the backend decided another. */
+  readonly requestedId?: string;
   readonly status: WorkflowSessionStatus;
   /** Last state of the workflow. */
   readonly state?: TState;
@@ -52,6 +54,12 @@ export interface WorkflowSessionOptions<TState, TInput, TResult>
   reconnect?: WorkflowReconnectOptions;
   /** Restores a previous session, as the registry does after a reload. */
   initialSnapshot?: Partial<WorkflowSessionSnapshot<TState, TResult>>;
+  /** Reads the id decided by the backend from what `transport.start` returned. */
+  resolveId?: (result: TResult) => string | undefined;
+  /** Used by the registry. Returning false rejects the id decided by the backend. */
+  onIdChange?: (id: string, previousId: string) => boolean;
+  /** Used by the registry. The session is about to talk to the backend. */
+  onActivate?: () => void;
 }
 
 const toError = (error: unknown) =>
@@ -74,7 +82,7 @@ const isFatalByDefault = (error: unknown) => {
  * and other stores only need to subscribe to it.
  */
 export class WorkflowSession<TState, TInput = unknown, TResult = TState> {
-  readonly id: string;
+  #id: string;
   #options: WorkflowSessionOptions<TState, TInput, TResult>;
   #snapshot: WorkflowSessionSnapshot<TState, TResult>;
   #listeners = new Set<() => void>();
@@ -82,7 +90,7 @@ export class WorkflowSession<TState, TInput = unknown, TResult = TState> {
   #startPromise?: Promise<void>;
 
   constructor(options: WorkflowSessionOptions<TState, TInput, TResult>) {
-    this.id = options.id;
+    this.#id = options.id;
     this.#options = options;
     this.#snapshot = {
       status: "idle",
@@ -91,6 +99,10 @@ export class WorkflowSession<TState, TInput = unknown, TResult = TState> {
       ...options.initialSnapshot,
       id: options.id,
     };
+  }
+
+  get id() {
+    return this.#id;
   }
 
   getSnapshot = () => this.#snapshot;
@@ -116,12 +128,25 @@ export class WorkflowSession<TState, TInput = unknown, TResult = TState> {
       return Promise.resolve();
     }
 
+    this.#options.onActivate?.();
     const controller = this.#replaceController();
     this.#update({ status: "starting", error: undefined });
     this.#startPromise = this.#options.transport
       .start({ id: this.id, input, signal: controller.signal })
       .then((startResult) => {
         if (controller.signal.aborted) return;
+        const id = this.#options.resolveId?.(startResult);
+        if (id && id !== this.#id) {
+          if (this.#options.onIdChange?.(id, this.#id) === false) {
+            this.#fail(
+              new Error(`The workflow ${id} is already being followed`),
+            );
+            return;
+          }
+          const requestedId = this.#id;
+          this.#id = id;
+          this.#update({ id, requestedId });
+        }
         this.#update({ status: "running", result: startResult });
         void this.#follow(controller);
       })
@@ -151,6 +176,7 @@ export class WorkflowSession<TState, TInput = unknown, TResult = TState> {
       return;
     }
     if (status === "starting" && this.#startPromise) return;
+    this.#options.onActivate?.();
     const controller = this.#replaceController();
     this.#update({ status: "running", error: undefined });
     void this.#follow(controller);

@@ -30,6 +30,7 @@ import {
 import {
   WorkflowExecutionAlreadyStartedError,
   WorkflowIdConflictPolicy,
+  WorkflowIdReusePolicy,
 } from "@temporalio/common";
 
 import { createOrder } from "../workflows/order.workflow";
@@ -81,6 +82,8 @@ export class AppService {
           args: [workflowData],
           taskQueue: this.taskQueue,
           workflowIdConflictPolicy: WorkflowIdConflictPolicy.FAIL,
+          // A referenceId is one purchase, so a closed order can't run again
+          workflowIdReusePolicy: WorkflowIdReusePolicy.REJECT_DUPLICATE,
           searchAttributes: {
             UserId: [user.id],
             Email: [user.email],

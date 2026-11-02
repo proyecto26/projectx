@@ -55,8 +55,17 @@ export function useOrderWorkflow(referenceId: string) {
     OrderWorkflowInput,
     OrderWorkflowResult
   >({ id: referenceId });
-  const registry = useWorkflowRegistry();
+  const registry = useWorkflowRegistry<
+    OrderWorkflowState,
+    OrderWorkflowInput,
+    OrderWorkflowResult
+  >();
   // Renders again when the registry restores the stored orders
   useWorkflowList();
-  return { ...workflow, isHydrated: registry?.isHydrated ?? false };
+  return {
+    ...workflow,
+    isHydrated: registry?.isHydrated ?? false,
+    /** Asks the backend for an order that isn't kept in this browser. */
+    find: async () => (await registry?.find(referenceId)) ?? "missing",
+  };
 }

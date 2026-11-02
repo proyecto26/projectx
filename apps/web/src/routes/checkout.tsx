@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { MetaFunction } from "react-router";
 import { useCart } from "react-use-cart";
 import invariant from "tiny-invariant";
@@ -32,11 +32,29 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
   const workflow = useOrderWorkflow(referenceId);
   const hasOrder = !!(workflow.state || workflow.result);
   const workflowInitiatedRef = useRef(false);
+  const findStartedRef = useRef(false);
+  const { find } = workflow;
+  // A finished order isn't kept here, so ask the backend before creating it
+  const [lookup, setLookup] = useState<"pending" | "missing" | "found">(
+    "pending",
+  );
+  const [lookupError, setLookupError] = useState<Error>();
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: It only runs once per page
+  useEffect(() => {
+    if (!workflow.isHydrated || findStartedRef.current) return;
+    findStartedRef.current = true;
+    if (hasOrder || workflow.status !== "idle") {
+      setLookup("found");
+      return;
+    }
+    find().then(setLookup, setLookupError);
+  }, [workflow.isHydrated]);
 
   // Trigger the creation of the order workflow
   useEffect(() => {
     if (
-      workflow.isHydrated &&
+      lookup === "missing" &&
       !workflowInitiatedRef.current &&
       !hasOrder &&
       workflow.status === "idle" &&
@@ -54,14 +72,7 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
         })),
       } as OrderWorkflowInput);
     }
-  }, [
-    workflow.isHydrated,
-    workflow.status,
-    workflow.start,
-    hasOrder,
-    items,
-    referenceId,
-  ]);
+  }, [lookup, workflow.status, workflow.start, hasOrder, items, referenceId]);
 
   // Clear the cart once the order exists, so a failure doesn't lose it
   const isOrderCreated = workflowInitiatedRef.current && !!workflow.result;
@@ -71,11 +82,14 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
 
   return (
     <CheckoutPage
-      error={workflow.error}
+      error={workflow.error ?? lookupError}
       isLoading={
         !workflow.isHydrated ||
         workflow.status === "starting" ||
-        (!hasOrder && workflow.status === "idle" && items.length > 0)
+        (!hasOrder &&
+          !lookupError &&
+          workflow.status === "idle" &&
+          (lookup === "pending" || items.length > 0))
       }
       currentCheckoutWorkflow={workflow}
     />

@@ -19,7 +19,6 @@ import {
   type ChildWorkflowHandle,
   condition,
   log,
-  patched,
   proxyActivities,
   setHandler,
   startChild,
@@ -52,12 +51,9 @@ export async function createOrder(
   data: OrderWorkflowData,
   state = initialState,
 ): Promise<void> {
-  // Executions that started before the stream existed must replay without it
-  const stream = patched("order-state-stream")
-    ? new WorkflowStream()
-    : undefined;
+  const stream = new WorkflowStream();
   const publishState = () =>
-    stream?.topic<Partial<OrderStatusResponseDto>>("state").publish(state);
+    stream.topic<Partial<OrderStatusResponseDto>>("state").publish(state);
 
   state.referenceId = data.order.referenceId;
   let isCreatingOrder = false;
@@ -109,7 +105,7 @@ export async function createOrder(
 
   // Wait for the update to finish. A subscriber waiting for new items also counts
   // as a running handler, so the stream can't wait for all of them at this point.
-  await condition(() => (stream ? !isCreatingOrder : allHandlersFinished()));
+  await condition(() => !isCreatingOrder);
 
   if (!orderCreated || !state?.orderId) {
     throw ApplicationFailure.nonRetryable(
@@ -144,10 +140,8 @@ export async function createOrder(
 
     // TODO: Second step - Ship the order
   } finally {
-    if (stream) {
-      // Answer the waiting subscribers before the workflow closes
-      stream.detachPollers();
-      await condition(allHandlersFinished);
-    }
+    // Answer the waiting subscribers before the workflow closes
+    stream.detachPollers();
+    await condition(allHandlersFinished);
   }
 }

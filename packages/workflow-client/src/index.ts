@@ -3,5 +3,6 @@ export * from "./session";
 export * from "./sse";
 export * from "./transports/fallback";
 export * from "./transports/http-stream";
+export * from "./transports/limited";
 export * from "./transports/polling";
 export * from "./types";

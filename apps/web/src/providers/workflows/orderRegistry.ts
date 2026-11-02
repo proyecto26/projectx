@@ -2,6 +2,7 @@ import { canUseDOM } from "@projectx/ui";
 import {
   createFallbackTransport,
   createHttpStreamTransport,
+  createLimitedTransport,
   createPollingTransport,
   WorkflowClientError,
   WorkflowRegistry,
@@ -58,6 +59,25 @@ export function createOrderRegistry({
     body: ({ input }) => input,
   });
 
+  const getOrderStatus = async ({
+    id,
+    signal,
+  }: {
+    id: string;
+    signal?: AbortSignal;
+  }): Promise<OrderWorkflowState> => {
+    const response = await fetch(`${ordersUrl()}/status/${id}`, {
+      headers: headers(),
+      signal,
+    });
+    if (!response.ok) {
+      throw new WorkflowClientError("Could not read the order status", {
+        status: response.status,
+      });
+    }
+    return response.json();
+  };
+
   const polling = createPollingTransport<
     OrderWorkflowState,
     OrderWorkflowInput,
@@ -65,18 +85,7 @@ export function createOrderRegistry({
   >({
     start: stream.start,
     cancel: stream.cancel,
-    getState: async ({ id, signal }) => {
-      const response = await fetch(`${ordersUrl()}/status/${id}`, {
-        headers: headers(),
-        signal,
-      });
-      if (!response.ok) {
-        throw new WorkflowClientError("Could not read the order status", {
-          status: response.status,
-        });
-      }
-      return response.json();
-    },
+    getState: getOrderStatus,
   });
 
   const registry = new WorkflowRegistry<
@@ -84,10 +93,18 @@ export function createOrderRegistry({
     OrderWorkflowInput,
     OrderWorkflowResult
   >({
-    transport: createFallbackTransport(stream, polling),
+    // Open streams hold browser connections, so the rest of the orders poll
+    transport: createLimitedTransport(
+      createFallbackTransport(stream, polling),
+      polling,
+    ),
     isFinal: ({ status }) => finalStatus.includes(status),
     storage: canUseDOM && email ? window.localStorage : undefined,
     storageKey: `order-workflows:${email}`,
+    // The backend can decide the id of the order it creates
+    resolveId: ({ referenceId }) => referenceId,
+    removeOnFinish: true,
+    lookup: getOrderStatus,
     onFinish: ({ state }) => {
       if (state) notifyFinishedOrder(state);
     },

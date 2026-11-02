@@ -38,14 +38,13 @@ npm install @proyecto26/temporal-workflow-client
 ### 1. Publish the state from your workflow
 
 ```ts
-import { allHandlersFinished, condition, patched, setHandler } from "@temporalio/workflow";
+import { allHandlersFinished, condition, setHandler } from "@temporalio/workflow";
 import { WorkflowStream } from "@temporalio/workflow-streams/workflow";
 
 export async function orderWorkflow(input: OrderInput) {
-  // patched() keeps executions that are already running replayable
-  const stream = patched("order-state-stream") ? new WorkflowStream() : undefined;
+  const stream = new WorkflowStream();
   const state = { status: "Pending" };
-  const publishState = () => stream?.topic("state").publish(state);
+  const publishState = () => stream.topic("state").publish(state);
   setHandler(getStateQuery, () => state);
 
   try {
@@ -53,11 +52,9 @@ export async function orderWorkflow(input: OrderInput) {
     state.status = "Confirmed";
     publishState();
   } finally {
-    if (stream) {
-      // Answer the waiting subscribers before the workflow closes
-      stream.detachPollers();
-      await condition(allHandlersFinished);
-    }
+    // Answer the waiting subscribers before the workflow closes
+    stream.detachPollers();
+    await condition(allHandlersFinished);
   }
 }
 ```
@@ -176,6 +173,33 @@ The provider calls `registry.hydrate()` after the first render, so server and cl
 > [!NOTE]
 > Everything `state` and `result` hold is written to `storage`. Leave out of them whatever shouldn't stay in the browser.
 
+### Several workflows at once
+
+A user can have many workflows running. `useWorkflows` reads them like `useQueries`, and each one keeps its own connection or polling:
+
+```tsx
+const { pending, allFinished } = useWorkflows<OrderState, OrderInput, OrderResult, Summary>({
+  ids: orderIds, // Optional, all the workflows of the registry by default
+  combine, // Keep it stable with useCallback or out of the component
+});
+```
+
+Use one registry per workflow type, each with its own transport, so workflows without streams can simply poll.
+
+### Registry options
+
+| Option | What it does |
+|--------|--------------|
+| `removeOnFinish` | Forgets a workflow after `onFinish`, so it isn't stored anymore. Components showing it keep their state until they unmount. |
+| `lookup` | Reads a workflow from your backend. Needed by `registry.find(id)`, which restores a workflow that isn't here without firing `onFinish`, and answers `"missing"` on a 404. |
+| `resolveId` | Reads the id decided by the backend from the start response. The session moves to that id and the requested one keeps working. Two sessions are never merged: if another one already has that id, the session fails. |
+| `ttlMs` | Removes workflows without changes for this long, 24 hours by default, also while the app stays open. |
+
+A workflow rejected by the backend when starting is removed from the registry, and the component that started it keeps the error. The backend decides what is allowed, so this package doesn't interpret status codes such as a 409.
+
+> [!IMPORTANT]
+> With `removeOnFinish`, this browser forgets finished workflows. Call `registry.find(id)` before starting one again from a URL that can be reloaded, and reject repeated ids in your backend, for example with `WorkflowIdReusePolicy.REJECT_DUPLICATE`.
+
 ## Without React ⚙️
 
 ```ts
@@ -219,6 +243,20 @@ interface WorkflowTransport<TState, TInput, TResult = TState> {
   cancel(options: { id: string; signal?: AbortSignal }): Promise<void>;
 }
 ```
+
+### Many workflows with streams
+
+Each open stream holds a browser connection. Over HTTP/1.1 browsers allow about 6 per origin, so 6 streams leave every other request to that API waiting. `createLimitedTransport` follows the workflows above the limit with polling, and moves them to a stream when one ends:
+
+```ts
+const transport = createLimitedTransport(
+  createFallbackTransport(stream, polling),
+  polling,
+  { maxStreams: 4 }, // The default
+);
+```
+
+The limit counts one registry, so several tabs or registries using the same API share those connections. Serving the API over HTTP/2 removes this limit.
 
 ## API 📖
 

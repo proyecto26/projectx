@@ -2,9 +2,14 @@ import { describe, expect, it, vi } from "vitest";
 
 import { toWorkflowStreamResponse } from "../server/response";
 import { parseSse } from "../sse";
-import type { WorkflowEvent, WorkflowTransport } from "../types";
+import type {
+  WorkflowEvent,
+  WorkflowSubscribeOptions,
+  WorkflowTransport,
+} from "../types";
 import { createFallbackTransport } from "./fallback";
 import { createHttpStreamTransport } from "./http-stream";
+import { createLimitedTransport } from "./limited";
 import { createPollingTransport } from "./polling";
 
 const encoder = new TextEncoder();
@@ -262,5 +267,138 @@ describe("fallback transport", () => {
     await expect(
       collect(aborted.subscribe({ id: "a", signal: controller.signal })),
     ).rejects.toMatchObject({ name: "AbortError" });
+  });
+});
+
+describe("createLimitedTransport", () => {
+  type State = { status: string };
+  const waitForAbort = (signal: AbortSignal) =>
+    new Promise<never>((_, reject) => {
+      signal.addEventListener("abort", () =>
+        reject(new DOMException("Aborted", "AbortError")),
+      );
+    });
+  const fake = (name: string, opened: string[]) =>
+    ({
+      start: vi.fn(async () => ({ status: name })),
+      cancel: vi.fn(async () => undefined),
+      // biome-ignore lint/correctness/useYield: A stream that waits without events
+      async *subscribe({ id, signal }: WorkflowSubscribeOptions) {
+        opened.push(`${name}:${id}`);
+        await waitForAbort(signal);
+      },
+    }) satisfies WorkflowTransport<State>;
+
+  const follow = (
+    transport: WorkflowTransport<State>,
+    id: string,
+    controller = new AbortController(),
+  ) => ({
+    controller,
+    done: (async () => {
+      for await (const _ of transport.subscribe({
+        id,
+        signal: controller.signal,
+      })) {
+        // Only the connections matter here
+      }
+    })().catch((error) => error),
+  });
+
+  it("uses the stream up to the limit and the secondary after it", async () => {
+    const opened: string[] = [];
+    const transport = createLimitedTransport(
+      fake("stream", opened),
+      fake("poll", opened),
+      { maxStreams: 2 },
+    );
+    const all = ["a", "b", "c"].map((id) => follow(transport, id));
+    await vi.waitFor(() => expect(opened).toHaveLength(3));
+    expect(opened).toEqual(["stream:a", "stream:b", "poll:c"]);
+
+    for (const { controller } of all) controller.abort();
+    await Promise.all(all.map(({ done }) => done));
+  });
+
+  it("frees the streams right away when everything restarts, as Strict Mode does", async () => {
+    const opened: string[] = [];
+    const transport = createLimitedTransport(
+      fake("stream", opened),
+      fake("poll", opened),
+      { maxStreams: 2 },
+    );
+    const ids = ["a", "b", "c", "d"];
+    const first = ids.map((id) => follow(transport, id));
+    await vi.waitFor(() => expect(opened).toHaveLength(4));
+    opened.length = 0;
+
+    for (const { controller } of first) controller.abort();
+    const second = ids.map((id) => follow(transport, id));
+    await vi.waitFor(() => expect(opened).toHaveLength(4));
+    expect(opened).toEqual(["stream:a", "stream:b", "poll:c", "poll:d"]);
+
+    for (const { controller } of second) controller.abort();
+    await Promise.all([...first, ...second].map(({ done }) => done));
+  });
+
+  it("doesn't lose a free stream on a workflow that stopped waiting", async () => {
+    const opened: string[] = [];
+    const transport = createLimitedTransport(
+      fake("stream", opened),
+      fake("poll", opened),
+      { maxStreams: 1 },
+    );
+    const streaming = follow(transport, "a");
+    const stopped = follow(transport, "b");
+    const waiting = follow(transport, "c");
+    await vi.waitFor(() => expect(opened).toHaveLength(3));
+
+    stopped.controller.abort();
+    streaming.controller.abort();
+    await expect(waiting.done).resolves.toBeUndefined();
+    await Promise.all([stopped.done, streaming.done]);
+  });
+
+  it("ends the secondary without an error when a stream is free", async () => {
+    const opened: string[] = [];
+    const transport = createLimitedTransport(
+      fake("stream", opened),
+      fake("poll", opened),
+      { maxStreams: 1 },
+    );
+    const first = follow(transport, "a");
+    await vi.waitFor(() => expect(opened).toEqual(["stream:a"]));
+    const second = follow(transport, "b");
+    await vi.waitFor(() => expect(opened).toHaveLength(2));
+
+    first.controller.abort();
+    await first.done;
+    // It ends by itself, so the session reconnects and takes the stream
+    await expect(second.done).resolves.toBeUndefined();
+
+    const reconnected = follow(transport, "b");
+    await vi.waitFor(() => expect(opened.at(-1)).toBe("stream:b"));
+    reconnected.controller.abort();
+    await reconnected.done;
+  });
+
+  it("frees the stream when it fails and keeps the error", async () => {
+    const opened: string[] = [];
+    const failing = fake("stream", opened);
+    // biome-ignore lint/correctness/useYield: A stream that fails without events
+    failing.subscribe = async function* () {
+      throw new Error("Down");
+    };
+    const transport = createLimitedTransport(failing, fake("poll", opened), {
+      maxStreams: 1,
+    });
+    expect(await follow(transport, "a").done).toMatchObject({
+      message: "Down",
+    });
+    // A second one takes the stream instead of the secondary
+    expect(await follow(transport, "b").done).toMatchObject({
+      message: "Down",
+    });
+    expect(opened).toEqual([]);
   });
 });

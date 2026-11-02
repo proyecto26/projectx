@@ -32,11 +32,11 @@ describe("order workflow bundle", () => {
     expect(code).not.toContain(name);
   });
 
-  it("replays an execution from before the state stream", async () => {
+  it("replays a completed order with the current code", async () => {
     const history = historyFromJSON(
       JSON.parse(
         readFileSync(
-          path.join(__dirname, "__fixtures__/order-before-stream.history.json"),
+          path.join(__dirname, "__fixtures__/order-state-stream.history.json"),
           "utf8",
         ),
       ),

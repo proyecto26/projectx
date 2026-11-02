@@ -18,6 +18,7 @@ import type {
 import { WorkflowRegistryProvider } from "./context";
 import { useWorkflow } from "./useWorkflow";
 import { useWorkflowList } from "./useWorkflowList";
+import { useWorkflows } from "./useWorkflows";
 
 afterEach(cleanup);
 
@@ -162,5 +163,65 @@ describe("useWorkflow", () => {
       "WorkflowRegistryProvider",
     );
     spy.mockRestore();
+  });
+});
+
+describe("useWorkflows", () => {
+  type State = { status: string };
+  const makeRegistry = () => {
+    const listeners = new Map<string, (state: State) => void>();
+    const transport: WorkflowTransport<State> = {
+      start: vi.fn(async () => ({ status: "Pending" })),
+      cancel: vi.fn(async () => undefined),
+      subscribe: ({ id, signal }) =>
+        (async function* (): AsyncGenerator<WorkflowEvent<State>> {
+          const state = await new Promise<State>((resolve, reject) => {
+            listeners.set(id, resolve);
+            signal.addEventListener("abort", () =>
+              reject(new DOMException("Aborted", "AbortError")),
+            );
+          });
+          yield { type: "finish", state, status: "COMPLETED" };
+        })(),
+    };
+    return { registry: new WorkflowRegistry<State>({ transport }), listeners };
+  };
+
+  it("reads all the workflows, a subset in order, and a combined value", async () => {
+    const { registry, listeners } = makeRegistry();
+    registry.session("a").resume();
+    registry.session("b").resume();
+    registry.session("c").resume();
+    const combine = (items: ReadonlyArray<{ status: string }>) =>
+      items.filter(({ status }) => status === "running").length;
+
+    const { result } = renderHook(() => ({
+      all: useWorkflows<State>({ registry }),
+      subset: useWorkflows<State>({ registry, ids: ["c", "a", "unknown"] }),
+      running: useWorkflows<State, unknown, State, number>({
+        registry,
+        combine,
+      }),
+    }));
+    expect(result.current.all.map(({ id }) => id)).toEqual(["a", "b", "c"]);
+    expect(result.current.subset.map(({ id }) => id)).toEqual(["c", "a"]);
+    expect(result.current.running).toBe(3);
+
+    await waitFor(() => expect(listeners.size).toBe(3));
+    act(() => listeners.get("a")?.({ status: "Done" }));
+    await waitFor(() => expect(result.current.running).toBe(2));
+    registry.stop();
+  });
+
+  it("keeps the same reference until something changes", () => {
+    const { registry } = makeRegistry();
+    registry.session("a").resume();
+    const { result, rerender } = renderHook(() =>
+      useWorkflows<State>({ registry, ids: ["a"] }),
+    );
+    const first = result.current;
+    rerender();
+    expect(result.current).toBe(first);
+    registry.stop();
   });
 });
