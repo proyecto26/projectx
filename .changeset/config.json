@@ -1,0 +1,12 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3/schema.json",
+  "changelog": [
+    "@changesets/changelog-github",
+    { "repo": "proyecto26/projectx" }
+  ],
+  "commit": false,
+  "access": "public",
+  "baseBranch": "develop",
+  "updateInternalDependencies": "patch",
+  "ignore": []
+}
