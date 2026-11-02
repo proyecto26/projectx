@@ -64,16 +64,20 @@ Start workflows with the client:
 
 ```ts
 import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { ClientService } from "@proyecto26/temporal-workflows";
 
 @Injectable()
 export class OrdersService {
-  constructor(private readonly clientService: ClientService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly clientService: ClientService,
+  ) {}
 
   startOrder(input: OrderInput) {
     return this.clientService.client?.workflow.start(orderWorkflow, {
       workflowId: `order-${input.id}`,
-      taskQueue: "orders",
+      taskQueue: this.configService.getOrThrow<string>("temporal.taskQueue"),
       args: [input],
     });
   }
