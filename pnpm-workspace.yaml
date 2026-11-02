@@ -1,3 +1,20 @@
 packages:
   - "apps/*"
   - "packages/*"
+
+shamefullyHoist: true
+strictPeerDependencies: false
+
+overrides:
+  webpack: 5.112.2
+
+allowBuilds:
+  "@nestjs/core": false
+  "@parcel/watcher": true
+  "@prisma/engines": true
+  "@scarf/scarf": false
+  "@swc/core": true
+  bcrypt: true
+  esbuild: true
+  prisma: true
+  protobufjs: false

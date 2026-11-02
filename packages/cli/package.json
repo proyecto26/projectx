@@ -1,6 +1,7 @@
 {
   "name": "@projectx/cli",
   "version": "1.0.0",
+  "private": true,
   "description": "ProjectX CLI - Generate services, workflows, and customize your Temporal-powered application",
   "type": "module",
   "main": "./dist/index.js",

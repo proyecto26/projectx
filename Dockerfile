@@ -9,10 +9,10 @@ WORKDIR /app
 # Copy package.json and pnpm-lock.yaml
 COPY package.json .
 COPY pnpm-lock.yaml .
-COPY .npmrc .
+COPY pnpm-workspace.yaml .
 
 # Install pnpm globally
-RUN npm install -g pnpm
+RUN npm install -g pnpm@12.16.1
 
 # Copy the application files
 COPY . .
