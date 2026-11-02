@@ -20,8 +20,8 @@
       "@projectx/db/*": ["../../packages/db/dist/*"],
       "@projectx/models": ["../../packages/models/dist/index"],
       "@projectx/models/*": ["../../packages/models/dist/*"],
-      "@projectx/workflows": ["../../packages/workflows/dist/index"],
-      "@projectx/workflows/*": ["../../packages/workflows/dist/*"]
+      "@proyecto26/temporal-workflows": ["../../packages/workflows/dist/index"],
+      "@proyecto26/temporal-workflows/*": ["../../packages/workflows/dist/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

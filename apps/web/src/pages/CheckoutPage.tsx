@@ -4,7 +4,7 @@ import type { Appearance } from "@stripe/stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { motion } from "framer-motion";
 
-import type { OrderWorkflow } from "@/providers/workflows/types";
+import type { OrderWorkflow } from "@/providers/workflows";
 import { CheckoutForm } from "./checkout/CheckoutForm";
 
 const STRIPE_SECRET_KEY = canUseDOM
@@ -97,7 +97,9 @@ export const CheckoutPage = ({
     );
   }
 
-  const clientSecret = currentCheckoutWorkflow?.data?.response?.clientSecret;
+  const clientSecret =
+    currentCheckoutWorkflow?.result?.clientSecret ??
+    currentCheckoutWorkflow?.state?.clientSecret;
 
   if (!clientSecret) {
     return (

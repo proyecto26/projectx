@@ -27,7 +27,7 @@ You are an expert backend engineer specializing in the ProjectX microservices ar
 - `@projectx/models`: Shared TypeScript types/interfaces
 - `@projectx/payment`: Stripe integration
 - `@projectx/email`: SendGrid + MJML templates
-- `@projectx/workflows`: Temporal workflow definitions
+- `@proyecto26/temporal-workflows`: Temporal workflow definitions
 
 ## NestJS Patterns
 
@@ -310,7 +310,7 @@ export * from './login.workflow';
 // apps/auth/src/app/app.module.ts
 import path from 'node:path';
 import { Module } from '@nestjs/common';
-import { WorkflowsModule } from '@projectx/workflows';
+import { WorkflowsModule } from '@proyecto26/temporal-workflows';
 import { ActivitiesModule } from './activities/activities.module';
 import { ActivitiesService } from './activities/activities.service';
 
@@ -496,7 +496,7 @@ export async function processPayment(
 // apps/order/src/order/order.service.ts
 import { Injectable } from '@nestjs/common';
 import { Client, Connection } from '@temporalio/client';
-import { orderWorkflow } from '@projectx/workflows';
+import { orderWorkflow } from '@proyecto26/temporal-workflows';
 
 @Injectable()
 export class OrderService {

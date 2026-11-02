@@ -1,0 +1,113 @@
+{
+  "name": "@proyecto26/temporal-workflow-client",
+  "version": "0.0.1",
+  "description": "Connect any JavaScript app to Temporal workflows: a framework agnostic store, swappable transports, React hooks and server helpers",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/proyecto26/projectx.git",
+    "directory": "packages/workflow-client"
+  },
+  "keywords": [
+    "temporal",
+    "workflow",
+    "react",
+    "sse",
+    "streaming"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./react": {
+      "import": {
+        "types": "./dist/react/index.d.ts",
+        "default": "./dist/react/index.js"
+      },
+      "require": {
+        "types": "./dist/react/index.d.cts",
+        "default": "./dist/react/index.cjs"
+      }
+    },
+    "./server": {
+      "import": {
+        "types": "./dist/server/index.d.ts",
+        "default": "./dist/server/index.js"
+      },
+      "require": {
+        "types": "./dist/server/index.d.cts",
+        "default": "./dist/server/index.cjs"
+      }
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "react": [
+        "./dist/react/index.d.cts"
+      ],
+      "server": [
+        "./dist/server/index.d.cts"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "biome check .",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@temporalio/client": "1.25.0",
+    "@temporalio/workflow-streams": "1.25.0",
+    "@testing-library/react": "16.3.3",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "jsdom": "^26.0.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "4.1.11"
+  },
+  "peerDependencies": {
+    "@temporalio/client": "^1.25.0",
+    "@temporalio/workflow-streams": "^1.25.0",
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@temporalio/client": {
+      "optional": true
+    },
+    "@temporalio/workflow-streams": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=20.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

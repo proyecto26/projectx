@@ -153,9 +153,15 @@ export class OrderService {
     return updatedOrder;
   }
 
-  async getOrderSummaryById(orderId: number): Promise<OrderSummaryDto> {
+  async getOrderSummaryById(
+    orderId: number,
+    userId: number,
+  ): Promise<OrderSummaryDto> {
     this.logger.log(`getOrderSummaryById(${orderId})`);
     const order = await this.orderRepositoryService.getOrderById(orderId);
+    if (order?.userId !== userId) {
+      throw new NotFoundException("Order not found");
+    }
 
     // Calculate subtotal from line items
     const subtotal =

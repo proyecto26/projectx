@@ -17,8 +17,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export const loader = async ({ request }: Route.LoaderArgs) => {
-  const url = new URL(request.url);
+export const loader = async ({ url }: Route.LoaderArgs) => {
   const category = url.searchParams.get("category") ?? undefined;
   const search = url.searchParams.get("search") ?? undefined;
 

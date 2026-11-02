@@ -9,9 +9,9 @@ alwaysApply: true
 # Temporal Workflow Rules
 ## Project Context
 - This project uses Temporal.io for workflow orchestration
-- Temporal Server version: 1.29.2
-- Temporal Admin Tools: 1.29.1-tctl-1.18.4-cli-1.5.0
-- Temporal UI: 2.44.1
+- Temporal Server version: 1.32.1
+- Temporal Admin Tools: 1.32.1
+- Temporal UI: 2.57.0
 - All services connect to Temporal for long-running business processes
 ## Workflow Architecture
 ### Workflow Locations
@@ -118,7 +118,7 @@ export async function myWorkflow() {
 ## Client Usage in NestJS
 ### Injecting Workflow Client
 ```typescript
-import { ClientService } from '@projectx/workflows';
+import { ClientService } from '@proyecto26/temporal-workflows';
 @Injectable()
 export class MyService {
   constructor(

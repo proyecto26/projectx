@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "stripe": "20.2.0",
-    "tslib": "^2.8.1"
+    "tslib": "^2.9.1"
   },
   "devDependencies": {
     "tsup": "^8.5.1",

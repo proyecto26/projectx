@@ -1,35 +1,53 @@
 {
-  "name": "@projectx/workflows",
+  "name": "@proyecto26/temporal-workflows",
   "version": "0.0.1",
+  "description": "NestJS module to run Temporal workers and clients",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/proyecto26/projectx.git",
+    "directory": "packages/workflows"
+  },
   "private": false,
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.json",
     "dev": "tsc -w -p tsconfig.json",
     "lint": "biome check .",
     "test": "echo 'no tests'"
   },
   "dependencies": {
-    "@projectx/core": "workspace:*",
-    "tslib": "^2.8.1"
+    "tslib": "^2.9.1"
   },
   "devDependencies": {
-    "@types/webpack": "^5.28.5",
-    "tsup": "^8.5.1",
-    "typescript": "^5.9.3"
-  },
-  "peerDependencies": {
+    "typescript": "^5.9.3",
     "@nestjs/common": "11.1.12",
     "@nestjs/config": "4.0.2",
-    "@temporalio/client": "1.14.1",
-    "@temporalio/proto": "1.14.1",
-    "@temporalio/worker": "1.14.1",
-    "@temporalio/workflow": "1.14.1",
-    "pino": "10.2.0"
+    "@temporalio/client": "1.25.0",
+    "@temporalio/proto": "1.25.0",
+    "@temporalio/worker": "1.25.0"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^10.0.0 || ^11.0.0",
+    "@nestjs/config": "^3.0.0 || ^4.0.0",
+    "@temporalio/client": "^1.25.0",
+    "@temporalio/proto": "^1.25.0",
+    "@temporalio/worker": "^1.25.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

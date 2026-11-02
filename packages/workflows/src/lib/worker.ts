@@ -1,84 +1,63 @@
-import path from "node:path";
 import type { ConfigService } from "@nestjs/config";
 import {
+  type BundleOptions,
   bundleWorkflowCode,
   NativeConnection,
+  type NativeConnectionOptions,
   type WorkerOptions,
 } from "@temporalio/worker";
-import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
-import { NormalModuleReplacementPlugin } from "webpack";
+
+export interface CreateWorkerOptions {
+  /** Path to the workflows, bundled when the worker starts. */
+  workflowsPath?: string;
+  /** Bundle built ahead of time, recommended in production. */
+  workflowBundle?: WorkerOptions["workflowBundle"];
+  /** Options for the Temporal bundler, used with `workflowsPath`. */
+  bundlerOptions?: Omit<BundleOptions, "workflowsPath">;
+  /** Defaults to the `temporal.host` configuration value. */
+  connectionOptions?: NativeConnectionOptions;
+  /** Defaults to the `temporal.namespace` configuration value. */
+  namespace?: string;
+  /** Defaults to the `temporal.taskQueue` configuration value. */
+  taskQueue?: string;
+}
 
 /**
  * Creates a worker options object for the Temporal worker.
+ *
+ * Workflow code runs in a sandbox, so it can only import pure modules: workflow
+ * definitions, enums and types. Importing a package that loads NestJS from a
+ * workflow makes this bundling step fail.
+ *
  * @param config - The NestJS configuration service.
- * @param workflowsPath - The path to the workflows directory.
+ * @param options - Where to find the workflows and how to reach Temporal.
  * @returns A Promise resolving to the worker options object.
  */
 export async function createWorkerOptions(
   config: ConfigService,
-  workflowsPath: string,
+  options: CreateWorkerOptions,
 ): Promise<WorkerOptions> {
-  const temporalHost = config.get("temporal.host");
-  const temporalNamespace = config.get("temporal.namespace");
-  const temporalTaskQueue = config.get("temporal.taskQueue");
-  const connection = await NativeConnection.connect({
-    address: temporalHost,
-    // tls configuration
-  });
+  const { workflowsPath, bundlerOptions } = options;
+  let { workflowBundle } = options;
+  if (!workflowBundle) {
+    if (!workflowsPath) {
+      throw new Error("Either workflowsPath or workflowBundle is required");
+    }
+    workflowBundle = await bundleWorkflowCode({
+      ...bundlerOptions,
+      workflowsPath,
+    });
+  }
 
-  const workflowBundle = await bundleWorkflowCode({
-    workflowsPath,
-    webpackConfigHook: (config) => {
-      const mocksPath = path.join(__dirname, "temporal-mocks.js");
-
-      config.resolve = config.resolve || {};
-      config.resolve.plugins = [
-        ...(config.resolve.plugins ?? []),
-        new TsconfigPathsPlugin({
-          baseUrl: path.dirname((config.entry as string[])[0] ?? ""),
-        }),
-      ];
-
-      // Use a robust mock for backend packages using a regex to simplify the configuration.
-      // This solves monorepo conflicts where shared packages pull in backend decorators.
-      config.plugins = [
-        ...(config.plugins ?? []),
-        new NormalModuleReplacementPlugin(
-          /(@nestjs\/.*|class-validator|class-transformer|express|reflect-metadata)/,
-          mocksPath,
-        ),
-      ];
-
-      // Keep node: aliases to false as these are usually just required, not called as functions
-      config.resolve.alias = {
-        ...(config.resolve.alias || {}),
-        "node:fs": false,
-        "node:path": false,
-        "node:http": false,
-        "node:https": false,
-        "node:querystring": false,
-        "node:os": false,
-        "node:crypto": false,
-        "node:zlib": false,
-        "node:stream": false,
-        "node:util": false,
-        "node:url": false,
-        "node:events": false,
-        "node:buffer": false,
-      };
-
-      // Clear externals to ensure that aliasing takes precedence and all code
-      // is bundled into the Workflow sandbox without leaving 'require()' calls.
-      config.externals = [];
-
-      return config;
-    },
-  });
+  const connection = await NativeConnection.connect(
+    options.connectionOptions ?? { address: config.get("temporal.host") },
+  );
 
   return {
     connection,
-    namespace: temporalNamespace,
-    taskQueue: temporalTaskQueue,
+    namespace: options.namespace ?? config.get("temporal.namespace"),
+    taskQueue:
+      options.taskQueue ?? (config.get("temporal.taskQueue") as string),
     workflowBundle,
   };
 }

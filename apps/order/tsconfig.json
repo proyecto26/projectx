@@ -24,8 +24,8 @@
       "@projectx/models/*": ["../../packages/models/dist/*"],
       "@projectx/payment": ["../../packages/payment/dist/index"],
       "@projectx/payment/*": ["../../packages/payment/dist/*"],
-      "@projectx/workflows": ["../../packages/workflows/dist/index"],
-      "@projectx/workflows/*": ["../../packages/workflows/dist/*"]
+      "@proyecto26/temporal-workflows": ["../../packages/workflows/dist/index"],
+      "@proyecto26/temporal-workflows/*": ["../../packages/workflows/dist/*"]
     },
     "incremental": true,
     "skipLibCheck": true,

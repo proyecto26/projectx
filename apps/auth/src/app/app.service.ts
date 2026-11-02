@@ -10,7 +10,7 @@ import {
   ClientService,
   getWorkflowDescription,
   isWorkflowRunning,
-} from "@projectx/workflows";
+} from "@proyecto26/temporal-workflows";
 import { WorkflowExecutionAlreadyStartedError } from "@temporalio/common";
 import { plainToInstance } from "class-transformer";
 

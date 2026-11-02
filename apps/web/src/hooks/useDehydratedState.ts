@@ -23,7 +23,7 @@ interface MatchData {
  * export async function loader() {
  *   const queryClient = new QueryClient();
  *   await queryClient.prefetchQuery(["products"], getProducts);
- *   return json({ dehydratedState: dehydrate(queryClient) });
+ *   return { dehydratedState: dehydrate(queryClient) };
  * }
  *
  * // In your route component:
@@ -46,7 +46,7 @@ export function useDehydratedState(): DehydratedState | undefined {
 
   const dehydratedState = matches
     .map((match) => {
-      return (match.data as MatchData)?.dehydratedState;
+      return (match.loaderData as MatchData | undefined)?.dehydratedState;
     })
     .filter((state): state is DehydratedState => Boolean(state));
 

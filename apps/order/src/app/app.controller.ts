@@ -1,3 +1,4 @@
+import type { ServerResponse } from "node:http";
 import {
   BadRequestException,
   Body,
@@ -13,6 +14,7 @@ import {
   Post,
   type RawBodyRequest,
   Req,
+  Res,
   UseGuards,
 } from "@nestjs/common";
 import {
@@ -30,6 +32,7 @@ import {
   OrderDto,
   OrderStatusResponseDto,
 } from "@projectx/models";
+import { pipeWorkflowResponse } from "@proyecto26/temporal-workflow-client/server";
 
 import { AppService } from "./app.service";
 import { OrderService } from "./order/order.service";
@@ -73,8 +76,11 @@ export class AppController {
   })
   @HttpCode(HttpStatus.OK)
   @Get("summary/:orderId")
-  async getOrderSummaryById(@Param("orderId", ParseIntPipe) orderId: number) {
-    return this.orderService.getOrderSummaryById(orderId);
+  async getOrderSummaryById(
+    @AuthenticatedUser() user: AuthUser,
+    @Param("orderId", ParseIntPipe) orderId: number,
+  ) {
+    return this.orderService.getOrderSummaryById(orderId, user.id);
   }
 
   @ApiBearerAuth()
@@ -95,8 +101,41 @@ export class AppController {
   })
   @HttpCode(HttpStatus.OK)
   @Get("status/:referenceId")
-  async getOrderStatus(@Param("referenceId") referenceId: string) {
-    return this.appService.getOrderStatus(referenceId);
+  async getOrderStatus(
+    @AuthenticatedUser() user: AuthUser,
+    @Param("referenceId") referenceId: string,
+  ) {
+    return this.appService.getOrderStatus(user, referenceId);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "Follow the status of the order workflow",
+    description:
+      "Server-Sent Events with the state of the order until the workflow closes",
+  })
+  @ApiParam({
+    name: "referenceId",
+    required: true,
+    type: String,
+    description: "Reference ID of the order",
+    example: "123e4567-e89b-12d3-a456-426614174000",
+  })
+  @Get("stream/:referenceId")
+  async streamOrderStatus(
+    @AuthenticatedUser() user: AuthUser,
+    @Param("referenceId") referenceId: string,
+    @Res() res: ServerResponse,
+  ) {
+    const controller = new AbortController();
+    res.once("close", () => controller.abort());
+    const response = await this.appService.streamOrderStatus(
+      user,
+      referenceId,
+      controller.signal,
+    );
+    await pipeWorkflowResponse(response, res);
   }
 
   @ApiBearerAuth()
@@ -105,8 +144,11 @@ export class AppController {
     summary: "Cancel an order",
   })
   @Delete(":referenceId")
-  async cancelOrder(@Param("referenceId") referenceId: string) {
-    return this.appService.cancelOrder(referenceId);
+  async cancelOrder(
+    @AuthenticatedUser() user: AuthUser,
+    @Param("referenceId") referenceId: string,
+  ) {
+    return this.appService.cancelOrder(user, referenceId);
   }
 
   @ApiOperation({

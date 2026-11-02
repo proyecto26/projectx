@@ -200,34 +200,50 @@ export function AdminOrdersPage({
   const handlePrintLabel = (order: AdminOrderListItemDto) => {
     const printWindow = window.open("", "_blank");
     if (printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Shipping Label - ${order.referenceId}</title>
-            <style>
-              body { font-family: Arial, sans-serif; padding: 20px; }
-              .label { border: 2px solid #000; padding: 20px; max-width: 400px; }
-              .header { font-size: 18px; font-weight: bold; margin-bottom: 15px; border-bottom: 1px solid #000; padding-bottom: 10px; }
-              .row { margin: 8px 0; }
-              .row-label { font-weight: bold; display: inline-block; width: 80px; }
-              .barcode { font-family: monospace; font-size: 24px; letter-spacing: 3px; margin-top: 15px; text-align: center; }
-            </style>
-          </head>
-          <body>
-            <div class="label">
-              <div class="header">SHIPPING LABEL</div>
-              <div class="row"><span class="row-label">Order:</span> ${order.referenceId}</div>
-              <div class="row"><span class="row-label">To:</span> ${order.customerName}</div>
-              <div class="row"><span class="row-label">Email:</span> ${order.customerEmail}</div>
-              <div class="row"><span class="row-label">Date:</span> ${formatDate(order.date)}</div>
-              <div class="row"><span class="row-label">Amount:</span> ${formatCurrency(order.amount)}</div>
-              <div class="barcode">*${order.referenceId.slice(0, 8).toUpperCase()}*</div>
-            </div>
-            <script>window.onload = function() { window.print(); }</script>
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
+      // Order values come from customers, so they are only ever set as text
+      const { document: labelDocument } = printWindow;
+      const createElement = (className: string, text = "") => {
+        const element = labelDocument.createElement("div");
+        element.className = className;
+        element.textContent = text;
+        return element;
+      };
+      const createRow = (label: string, value: string) => {
+        const row = createElement("row");
+        const rowLabel = labelDocument.createElement("span");
+        rowLabel.className = "row-label";
+        rowLabel.textContent = `${label}:`;
+        row.append(rowLabel, ` ${value}`);
+        return row;
+      };
+
+      labelDocument.title = `Shipping Label - ${order.referenceId}`;
+      const style = labelDocument.createElement("style");
+      style.textContent = `
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .label { border: 2px solid #000; padding: 20px; max-width: 400px; }
+        .header { font-size: 18px; font-weight: bold; margin-bottom: 15px; border-bottom: 1px solid #000; padding-bottom: 10px; }
+        .row { margin: 8px 0; }
+        .row-label { font-weight: bold; display: inline-block; width: 80px; }
+        .barcode { font-family: monospace; font-size: 24px; letter-spacing: 3px; margin-top: 15px; text-align: center; }
+      `;
+      labelDocument.head.append(style);
+
+      const label = createElement("label");
+      label.append(
+        createElement("header", "SHIPPING LABEL"),
+        createRow("Order", order.referenceId),
+        createRow("To", order.customerName),
+        createRow("Email", order.customerEmail),
+        createRow("Date", formatDate(order.date)),
+        createRow("Amount", formatCurrency(order.amount)),
+        createElement(
+          "barcode",
+          `*${order.referenceId.slice(0, 8).toUpperCase()}*`,
+        ),
+      );
+      labelDocument.body.append(label);
+      printWindow.print();
     }
   };
 

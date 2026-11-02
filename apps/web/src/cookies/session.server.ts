@@ -27,7 +27,8 @@ export async function getGlobalSession(request: Request) {
 }
 
 export const csrf = new CSRF({
-  cookie: createCookie("csrf", {
+  // Renamed for remix-utils v10 (HMAC-signed tokens): old "csrf" cookies would fail validation
+  cookie: createCookie("__csrf", {
     path: "/",
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

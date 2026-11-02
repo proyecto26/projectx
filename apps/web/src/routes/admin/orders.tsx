@@ -20,11 +20,10 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export const loader = async ({ request }: Route.LoaderArgs) => {
+export const loader = async ({ request, url }: Route.LoaderArgs) => {
   const accessToken = await getAccessTokenOrRedirect(request);
 
-  // Get URL search params for filtering
-  const url = new URL(request.url);
+  // Search params for filtering (`url` is the normalized URL, without `.data`)
   const status = url.searchParams.get("status") || undefined;
   const search = url.searchParams.get("search") || undefined;
   const page = Number(url.searchParams.get("page")) || 1;
