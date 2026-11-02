@@ -4,7 +4,7 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    dedupe: ["react", "react-dom", "react-router", "react-router-dom"],
+    dedupe: ["react", "react-dom", "react-router"],
   },
   test: {
     environment: "jsdom",

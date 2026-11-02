@@ -5,6 +5,6 @@ export default {
   appDirectory: "src",
   allowedActionOrigins: [
     "localhost:3000",
-    "*.use2.devtunnels.ms/", // Wildcards are supported in some versions/patterns
+    "*.use2.devtunnels.ms", // Host patterns only: no scheme or trailing slash
   ],
 } satisfies Config;

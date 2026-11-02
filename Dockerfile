@@ -1,4 +1,4 @@
-FROM node:25
+FROM node:24
 
 # Install bash and other dependencies
 RUN apt-get update && apt-get install -y bash libc6 && rm -rf /var/lib/apt/lists/*

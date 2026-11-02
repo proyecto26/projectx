@@ -12,13 +12,19 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js",
       "default": "./dist/index.js"
+    },
+    "./enums": {
+      "types": "./dist/enums.d.ts",
+      "import": "./dist/enums.mjs",
+      "require": "./dist/enums.js",
+      "default": "./dist/enums.js"
     }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --outDir dist && tsc --emitDeclarationOnly --declaration --declarationMap --outDir dist",
+    "build": "tsup src/index.ts src/enums.ts --format cjs,esm --outDir dist && tsc --emitDeclarationOnly --declaration --declarationMap --outDir dist",
     "dev": "tsc -w -p tsconfig.json",
     "lint": "biome check .",
     "test": "echo 'no tests'"
@@ -26,8 +32,8 @@
   "dependencies": {
     "class-transformer": "0.5.1",
     "class-validator": "0.14.3",
-    "tslib": "^2.8.1",
-    "@2toad/profanity": "3.2.0"
+    "tslib": "^2.9.1",
+    "@2toad/profanity": "3.3.0"
   },
   "devDependencies": {
     "tsup": "^8.5.1",

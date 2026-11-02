@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Shirt, Smartphone, Tag, Zap } from "lucide-react";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router";
 import { CategoryChip } from "./CategoryChip";
 
 const meta: Meta<typeof CategoryChip> = {

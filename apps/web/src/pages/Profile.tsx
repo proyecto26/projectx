@@ -10,7 +10,7 @@ import {
   Trash2,
   User,
 } from "lucide-react";
-import { type ChangeEvent, type FormEvent, useState } from "react";
+import { type ChangeEvent, type SubmitEvent, useState } from "react";
 
 import { useAuth } from "@/providers";
 
@@ -162,7 +162,7 @@ function ProfileTab({ email }: { email: string }) {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
     console.log("Profile saved:", { ...form, email });
   };

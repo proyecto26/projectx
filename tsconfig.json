@@ -16,8 +16,8 @@
       "@projectx/ui": ["packages/ui/dist/index"],
       "@projectx/ui/*": ["packages/ui/dist/*"],
       "@projectx/ui/styles": ["packages/ui/styles/index.css"],
-      "@projectx/workflows": ["packages/workflows/dist/index"],
-      "@projectx/workflows/*": ["packages/workflows/dist/*"]
+      "@proyecto26/temporal-workflows": ["packages/workflows/dist/index"],
+      "@proyecto26/temporal-workflows/*": ["packages/workflows/dist/*"]
     },
     "strict": true,
     "skipLibCheck": true,

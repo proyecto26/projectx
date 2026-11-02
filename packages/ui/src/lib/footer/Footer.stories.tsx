@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router";
 import { Footer } from "./Footer";
 
 const meta: Meta<typeof Footer> = {

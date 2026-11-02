@@ -23,7 +23,7 @@ projectx/
 │   ├── models/            # @projectx/models - TypeScript types
 │   ├── payment/           # @projectx/payment - Stripe
 │   ├── ui/                # @projectx/ui - React components
-│   └── workflows/         # @projectx/workflows - Temporal
+│   └── workflows/         # @proyecto26/temporal-workflows - Temporal
 ├── turbo.json             # Turborepo config
 ├── pnpm-workspace.yaml    # Workspace definition
 └── package.json           # Root package

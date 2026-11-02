@@ -9,7 +9,7 @@ This is a modern full-stack e-commerce platform built with a microservices archi
 ### Monorepo
 - **Turborepo** for build orchestration and caching
 - **pnpm** (v9.12.3) as package manager
-- **Node.js** v25
+- **Node.js** v24
 
 ### Backend (NestJS Microservices)
 - **auth** - Authentication service (JWT, Passport)
@@ -56,6 +56,7 @@ projectx/
 │   ├── models/         # Shared TypeScript models
 │   ├── payment/        # Stripe integration
 │   ├── ui/             # React component library
+│   ├── workflow-client/ # Connect JS apps to Temporal workflows (store, transports, React, SSE)
 │   └── workflows/      # Temporal workflow definitions
 ├── openspec/
 │   ├── changes/        # Active OpenSpec changes (gitignored)
@@ -150,7 +151,8 @@ Use OpenSpec slash commands for structured AI-assisted development:
 - `@projectx/db` - Prisma client and repository services
 - `@projectx/models` - Shared TypeScript types/interfaces
 - `@projectx/ui` - Reusable React components
-- `@projectx/workflows` - Temporal workflow utilities
+- `@proyecto26/temporal-workflows` - NestJS module for Temporal workers and clients (publishable)
+- `@proyecto26/temporal-workflow-client` - Framework agnostic client for Temporal workflows: React hooks, SSE and polling transports (publishable)
 - `@projectx/payment` - Stripe integration
 - `@projectx/email` - SendGrid + MJML templates
 

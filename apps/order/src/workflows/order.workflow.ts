@@ -11,17 +11,20 @@ import {
   paymentWebHookEventSignal,
   UnkownException,
 } from "@projectx/core/workflows";
-import { OrderStatus, type OrderStatusResponseDto } from "@projectx/models";
+import type { OrderStatusResponseDto } from "@projectx/models";
+import { OrderStatus } from "@projectx/models/enums";
 import {
   ApplicationFailure,
   allHandlersFinished,
   type ChildWorkflowHandle,
   condition,
   log,
+  patched,
   proxyActivities,
   setHandler,
   startChild,
 } from "@temporalio/workflow";
+import { WorkflowStream } from "@temporalio/workflow-streams/workflow";
 import type { ActivitiesService } from "../main";
 import { processPayment } from "./process-payment.workflow";
 
@@ -49,7 +52,15 @@ export async function createOrder(
   data: OrderWorkflowData,
   state = initialState,
 ): Promise<void> {
+  // Executions that started before the stream existed must replay without it
+  const stream = patched("order-state-stream")
+    ? new WorkflowStream()
+    : undefined;
+  const publishState = () =>
+    stream?.topic<Partial<OrderStatusResponseDto>>("state").publish(state);
+
   state.referenceId = data.order.referenceId;
+  let isCreatingOrder = false;
   // Define references to child workflows
   let processPaymentWorkflow:
     | ChildWorkflowHandle<typeof processPayment>
@@ -78,20 +89,27 @@ export async function createOrder(
   );
   // Create the order and the payment intent with the payment provider
   setHandler(createOrderUpdate, async () => {
-    const { order, clientSecret } = await createOrderActivity(data);
-    state.orderId = order.id;
-    state.referenceId = order.referenceId;
-    if (clientSecret) {
-      state.clientSecret = clientSecret;
+    isCreatingOrder = true;
+    try {
+      const { order, clientSecret } = await createOrderActivity(data);
+      state.orderId = order.id;
+      state.referenceId = order.referenceId;
+      if (clientSecret) {
+        state.clientSecret = clientSecret;
+      }
+      publishState();
+      return state as OrderStatusResponseDto;
+    } finally {
+      isCreatingOrder = false;
     }
-    return state as OrderStatusResponseDto;
   });
 
   // Wait the order to be ready to be processed
   const orderCreated = await condition(() => !!state?.orderId, ORDER_TIMEOUT);
 
-  // Wait for all handlers to finish before workflow completion
-  await condition(allHandlersFinished);
+  // Wait for the update to finish. A subscriber waiting for new items also counts
+  // as a running handler, so the stream can't wait for all of them at this point.
+  await condition(() => (stream ? !isCreatingOrder : allHandlersFinished()));
 
   if (!orderCreated || !state?.orderId) {
     throw ApplicationFailure.nonRetryable(
@@ -100,26 +118,36 @@ export async function createOrder(
     );
   }
 
-  // First step - Process payment
-  if (state.status === OrderStatus.Pending) {
-    processPaymentWorkflow = await startChild(processPayment, {
-      args: [data],
-      workflowId: getWorkflowIdByPaymentOrder(state.referenceId),
-    });
-    const processPaymentResult = await processPaymentWorkflow.result();
-    if (processPaymentResult.status !== OrderProcessPaymentStatus.SUCCESS) {
-      // Report payment failure before throwing the error
-      await reportPaymentFailed(state.orderId as number);
-      state.status = OrderStatus.Failed;
-      throw ApplicationFailure.nonRetryable(
-        UnkownException.name,
-        "Payment failed",
-      );
+  try {
+    // First step - Process payment
+    if (state.status === OrderStatus.Pending) {
+      processPaymentWorkflow = await startChild(processPayment, {
+        args: [data],
+        workflowId: getWorkflowIdByPaymentOrder(state.referenceId),
+      });
+      const processPaymentResult = await processPaymentWorkflow.result();
+      if (processPaymentResult.status !== OrderProcessPaymentStatus.SUCCESS) {
+        // Report payment failure before throwing the error
+        await reportPaymentFailed(state.orderId as number);
+        state.status = OrderStatus.Failed;
+        publishState();
+        throw ApplicationFailure.nonRetryable(
+          UnkownException.name,
+          "Payment failed",
+        );
+      }
+      processPaymentWorkflow = undefined;
+      state.status = OrderStatus.Confirmed;
+      await reportPaymentConfirmed(state.orderId as number);
+      publishState();
     }
-    processPaymentWorkflow = undefined;
-    state.status = OrderStatus.Confirmed;
-    await reportPaymentConfirmed(state.orderId as number);
-  }
 
-  // TODO: Second step - Ship the order
+    // TODO: Second step - Ship the order
+  } finally {
+    if (stream) {
+      // Answer the waiting subscribers before the workflow closes
+      stream.detachPollers();
+      await condition(allHandlersFinished);
+    }
+  }
 }

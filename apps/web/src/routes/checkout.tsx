@@ -1,16 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import type { MetaFunction } from "react-router";
 import { useCart } from "react-use-cart";
 import invariant from "tiny-invariant";
 import { CheckoutPage } from "../pages/CheckoutPage";
 
-import {
-  type OrderWorkflow,
-  useCurrentWorkflow,
-  useWorkflowActions,
-  WorkflowStep,
-  WorkflowTypes,
-} from "../providers";
+import { type OrderWorkflowInput, useOrderWorkflow } from "../providers";
 import type { Route } from "./+types/checkout";
 
 export const meta: MetaFunction = () => {
@@ -35,66 +29,55 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
   const { items, emptyCart } = useCart();
   const { referenceId } = loaderData;
   // Get the workflow running for this order with that referenceId
-  const currentCheckoutWorkflow = useCurrentWorkflow<OrderWorkflow>(
-    WorkflowTypes.ORDER,
-    (workflow) => workflow.referenceId === referenceId,
-  );
-  // Trigger actions to manage the workflow
-  const { handleRun, handleClear } = useWorkflowActions<OrderWorkflow>({
-    workflowType: WorkflowTypes.ORDER,
-  });
+  const workflow = useOrderWorkflow(referenceId);
+  const hasOrder = !!(workflow.state || workflow.result);
   const workflowInitiatedRef = useRef(false);
-  const [error, setError] = useState<Error>();
 
   // Trigger the creation of the order workflow
   useEffect(() => {
     if (
+      workflow.isHydrated &&
       !workflowInitiatedRef.current &&
-      !currentCheckoutWorkflow &&
+      !hasOrder &&
+      workflow.status === "idle" &&
       items.length > 0
     ) {
       workflowInitiatedRef.current = true;
-      handleRun({
-        workflow: {
-          referenceId,
-          expirationTimeInMilliseconds: Date.now() + 1000 * 60 * 60 * 24,
-          step: WorkflowStep.START,
-          data: {
-            referenceId,
-            billingAddress: "",
-            paymentMethod: "",
-            shippingAddress: "",
-            items: items.map((item) => ({
-              productId: Number(item.id),
-              quantity: item.quantity ?? 1,
-            })),
-          },
-        },
-      });
-      // Clear the cart after the workflow is triggered
-      emptyCart();
+      void workflow.start({
+        referenceId,
+        billingAddress: "",
+        paymentMethod: "",
+        shippingAddress: "",
+        items: items.map((item) => ({
+          productId: Number(item.id),
+          quantity: item.quantity ?? 1,
+        })),
+      } as OrderWorkflowInput);
     }
   }, [
-    currentCheckoutWorkflow,
-    items, // Clear the cart after the workflow is triggered
-    emptyCart,
-    handleRun,
+    workflow.isHydrated,
+    workflow.status,
+    workflow.start,
+    hasOrder,
+    items,
     referenceId,
   ]);
 
-  // Manage errors with the current workflow
+  // Clear the cart once the order exists, so a failure doesn't lose it
+  const isOrderCreated = workflowInitiatedRef.current && !!workflow.result;
   useEffect(() => {
-    if (currentCheckoutWorkflow?.error) {
-      setError(currentCheckoutWorkflow.error);
-      handleClear({ workflow: currentCheckoutWorkflow });
-    }
-  }, [currentCheckoutWorkflow?.error, currentCheckoutWorkflow, handleClear]);
+    if (isOrderCreated) emptyCart();
+  }, [isOrderCreated, emptyCart]);
 
   return (
     <CheckoutPage
-      error={error}
-      isLoading={items?.length > 0 || !currentCheckoutWorkflow}
-      currentCheckoutWorkflow={currentCheckoutWorkflow}
+      error={workflow.error}
+      isLoading={
+        !workflow.isHydrated ||
+        workflow.status === "starting" ||
+        (!hasOrder && workflow.status === "idle" && items.length > 0)
+      }
+      currentCheckoutWorkflow={workflow}
     />
   );
 }

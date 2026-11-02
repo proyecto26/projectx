@@ -6,16 +6,18 @@ import {
   type OnModuleInit,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { createLoggerOptions } from "@projectx/core";
-import { DefaultLogger, Runtime, Worker } from "@temporalio/worker";
-import pino from "pino";
+import {
+  DefaultLogger,
+  type LogLevel,
+  Runtime,
+  Worker,
+} from "@temporalio/worker";
 import { WORKER_OPTIONS_TOKEN } from "./constants";
 import { delay } from "./utils";
-import { createWorkerOptions } from "./worker";
+import { type CreateWorkerOptions, createWorkerOptions } from "./worker";
 
-export interface WorkerServiceOptions<T> {
+export interface WorkerServiceOptions<T> extends CreateWorkerOptions {
   activitiesService: T;
-  workflowsPath: string;
 }
 
 export const RESTRICTED_PROPERTIES = ["caller", "callee", "arguments"];
@@ -42,20 +44,19 @@ export class WorkerService<T extends Record<string, unknown>>
 
   private async initializeWorkerWithRetry(retries = 5, delayMs = 10000) {
     const logLevel = this.configService.get("app.logLevel") || "info";
-    const apiPrefix = this.configService.get("app.apiPrefix");
-    const loggerOptions = createLoggerOptions(logLevel, apiPrefix);
-    const pinoLogger = pino(loggerOptions);
-    // Create loggers with different labels for the separate components
-    const workerLogger = pinoLogger.child<string>({ label: "worker" });
+    const workerLogger = new Logger("TemporalWorker");
 
     Runtime.install({
-      logger: new DefaultLogger(logLevel, (entry) => {
-        workerLogger.debug({
-          message: entry.message,
-          timestamp: entry.timestampNanos,
-          ...entry.meta,
-        });
-      }),
+      logger: new DefaultLogger(
+        `${logLevel}`.toUpperCase() as LogLevel,
+        (entry) => {
+          workerLogger.debug({
+            message: entry.message,
+            timestamp: entry.timestampNanos,
+            ...entry.meta,
+          });
+        },
+      ),
     });
 
     for (let attempt = 1; attempt <= retries; attempt++) {
@@ -81,9 +82,10 @@ export class WorkerService<T extends Record<string, unknown>>
           {} as Record<string, (...args: unknown[]) => unknown>,
         );
 
+        const { activitiesService: _, ...createOptions } = this.workerOptions;
         const workerOptions = await createWorkerOptions(
           this.configService,
-          this.workerOptions.workflowsPath,
+          createOptions,
         );
 
         const worker = await Worker.create({

@@ -30,7 +30,7 @@ alwaysApply: true
 - **Module System:** Dual (CJS + ESM via tsup)
 - **Exports:** StripeService, PaymentModule
 - **Provider:** Stripe
-### Workflows (`@projectx/workflows`)
+### Workflows (`@proyecto26/temporal-workflows`)
 - **Purpose:** Temporal workflow client and worker management
 - **Module System:** Dual (CJS + ESM via tsup)
 - **Exports:** ClientService, WorkerService, WorkflowsModule
@@ -209,7 +209,7 @@ async handleWebhook(
   // Process payment intent
 }
 ```
-## Package: @projectx/workflows
+## Package: @proyecto26/temporal-workflows
 ### Critical: Module exports
 ```typescript
 @Module({
@@ -248,7 +248,7 @@ export class WorkerService {
 ```
 ### Usage in apps:
 ```typescript
-import { ClientService, WorkflowsModule } from '@projectx/workflows';
+import { ClientService, WorkflowsModule } from '@proyecto26/temporal-workflows';
 // ✅ Regular import (not type import)
 constructor(private readonly clientService: ClientService) {}
 // Module registration

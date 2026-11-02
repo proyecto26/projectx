@@ -1,9 +1,6 @@
 import type { ComponentType } from "react";
-import {
-  createMemoryRouter,
-  type RouteObject,
-  RouterProvider,
-} from "react-router-dom";
+import { createMemoryRouter, type RouteObject } from "react-router";
+import { RouterProvider } from "react-router/dom";
 
 export function withRouterProvider<T extends object>(
   WrappedComponent: ComponentType<T>,

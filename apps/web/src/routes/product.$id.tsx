@@ -5,10 +5,8 @@ import { productAPIUrl } from "@/config/app.config.server";
 import { ProductDetailPage } from "@/pages/ProductDetailPage";
 import type { Route } from "./+types/product.$id";
 
-export const meta: Route.MetaFunction = ({ data }) => {
-  const title =
-    (data as { product?: { name?: string } })?.product?.name ??
-    "Product Detail";
+export const meta: Route.MetaFunction = ({ loaderData }) => {
+  const title = loaderData?.product?.name ?? "Product Detail";
   return [
     { title: `ProjectX - ${title}` },
     { name: "description", content: `View details for ${title}` },

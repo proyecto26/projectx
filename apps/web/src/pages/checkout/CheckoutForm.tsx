@@ -4,7 +4,7 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { motion } from "framer-motion";
-import { type FormEvent, useState } from "react";
+import { type SubmitEvent, useState } from "react";
 
 import type { OrderWorkflow } from "@/providers/workflows";
 
@@ -21,7 +21,7 @@ export const CheckoutForm = ({
   const [message, setMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
 
     if (!stripe || !elements) {
@@ -31,7 +31,9 @@ export const CheckoutForm = ({
     }
 
     setIsLoading(true);
-    const { orderId } = currentCheckoutWorkflow?.data?.response || {};
+    const orderId =
+      currentCheckoutWorkflow?.result?.orderId ??
+      currentCheckoutWorkflow?.state?.orderId;
 
     const { error } = await stripe.confirmPayment({
       elements,

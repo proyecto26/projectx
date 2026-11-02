@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Injectable,
   Logger,
+  NotFoundException,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import {
@@ -17,8 +18,15 @@ import {
 } from "@projectx/core";
 import type { CreateOrderDto } from "@projectx/models";
 import { StripeService } from "@projectx/payment";
-import { ClientService } from "@projectx/workflows";
-import { WithStartWorkflowOperation } from "@temporalio/client";
+import {
+  toWorkflowStreamResponse,
+  workflowStreamEvents,
+} from "@proyecto26/temporal-workflow-client/server";
+import { ClientService } from "@proyecto26/temporal-workflows";
+import {
+  WithStartWorkflowOperation,
+  WorkflowNotFoundError,
+} from "@temporalio/client";
 import {
   WorkflowExecutionAlreadyStartedError,
   WorkflowIdConflictPolicy,
@@ -113,19 +121,69 @@ export class AppService {
     }
   }
 
-  async getOrderStatus(referenceId: string) {
-    this.logger.log(`getOrderStatus(${referenceId}) - getting status`);
-    const workflowId = this.getWorkflowIdByReferenceId(referenceId);
+  /**
+   * Get the workflow of an order only if it belongs to the user.
+   * A missing workflow and someone else's workflow look the same to the caller.
+   */
+  async getOwnedWorkflowHandle(user: AuthUser, referenceId: string) {
+    const handle = this.getWorkflowClient().getHandle(
+      this.getWorkflowIdByReferenceId(referenceId),
+    );
+    let ownerId: unknown;
+    try {
+      const description = await handle.describe();
+      ownerId = description.searchAttributes?.UserId?.[0];
+    } catch (error) {
+      if (error instanceof WorkflowNotFoundError) {
+        throw new NotFoundException("Order not found");
+      }
+      throw error;
+    }
+    if (ownerId === undefined || `${ownerId}` !== `${user.id}`) {
+      throw new NotFoundException("Order not found");
+    }
+    return handle;
+  }
 
-    const handle = this.getWorkflowClient().getHandle(workflowId);
+  async getOrderStatus(user: AuthUser, referenceId: string) {
+    this.logger.log(`getOrderStatus(${referenceId}) - getting status`);
+    const handle = await this.getOwnedWorkflowHandle(user, referenceId);
     const state = await handle.query(getOrderStateQuery);
     return state;
   }
 
-  async cancelOrder(referenceId: string) {
+  /** The state of an order as Server-Sent Events, until the workflow closes. */
+  async streamOrderStatus(
+    user: AuthUser,
+    referenceId: string,
+    signal: AbortSignal,
+  ) {
+    this.logger.log(`streamOrderStatus(${referenceId}) - streaming status`);
+    await this.getOwnedWorkflowHandle(user, referenceId);
+    const { client } = this.clientService;
+    if (!client) {
+      throw new HttpException(
+        "The workflow client was not initialized correctly",
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+    return toWorkflowStreamResponse(
+      workflowStreamEvents({
+        client,
+        workflowId: this.getWorkflowIdByReferenceId(referenceId),
+        getState: (handle) => handle.query(getOrderStateQuery),
+        signal,
+      }),
+      {
+        onError: (error) =>
+          this.logger.error(`streamOrderStatus(${referenceId}) failed`, error),
+      },
+    );
+  }
+
+  async cancelOrder(user: AuthUser, referenceId: string) {
     this.logger.log(`cancelOrder(${referenceId}) - cancelling order`);
-    const workflowId = this.getWorkflowIdByReferenceId(referenceId);
-    const handle = this.getWorkflowClient().getHandle(workflowId);
+    const handle = await this.getOwnedWorkflowHandle(user, referenceId);
     await handle.signal(cancelWorkflowSignal);
   }
 

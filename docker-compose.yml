@@ -43,6 +43,7 @@ x-service-common: &service-common
     - /app/packages/models/node_modules
     - /app/packages/payment/node_modules
     - /app/packages/ui/node_modules
+    - /app/packages/workflow-client/node_modules
     - /app/packages/workflows/node_modules
     # Frontend files that should not be watched (speeds up the container)
     - /app/apps/web/.vite
@@ -50,7 +51,7 @@ x-service-common: &service-common
 
 services:
   db:
-    image: postgis/postgis:17-3.5
+    image: postgis/postgis:17-3.6
     platform: linux/amd64
     container_name: ${COMPOSE_PROJECT_NAME:-projectx}-db
     restart: always
@@ -82,7 +83,7 @@ services:
       - /run/postgresql
 
   elasticsearch:
-    image: elasticsearch:7.17.27
+    image: elasticsearch:7.17.28
     container_name: ${COMPOSE_PROJECT_NAME:-projectx}-elasticsearch
     platform: linux/amd64
     environment:
@@ -95,8 +96,11 @@ services:
       - xpack.security.enabled=false
     networks:
       - default
+    volumes:
+      # Custom search attribute mappings only live in the index, Temporal will not recreate them if this is lost
+      - elasticsearch_data:/usr/share/elasticsearch/data
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=1s || exit 1" ]
+      test: [ "CMD-SHELL", "curl -sf 'http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=1s' || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -104,7 +108,7 @@ services:
       - "com.*project-name.service=elasticsearch"
 
   temporal-admin-tools:
-    image: temporalio/admin-tools:1.29.1-tctl-1.18.4-cli-1.5.0
+    image: temporalio/admin-tools:1.32.1
     container_name: ${COMPOSE_PROJECT_NAME:-projectx}-temporal-admin-tools
     platform: linux/amd64
     depends_on:
@@ -132,7 +136,7 @@ services:
     command: /scripts/setup-postgres-es.sh
 
   temporal:
-    image: temporalio/server:1.29.2
+    image: temporalio/server:1.32.1
     container_name: ${COMPOSE_PROJECT_NAME:-projectx}-temporal
     platform: linux/amd64
     depends_on:
@@ -167,7 +171,7 @@ services:
       - "${TEMPORAL_PORT:-7233}"
 
   temporal-create-namespace:
-    image: temporalio/admin-tools:1.29.1-tctl-1.18.4-cli-1.5.0
+    image: temporalio/admin-tools:1.32.1
     container_name: ${COMPOSE_PROJECT_NAME:-projectx}-temporal-create-namespace
     platform: linux/amd64
     depends_on:
@@ -184,7 +188,7 @@ services:
     command: /scripts/create-namespace.sh
 
   temporal-ui:
-    image: temporalio/ui:2.44.1
+    image: temporalio/ui:2.57.0
     container_name: ${COMPOSE_PROJECT_NAME:-projectx}-temporal-ui
     platform: linux/amd64
     depends_on:
@@ -269,9 +273,12 @@ services:
       - "${PRODUCT_PORT:-8083}:${PRODUCT_PORT:-8083}"
       - "9231:9231"
 
+  # Public tunnel to the order service, opt in with `docker compose --profile ngrok up -d`
   ngrok-order:
     image: ngrok/ngrok:latest
     platform: linux/amd64
+    profiles:
+      - ngrok
     command:
       - "http"
       - "http://host.docker.internal:${ORDER_PORT:-8082}"
@@ -286,5 +293,6 @@ networks:
     driver: bridge
 
 volumes:
+  elasticsearch_data:
   postgres_data:
     name: ${COMPOSE_PROJECT_NAME:-projectx}-postgres-data
