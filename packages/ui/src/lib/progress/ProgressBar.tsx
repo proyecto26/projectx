@@ -1,6 +1,11 @@
 import { classnames } from "../../utils/tailwind";
 
-export type ProgressBarColor = "success" | "primary" | "warning" | "error";
+export type ProgressBarColor =
+  | "success"
+  | "primary"
+  | "info"
+  | "warning"
+  | "error";
 
 export type ProgressBarProps = {
   label: string;
@@ -13,6 +18,7 @@ export type ProgressBarProps = {
 const colorStyles: Record<ProgressBarColor, string> = {
   success: "bg-success",
   primary: "bg-primary",
+  info: "bg-info",
   warning: "bg-warning",
   error: "bg-error",
 };

@@ -235,7 +235,7 @@ type OrderStatus = "Completed" | "Processing" | "Pending" | "Cancelled";
 
 function getOrderStatusColor(
   status: string,
-): "success" | "info" | "warning" | "error" {
+): "success" | "primary" | "info" | "warning" | "error" {
   const map: Record<OrderStatus, "success" | "info" | "warning" | "error"> = {
     Completed: "success",
     Processing: "info",

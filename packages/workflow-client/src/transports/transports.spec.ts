@@ -278,16 +278,15 @@ describe("createLimitedTransport", () => {
         reject(new DOMException("Aborted", "AbortError")),
       );
     });
-  const fake = (name: string, opened: string[]) =>
-    ({
-      start: vi.fn(async () => ({ status: name })),
-      cancel: vi.fn(async () => undefined),
-      // biome-ignore lint/correctness/useYield: A stream that waits without events
-      async *subscribe({ id, signal }: WorkflowSubscribeOptions) {
-        opened.push(`${name}:${id}`);
-        await waitForAbort(signal);
-      },
-    }) satisfies WorkflowTransport<State>;
+  const fake = (name: string, opened: string[]): WorkflowTransport<State> => ({
+    start: vi.fn(async () => ({ status: name })),
+    cancel: vi.fn(async () => undefined),
+    // biome-ignore lint/correctness/useYield: A stream that waits without events
+    async *subscribe({ id, signal }: WorkflowSubscribeOptions) {
+      opened.push(`${name}:${id}`);
+      await waitForAbort(signal);
+    },
+  });
 
   const follow = (
     transport: WorkflowTransport<State>,
