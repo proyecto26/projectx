@@ -1,3 +1,4 @@
+import type { WorkflowActionMap } from "./actions";
 import { WorkflowRegistry, type WorkflowStorage } from "./registry";
 import type {
   WorkflowReconnectOptions,
@@ -13,6 +14,13 @@ export type WorkflowSnapshot<
   TResult = TState,
 > = WorkflowSessionSnapshot<TState, TResult> & { readonly type: string };
 
+/** What a function building a transport receives. */
+export interface WorkflowTransportOptions<TContext = unknown> {
+  context: TContext;
+  /** Counts the open streams of all the workflow types of the client. */
+  limiter: StreamLimiter;
+}
+
 /**
  * Written with methods on purpose: their parameters are bivariant, which lets a
  * client hold definitions of different types in one list as `unknown`.
@@ -22,17 +30,22 @@ export interface WorkflowDefinition<
   TInput = unknown,
   TResult = TState,
   TContext = unknown,
+  TActions = never,
 > {
   /** Identifies this kind of workflow, unique in a client. */
   type: string;
   /** How it talks to the backend, or a function building it for each client. */
   transport:
     | WorkflowTransport<TState, TInput, TResult>
-    | ((options: {
-        context: TContext;
-        /** Counts the open streams of all the workflow types of the client. */
-        limiter: StreamLimiter;
-      }) => WorkflowTransport<TState, TInput, TResult>);
+    | ((
+        options: WorkflowTransportOptions<TContext>,
+      ) => WorkflowTransport<TState, TInput, TResult>);
+  /**
+   * What the browser can ask a running workflow to do, declared with `signal` and
+   * `update`. Each key becomes a function in `actions`. It needs inferred types:
+   * with explicit generics in `defineWorkflow` this doesn't compile.
+   */
+  actions?: TActions;
   /** Business states that end the workflow while the execution may still run. */
   isFinal?(state: TState): boolean;
   reconnect?: WorkflowReconnectOptions;
@@ -76,7 +89,8 @@ export function defineWorkflow<
   TInput = unknown,
   TResult = TState,
   TContext = unknown,
->(definition: WorkflowDefinition<TState, TInput, TResult, TContext>) {
+  TActions extends WorkflowActionMap = never,
+>(definition: WorkflowDefinition<TState, TInput, TResult, TContext, TActions>) {
   return definition;
 }
 
@@ -86,17 +100,17 @@ type StoredRegistry = WorkflowRegistry<unknown, unknown, unknown>;
  * A definition with any context, for what doesn't read it. Only functions receive
  * the context, so `never` accepts them all.
  */
-export type WorkflowDefinitionOf<TState, TInput, TResult> = WorkflowDefinition<
+export type WorkflowDefinitionOf<
   TState,
   TInput,
   TResult,
-  never
->;
+  TActions = never,
+> = WorkflowDefinition<TState, TInput, TResult, never, TActions>;
 
 export interface WorkflowClientOptions<TContext> {
   /** Every kind of workflow, needed to restore the stored ones of each. */
   workflows: ReadonlyArray<
-    WorkflowDefinition<unknown, unknown, unknown, TContext>
+    WorkflowDefinition<unknown, unknown, unknown, TContext, WorkflowActionMap>
   >;
   /** What the definitions need from the app, such as how to read the token. */
   context?: TContext;
@@ -160,19 +174,20 @@ export class WorkflowClient<TContext = unknown> {
   }
 
   /** Gets the session of a workflow, creating it the first time. */
-  session<TState, TInput, TResult>(
-    workflow: WorkflowDefinitionOf<TState, TInput, TResult>,
+  session<TState, TInput, TResult, TActions = never>(
+    workflow: WorkflowDefinitionOf<TState, TInput, TResult, TActions>,
     id: string,
   ) {
     return this.#registry(workflow).session(id) as unknown as WorkflowSession<
       TState,
       TInput,
-      TResult
+      TResult,
+      TActions
     >;
   }
 
-  has<TState, TInput, TResult>(
-    workflow: WorkflowDefinitionOf<TState, TInput, TResult>,
+  has<TState, TInput, TResult, TActions>(
+    workflow: WorkflowDefinitionOf<TState, TInput, TResult, TActions>,
     id: string,
   ) {
     return this.#registry(workflow).has(id);
@@ -183,8 +198,8 @@ export class WorkflowClient<TContext = unknown> {
    * or one started somewhere else. It follows it if it's still running, and it
    * doesn't fire `onFinish` for one that already ended.
    */
-  find<TState, TInput, TResult>(
-    workflow: WorkflowDefinitionOf<TState, TInput, TResult>,
+  find<TState, TInput, TResult, TActions>(
+    workflow: WorkflowDefinitionOf<TState, TInput, TResult, TActions>,
     id: string,
     options?: { signal?: AbortSignal },
   ): Promise<"found" | "missing"> {
@@ -192,16 +207,18 @@ export class WorkflowClient<TContext = unknown> {
   }
 
   /** Stops following a workflow and forgets it. The workflow keeps running. */
-  remove<TState, TInput, TResult>(
-    workflow: WorkflowDefinitionOf<TState, TInput, TResult>,
+  remove<TState, TInput, TResult, TActions>(
+    workflow: WorkflowDefinitionOf<TState, TInput, TResult, TActions>,
     id: string,
   ) {
     this.#registry(workflow).remove(id);
   }
 
   /** Snapshots of the workflows. Without a filter, the array only changes on updates. */
-  list<TState, TInput, TResult>(
-    filter: { workflow: WorkflowDefinitionOf<TState, TInput, TResult> } & Pick<
+  list<TState, TInput, TResult, TActions>(
+    filter: {
+      workflow: WorkflowDefinitionOf<TState, TInput, TResult, TActions>;
+    } & Pick<
       WorkflowListFilter<WorkflowSnapshot<TState, TResult>>,
       "predicate"
     >,

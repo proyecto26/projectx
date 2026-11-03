@@ -1,3 +1,4 @@
+export * from "./actions";
 export * from "./client";
 export type { WorkflowStorage } from "./registry";
 export * from "./session";

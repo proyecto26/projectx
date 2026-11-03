@@ -18,6 +18,7 @@ export function createFallbackTransport<
   return {
     start: primary.start,
     cancel: primary.cancel,
+    send: primary.send?.bind(primary),
     async *subscribe(subscribeOptions): AsyncGenerator<WorkflowEvent<TState>> {
       let received = false;
       try {

@@ -4,6 +4,7 @@ import { sleep } from "../utils";
 export interface PollingTransportOptions<TState, TInput, TResult> {
   start: WorkflowTransport<TState, TInput, TResult>["start"];
   cancel: WorkflowTransport<TState, TInput, TResult>["cancel"];
+  send?: WorkflowTransport<TState, TInput, TResult>["send"];
   /** Reads the state, usually from an endpoint running a workflow query. */
   getState: (options: { id: string; signal: AbortSignal }) => Promise<TState>;
   intervalMs?: number;
@@ -17,6 +18,7 @@ export function createPollingTransport<
 >({
   start,
   cancel,
+  send,
   getState,
   intervalMs = 3_000,
 }: PollingTransportOptions<TState, TInput, TResult>): WorkflowTransport<
@@ -27,6 +29,7 @@ export function createPollingTransport<
   return {
     start,
     cancel,
+    send,
     async *subscribe({ id, signal }): AsyncGenerator<WorkflowEvent<TState>> {
       let last: string | undefined;
       while (!signal.aborted) {

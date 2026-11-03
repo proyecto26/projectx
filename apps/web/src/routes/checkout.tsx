@@ -99,6 +99,7 @@ export default function Checkout({ loaderData }: Route.ComponentProps) {
           (lookup === "pending" || items.length > 0))
       }
       currentCheckoutWorkflow={workflow}
+      cancelOrder={workflow.cancelOrder}
     />
   );
 }

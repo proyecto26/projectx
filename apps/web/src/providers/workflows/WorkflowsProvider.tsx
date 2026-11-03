@@ -2,6 +2,7 @@ import { canUseDOM } from "@projectx/ui";
 import { WorkflowClient } from "@proyecto26/temporal-workflow-client";
 import {
   useWorkflow,
+  useWorkflowAction,
   useWorkflowClient,
   useWorkflows,
   WorkflowClientProvider,
@@ -50,11 +51,17 @@ export function WorkflowsProvider({
 /** The workflow of an order, and whether stored orders were restored already. */
 export function useOrderWorkflow(referenceId: string) {
   const workflow = useWorkflow({ workflow: orderWorkflow, id: referenceId });
+  const cancelOrder = useWorkflowAction({
+    workflow: orderWorkflow,
+    id: referenceId,
+    action: "cancel",
+  });
   const client = useWorkflowClient();
   // Renders again when the client restores the stored orders
   useWorkflows({ workflow: orderWorkflow });
   return {
     ...workflow,
+    cancelOrder,
     isHydrated: client?.isHydrated ?? false,
     /** Asks the backend for an order that isn't kept in this browser. */
     find: async () =>

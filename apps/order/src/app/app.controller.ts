@@ -151,6 +151,29 @@ export class AppController {
     return this.appService.cancelOrder(user, referenceId);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: "Send an action to a running order",
+    description: "Runs one of the actions in `orderActions`",
+  })
+  @Post(":referenceId/actions/:action")
+  async sendOrderAction(
+    @AuthenticatedUser() user: AuthUser,
+    @Param("referenceId") referenceId: string,
+    @Param("action") action: string,
+    @Body("actionId") actionId: string | undefined,
+    @Res() res: ServerResponse,
+  ) {
+    const response = await this.appService.sendOrderAction(
+      user,
+      referenceId,
+      action,
+      actionId,
+    );
+    await pipeWorkflowResponse(response, res);
+  }
+
   @ApiOperation({
     summary: "Handle Stripe webhook events",
     description:

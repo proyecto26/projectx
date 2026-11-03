@@ -11,8 +11,21 @@ import {
   allHandlersFinished,
   condition,
   log,
+  proxyActivities,
   setHandler,
 } from "@temporalio/workflow";
+
+import type { ActivitiesService } from "../main";
+
+const { cancelPayment } = proxyActivities<ActivitiesService>({
+  startToCloseTimeout: "30 seconds",
+  retry: {
+    initialInterval: "2s",
+    maximumInterval: "30s",
+    maximumAttempts: 10,
+    backoffCoefficient: 1.5,
+  },
+});
 
 export const finalPaymentStatuses = [
   OrderProcessPaymentStatus.SUCCESS,
@@ -70,10 +83,26 @@ export async function processPayment(
   });
 
   // Wait for payment to complete or timeout
-  await condition(
+  let isWaiting = await condition(
     () => finalPaymentStatuses.includes(state.status),
     PROCESS_PAYMENT_TIMEOUT,
   );
+
+  // Cancelling has to stop the payment provider too, where it may be too late
+  while (isWaiting && state.status === OrderProcessPaymentStatus.CANCELLED) {
+    const outcome = await cancelPayment(data.order.referenceId);
+    if (outcome === "cancelled") break;
+    if (outcome === "paid") {
+      state.status = OrderProcessPaymentStatus.SUCCESS;
+      break;
+    }
+    // Being processed, so its webhook decides. Cancelling again is allowed.
+    state.status = OrderProcessPaymentStatus.INITIATED;
+    isWaiting = await condition(
+      () => finalPaymentStatuses.includes(state.status),
+      PROCESS_PAYMENT_TIMEOUT,
+    );
+  }
 
   // Wait for all handlers to finish before workflow completion
   await condition(allHandlersFinished);
