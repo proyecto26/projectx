@@ -64,6 +64,8 @@ export async function processPayment(
   // Apart from the status, as a webhook about the payment can't undo the request
   let isCancelRequested = false;
   const isSettled = () => finalPaymentStatuses.includes(state.status);
+  // A function, as a signal can change the status during any await
+  const isPaid = () => state.status === OrderProcessPaymentStatus.SUCCESS;
 
   // Attach queries, signals and updates
   setHandler(cancelWorkflowSignal, () => {
@@ -95,17 +97,14 @@ export async function processPayment(
   );
 
   // Cancelling has to stop the payment provider too, where it may be too late
-  while (
-    isCancelRequested &&
-    state.status !== OrderProcessPaymentStatus.SUCCESS
-  ) {
+  while (isCancelRequested && !isPaid()) {
     // A webhook confirming the payment doesn't need the provider to answer
     const outcome = await Promise.race([
       cancelPayment(data.order.referenceId),
-      condition(() => state.status === OrderProcessPaymentStatus.SUCCESS).then(
-        () => "paid" as const,
-      ),
+      condition(isPaid).then(() => "paid" as const),
     ]);
+    // Both can happen at once, and a confirmed payment wins over any other answer
+    if (isPaid()) break;
     if (outcome === "cancelled") {
       state.status = OrderProcessPaymentStatus.CANCELLED;
     } else if (outcome === "paid") {
