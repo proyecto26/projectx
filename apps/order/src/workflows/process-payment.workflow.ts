@@ -98,11 +98,13 @@ export async function processPayment(
   );
 
   // Cancelling has to stop the payment provider too, where it may be too late
+  // A webhook confirming the payment doesn't need the provider to answer. Only one
+  // wait, as each one stays registered until the workflow closes
+  const paidByWebhook = condition(isPaid).then(() => "paid" as const);
   while (isCancelRequested && !isPaid()) {
-    // A webhook confirming the payment doesn't need the provider to answer
     const outcome = await Promise.race([
       cancelPayment(data.order.referenceId),
-      condition(isPaid).then(() => "paid" as const),
+      paidByWebhook,
     ]);
     // Both can happen at once, and a confirmed payment wins over any other answer
     if (isPaid()) break;
