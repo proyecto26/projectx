@@ -112,8 +112,10 @@ export async function processPayment(
     } else {
       // Being processed, so wait for its webhook and ask again. Any answer other
       // than a success, or no answer, doesn't tell the payment can't succeed
+      const hasNews = isSettled();
       state.status = OrderProcessPaymentStatus.INITIATED;
-      await condition(isSettled, PROCESS_PAYMENT_TIMEOUT);
+      // A failed attempt during the activity may let it be cancelled now
+      if (!hasNews) await condition(isSettled, PROCESS_PAYMENT_TIMEOUT);
       continue;
     }
     break;

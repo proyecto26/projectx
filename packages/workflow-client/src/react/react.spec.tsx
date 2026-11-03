@@ -6,7 +6,7 @@ import {
   renderHook,
   waitFor,
 } from "@testing-library/react";
-import { type ReactNode, StrictMode, useEffect } from "react";
+import { type ReactNode, StrictMode, useEffect, useLayoutEffect } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { update } from "../actions";
@@ -387,6 +387,20 @@ describe("useWorkflowAction", () => {
     rerender({ current: second });
     expect(committed).not.toContain("B:user A");
     expect(result.current.result).toBeUndefined();
+  });
+
+  it("tracks a call sent from a layout effect", async () => {
+    const { workflow, client } = setup(vi.fn(async () => "done"));
+    const { result } = renderHook(() => {
+      const add = useWorkflowAction({ workflow, id: "a", action, client });
+      const { send } = add;
+      useLayoutEffect(() => {
+        void send("x");
+      }, [send]);
+      return add;
+    });
+    await waitFor(() => expect(result.current.result).toBe("done"));
+    expect(result.current.isPending).toBe(false);
   });
 
   it("isn't left pending after leaving a workflow and coming back", async () => {

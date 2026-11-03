@@ -136,6 +136,24 @@ describe("processPayment when cancelling", () => {
     expect(cancelPayment).toHaveBeenCalledTimes(2);
   });
 
+  it("asks again at once when an attempt fails during the activity", async () => {
+    let answer: (outcome: string) => void = () => undefined;
+    cancelPayment
+      .mockReturnValueOnce(
+        new Promise((resolve) => {
+          answer = resolve;
+        }),
+      )
+      .mockResolvedValueOnce("cancelled");
+    const run = processPayment(data);
+    cancel();
+    await tick();
+    webhook("payment_intent.payment_failed");
+    answer("processing");
+    await expect(run).resolves.toEqual({ status: Status.CANCELLED });
+    expect(cancelPayment).toHaveBeenCalledTimes(2);
+  });
+
   it("doesn't call the provider without a cancellation", async () => {
     const run = processPayment(data);
     webhook("payment_intent.succeeded");

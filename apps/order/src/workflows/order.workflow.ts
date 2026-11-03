@@ -62,6 +62,8 @@ export async function createOrder(
     | ChildWorkflowHandle<typeof processPayment>
     | undefined;
 
+  let isCancelRequested = false;
+
   // Attach queries, signals and updates
   setHandler(getOrderStateQuery, () => state as OrderStatusResponseDto);
   setHandler(cancelWorkflowSignal, () => {
@@ -72,10 +74,12 @@ export async function createOrder(
         "Order cancelled",
       );
     }
+    // Remembered, as the payment process may still be starting
+    isCancelRequested = true;
     if (processPaymentWorkflow) {
       void processPaymentWorkflow.signal(cancelWorkflowSignal);
     } else {
-      log.error("The payment process has already finished, cannot cancel");
+      log.info("The payment process isn't running");
     }
   });
   setHandler(
@@ -121,6 +125,9 @@ export async function createOrder(
         args: [data],
         workflowId: getWorkflowIdByPaymentOrder(state.referenceId),
       });
+      if (isCancelRequested) {
+        void processPaymentWorkflow.signal(cancelWorkflowSignal);
+      }
       const processPaymentResult = await processPaymentWorkflow.result();
       if (processPaymentResult.status !== OrderProcessPaymentStatus.SUCCESS) {
         // Report payment failure before throwing the error

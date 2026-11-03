@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import type {
   WorkflowActionArgs,
@@ -64,14 +64,9 @@ export function useWorkflowAction<
     heldSession === session && heldAction === action
       ? heldState
       : { isPending: false };
-  // Only the last call updates the state, while earlier ones still run
+  // Only the last call updates the state, while earlier ones still run. Coming
+  // back to a target shows its call, which still finishes
   const lastCall = useRef(0);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: starts over for another target
-  useEffect(() => {
-    lastCall.current++;
-    setState({ isPending: false });
-  }, [session, action]);
 
   const send = useCallback(
     async (...args: WorkflowActionArgs<Input>): Promise<Output | undefined> => {
