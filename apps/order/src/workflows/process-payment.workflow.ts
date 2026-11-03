@@ -61,6 +61,10 @@ export async function processPayment(
   };
   log.info("Processing payment", { data });
 
+  // Apart from the status, as a webhook about the payment can't undo the request
+  let isCancelRequested = false;
+  const isSettled = () => finalPaymentStatuses.includes(state.status);
+
   // Attach queries, signals and updates
   setHandler(cancelWorkflowSignal, () => {
     if (finalPaymentStatuses.includes(state.status)) {
@@ -68,7 +72,7 @@ export async function processPayment(
       return;
     }
     log.warn("Cancelling payment");
-    state.status = OrderProcessPaymentStatus.CANCELLED;
+    isCancelRequested = true;
   });
   setHandler(paymentWebHookEventSignal, (event: PaymentWebhookEvent) => {
     log.info("Received payment webhook event", { type: event.type });
@@ -85,28 +89,35 @@ export async function processPayment(
   });
 
   // Wait for payment to complete or timeout
-  let isWaiting = await condition(
-    () => finalPaymentStatuses.includes(state.status),
+  await condition(
+    () => isSettled() || isCancelRequested,
     PROCESS_PAYMENT_TIMEOUT,
   );
 
   // Cancelling has to stop the payment provider too, where it may be too late
-  while (isWaiting && state.status === OrderProcessPaymentStatus.CANCELLED) {
-    const outcome = await cancelPayment(data.order.referenceId);
-    if (outcome === "cancelled") break;
-    if (outcome === "paid") {
+  while (
+    isCancelRequested &&
+    state.status !== OrderProcessPaymentStatus.SUCCESS
+  ) {
+    // A webhook confirming the payment doesn't need the provider to answer
+    const outcome = await Promise.race([
+      cancelPayment(data.order.referenceId),
+      condition(() => state.status === OrderProcessPaymentStatus.SUCCESS).then(
+        () => "paid" as const,
+      ),
+    ]);
+    if (outcome === "cancelled") {
+      state.status = OrderProcessPaymentStatus.CANCELLED;
+    } else if (outcome === "paid") {
       state.status = OrderProcessPaymentStatus.SUCCESS;
-      break;
-    }
-    // Being processed, so its webhook decides, unless it arrived in the meantime.
-    // Cancelling again is allowed.
-    if (state.status === OrderProcessPaymentStatus.CANCELLED) {
+    } else {
+      // Being processed, so wait for its webhook and ask again. Any answer other
+      // than a success, or no answer, doesn't tell the payment can't succeed
       state.status = OrderProcessPaymentStatus.INITIATED;
+      await condition(isSettled, PROCESS_PAYMENT_TIMEOUT);
+      continue;
     }
-    isWaiting = await condition(
-      () => finalPaymentStatuses.includes(state.status),
-      PROCESS_PAYMENT_TIMEOUT,
-    );
+    break;
   }
 
   // Wait for all handlers to finish before workflow completion

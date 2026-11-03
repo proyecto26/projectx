@@ -389,6 +389,27 @@ describe("useWorkflowAction", () => {
     expect(result.current.result).toBeUndefined();
   });
 
+  it("isn't left pending after leaving a workflow and coming back", async () => {
+    let answer: (value: string) => void = () => undefined;
+    const send = vi.fn(
+      () =>
+        new Promise<unknown>((resolve) => {
+          answer = resolve;
+        }),
+    );
+    const { workflow, client } = setup(send);
+    const { result, rerender } = renderHook(
+      ({ id }) => useWorkflowAction({ workflow, id, action, client }),
+      { initialProps: { id: "a" } },
+    );
+    act(() => void result.current.send("x"));
+    expect(result.current.isPending).toBe(true);
+    rerender({ id: "b" });
+    rerender({ id: "a" });
+    await act(async () => answer("late"));
+    expect(result.current.isPending).toBe(false);
+  });
+
   it("only shows the last call, and starts over for another workflow", async () => {
     const answers: Array<(value: string) => void> = [];
     const send = vi.fn(

@@ -70,6 +70,7 @@ export function useWorkflowAction<
   // biome-ignore lint/correctness/useExhaustiveDependencies: starts over for another target
   useEffect(() => {
     lastCall.current++;
+    setState({ isPending: false });
   }, [session, action]);
 
   const send = useCallback(

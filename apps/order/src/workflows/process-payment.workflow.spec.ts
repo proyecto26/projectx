@@ -94,14 +94,44 @@ describe("processPayment when cancelling", () => {
     await expect(run).resolves.toEqual({ status: Status.SUCCESS });
   });
 
-  it("cancels again if asked while processing", async () => {
+  it("asks the provider again when the webhook never arrives", async () => {
+    cancelPayment
+      .mockResolvedValueOnce("processing")
+      .mockResolvedValueOnce("paid");
+    const run = processPayment(data);
+    cancel();
+    await tick();
+    timeouts[timeouts.length - 1]?.();
+    await expect(run).resolves.toEqual({ status: Status.SUCCESS });
+    expect(cancelPayment).toHaveBeenCalledTimes(2);
+  });
+
+  it("doesn't lose the request when a webhook arrives with it", async () => {
+    cancelPayment.mockResolvedValue("cancelled");
+    const run = processPayment(data);
+    cancel();
+    webhook("payment_intent.processing");
+    await expect(run).resolves.toEqual({ status: Status.CANCELLED });
+    expect(cancelPayment).toHaveBeenCalledTimes(1);
+  });
+
+  it("confirms the payment even if the provider never answers", async () => {
+    cancelPayment.mockReturnValue(new Promise(() => undefined));
+    const run = processPayment(data);
+    cancel();
+    await tick();
+    webhook("payment_intent.succeeded");
+    await expect(run).resolves.toEqual({ status: Status.SUCCESS });
+  });
+
+  it("cancels again after a failed attempt while processing", async () => {
     cancelPayment
       .mockResolvedValueOnce("processing")
       .mockResolvedValueOnce("cancelled");
     const run = processPayment(data);
     cancel();
     await tick();
-    cancel();
+    webhook("payment_intent.payment_failed");
     await expect(run).resolves.toEqual({ status: Status.CANCELLED });
     expect(cancelPayment).toHaveBeenCalledTimes(2);
   });
