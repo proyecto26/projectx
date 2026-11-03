@@ -302,4 +302,17 @@ describe("processPayment when a payment is declined", () => {
     await expect(run).resolves.toMatchObject({ status: Status.CANCELLED });
     expect(cancelPayment).not.toHaveBeenCalled();
   });
+
+  it("stops offering a retry once the order is closing", async () => {
+    cancelPayment.mockResolvedValue("cancelled");
+    const run = processPayment(data);
+    decline("ch_1");
+    await tick();
+    cancel();
+    await run;
+    expect(progress).toEqual([
+      { reason: "declined", attempts: 1, retryable: true },
+      { reason: "declined", attempts: 1, retryable: false },
+    ]);
+  });
 });

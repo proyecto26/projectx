@@ -77,6 +77,11 @@ export async function processPayment(
   const close = (reason: CloseReason) => {
     // A cancellation requested by the customer is what they should see
     if (!closeReason || reason === "cancelled") closeReason = reason;
+    // Checkout stops offering a retry while the intent is being cancelled
+    if (state.failure?.retryable) {
+      state.failure = { ...state.failure, retryable: false };
+      reportProgress(state.failure);
+    }
   };
   let isCanceledByProvider = false;
   // Each attempt once, as Stripe may send an event twice or in two Event objects
@@ -133,8 +138,10 @@ export async function processPayment(
       failedAttempts.add(event.failure?.attempt ?? event.id);
       // Without a classification, it's a decline the attempt cap limits
       const reason = event.failure?.reason ?? PaymentFailureReason.Declined;
-      if (event.failure?.retryable === false) close("declined");
-      if (failedAttempts.size >= MAX_PAYMENT_ATTEMPTS) close("declined");
+      const isLast =
+        event.failure?.retryable === false ||
+        failedAttempts.size >= MAX_PAYMENT_ATTEMPTS;
+      if (isLast) close("declined");
       state.failure = {
         reason,
         attempts: failedAttempts.size,

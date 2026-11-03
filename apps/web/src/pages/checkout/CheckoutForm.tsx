@@ -21,6 +21,8 @@ export const CheckoutForm = ({
 
   const [message, setMessage] = useState<string | null>(null);
   const paymentFailure = currentCheckoutWorkflow?.state?.paymentFailure;
+  // The order is closing, and its payment is being cancelled
+  const isClosing = paymentFailure?.retryable === false;
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: SubmitEvent) => {
@@ -65,7 +67,7 @@ export const CheckoutForm = ({
       <PaymentElement id="payment-element" className="mb-8" />
       <button
         type="submit"
-        disabled={isLoading || !stripe || !elements}
+        disabled={isLoading || isClosing || !stripe || !elements}
         id="submit"
         className="w-full rounded-lg bg-purple-600 px-4 py-2 font-semibold text-white transition-colors duration-200 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
       >
@@ -108,8 +110,10 @@ export const CheckoutForm = ({
           className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20"
         >
           <p role="alert" className="text-red-600 text-sm dark:text-red-400">
-            {message ??
-              (paymentFailure && paymentFailureMessage(paymentFailure))}
+            {isClosing
+              ? "This order can't take another payment."
+              : (message ??
+                (paymentFailure && paymentFailureMessage(paymentFailure)))}
           </p>
         </motion.div>
       )}

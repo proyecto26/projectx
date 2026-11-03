@@ -124,6 +124,19 @@ async function untilPaymentStarted(referenceId: string) {
 
 const referenceOf = (workflowId: string) => workflowId.replace(/^order-/, "");
 
+// The histories of the order and of its payment process replay with this code
+async function replayBoth(orderWorkflowId: string) {
+  for (const workflowId of [
+    orderWorkflowId,
+    `payment-${referenceOf(orderWorkflowId)}`,
+  ]) {
+    const history = await env.client.workflow
+      .getHandle(workflowId)
+      .fetchHistory();
+    await Worker.runReplayHistory({ workflowBundle }, history);
+  }
+}
+
 describe("payments on a Temporal server", () => {
   it("lets the customer retry a decline and confirms the order", async () => {
     await withWorker(async () => {
@@ -150,9 +163,7 @@ describe("payments on a Temporal server", () => {
       expect(activities.cancelPayment).not.toHaveBeenCalled();
       expect((await handle.query(getOrderStateQuery)).status).toBe("Confirmed");
 
-      // The same history replays with the current code
-      const history = await handle.fetchHistory();
-      await Worker.runReplayHistory({ workflowBundle }, history);
+      await replayBoth(handle.workflowId);
     });
   }, 60_000);
 
@@ -236,6 +247,43 @@ describe("payments on a Temporal server", () => {
       await expect(handle.result()).rejects.toThrow();
       expect(activities.cancelPayment).toHaveBeenCalledTimes(1);
       expect((await handle.query(getOrderStateQuery)).status).toBe("Cancelled");
+      expect(activities.reportPaymentFailed).toHaveBeenCalledWith(
+        1,
+        "Cancelled",
+      );
+    });
+  }, 60_000);
+
+  it("cancels at once after a failure while the payment was processing", async () => {
+    let answer: (outcome: string) => void = () => undefined;
+    activities.cancelPayment
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            answer = resolve;
+          }),
+      )
+      .mockImplementationOnce(async () => "cancelled");
+    await withWorker(async () => {
+      const handle = await startOrder();
+      await untilPaymentStarted(referenceOf(handle.workflowId));
+      await handle.signal(cancelWorkflowSignal);
+      for (
+        let i = 0;
+        i < 50 && activities.cancelPayment.mock.calls.length === 0;
+        i++
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+      await handle.signal(paymentWebHookEventSignal, declined("ch_1"));
+      answer("processing");
+      await expect(handle.result()).rejects.toThrow();
+      expect(activities.cancelPayment).toHaveBeenCalledTimes(2);
+      expect(activities.reportPaymentFailed).toHaveBeenCalledWith(
+        1,
+        "Cancelled",
+      );
+      await replayBoth(handle.workflowId);
     });
   }, 60_000);
 });

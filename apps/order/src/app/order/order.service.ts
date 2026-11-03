@@ -138,11 +138,15 @@ export class OrderService {
     }
   }
 
-  async reportPaymentFailed(orderId: number) {
-    this.logger.log(`reportPaymentFailed(${orderId})`);
+  /** Records an order that ended unpaid, as cancelled or failed */
+  async reportPaymentFailed(
+    orderId: number,
+    status: OrderStatus.Failed | OrderStatus.Cancelled = OrderStatus.Failed,
+  ) {
+    this.logger.log(`reportPaymentFailed(${orderId}) - ${status}`);
     const updatedOrder = await this.orderRepositoryService.updateOrderStatus(
       orderId,
-      OrderStatus.Failed,
+      status,
     );
 
     // Update payment record

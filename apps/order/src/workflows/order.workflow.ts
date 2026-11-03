@@ -164,13 +164,14 @@ export async function createOrder(
       processPaymentWorkflow = undefined;
       isPaymentOver = true;
       if (processPaymentResult.status !== OrderProcessPaymentStatus.SUCCESS) {
-        // Report payment failure before throwing the error
-        await reportPaymentFailed(state.orderId as number);
         // The customer sees why it ended, a cancellation isn't a failed payment
-        state.status =
+        const endStatus =
           processPaymentResult.status === OrderProcessPaymentStatus.CANCELLED
             ? OrderStatus.Cancelled
             : OrderStatus.Failed;
+        // Report payment failure before throwing the error
+        await reportPaymentFailed(state.orderId as number, endStatus);
+        state.status = endStatus;
         publishState();
         throw ApplicationFailure.nonRetryable(
           UnkownException.name,
