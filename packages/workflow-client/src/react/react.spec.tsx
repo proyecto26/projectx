@@ -6,9 +6,10 @@ import {
   renderHook,
   waitFor,
 } from "@testing-library/react";
-import { type ReactNode, StrictMode } from "react";
+import { type ReactNode, StrictMode, useEffect, useLayoutEffect } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { update } from "../actions";
 import { defineWorkflow, WorkflowClient } from "../client";
 import type {
   WorkflowEvent,
@@ -17,6 +18,7 @@ import type {
 } from "../types";
 import { WorkflowClientProvider } from "./context";
 import { useWorkflow } from "./useWorkflow";
+import { useWorkflowAction } from "./useWorkflowAction";
 import { useWorkflows } from "./useWorkflows";
 
 afterEach(cleanup);
@@ -278,5 +280,173 @@ describe("useWorkflows", () => {
     rerender();
     expect(result.current).toBe(first);
     client.stop();
+  });
+});
+
+it("never shows the workflow of a previous client, not even for a render", async () => {
+  const transportOf = (state: string): WorkflowTransport<string> => ({
+    start: async () => state,
+    cancel: async () => undefined,
+    async *subscribe({ signal }) {
+      yield { type: "state", state };
+      await new Promise((resolve) => signal.addEventListener("abort", resolve));
+    },
+  });
+  const makeClient = (state: string) => {
+    const workflow = defineWorkflow<string>({
+      type: "test",
+      transport: transportOf(state),
+    });
+    const client = new WorkflowClient({ workflows: [workflow] });
+    client.session(workflow, "same").resume();
+    return { workflow, client };
+  };
+  const first = makeClient("user A");
+  const second = makeClient("user B");
+  await waitFor(() => expect(first.client.list()[0]?.state).toBe("user A"));
+  await waitFor(() => expect(second.client.list()[0]?.state).toBe("user B"));
+  const committed: unknown[] = [];
+  const { rerender } = renderHook(
+    ({ current }) => {
+      const { state } = useWorkflow({
+        workflow: current.workflow,
+        id: "same",
+        client: current.client,
+      });
+      useEffect(() => {
+        committed.push(`${current === first ? "A" : "B"}:${state}`);
+      });
+    },
+    { initialProps: { current: first } },
+  );
+  rerender({ current: second });
+  expect(committed).not.toContain("B:user A");
+  first.client.stop();
+  second.client.stop();
+});
+
+describe("useWorkflowAction", () => {
+  const actions = { echo: update<string, string>() };
+  const action = "echo";
+  const setup = (send: WorkflowTransport<string>["send"]) => {
+    const transport: WorkflowTransport<string> = {
+      start: async () => "s",
+      cancel: async () => undefined,
+      async *subscribe() {},
+      send,
+    };
+    const workflow = defineWorkflow({ type: "test", transport, actions });
+    return { workflow, client: new WorkflowClient({ workflows: [workflow] }) };
+  };
+
+  it("tracks the call and keeps a failure out of the promise", async () => {
+    const send = vi
+      .fn()
+      .mockResolvedValueOnce("one")
+      .mockRejectedValueOnce(new Error("Nope"));
+    const { workflow, client } = setup(send);
+    const { result } = renderHook(() =>
+      useWorkflowAction({ workflow, id: "a", action, client }),
+    );
+    let answer: string | undefined;
+    await act(async () => {
+      answer = await result.current.send("x");
+    });
+    expect(answer).toBe("one");
+    expect(result.current).toMatchObject({ isPending: false, result: "one" });
+
+    await act(async () => {
+      answer = await result.current.send("x");
+    });
+    expect(answer).toBeUndefined();
+    expect(result.current.error?.message).toBe("Nope");
+  });
+
+  it("never shows the result of a previous client, not even for a render", async () => {
+    const first = setup(vi.fn(async () => "user A"));
+    const second = setup(vi.fn(async () => "user B"));
+    const committed: unknown[] = [];
+    const { result, rerender } = renderHook(
+      ({ current }) => {
+        const add = useWorkflowAction({
+          workflow: current.workflow,
+          id: "a",
+          action,
+          client: current.client,
+        });
+        useEffect(() => {
+          committed.push(`${current === first ? "A" : "B"}:${add.result}`);
+        });
+        return add;
+      },
+      { initialProps: { current: first } },
+    );
+    await act(async () => {
+      await result.current.send("x");
+    });
+    rerender({ current: second });
+    expect(committed).not.toContain("B:user A");
+    expect(result.current.result).toBeUndefined();
+  });
+
+  it("tracks a call sent from a layout effect", async () => {
+    const { workflow, client } = setup(vi.fn(async () => "done"));
+    const { result } = renderHook(() => {
+      const add = useWorkflowAction({ workflow, id: "a", action, client });
+      const { send } = add;
+      useLayoutEffect(() => {
+        void send("x");
+      }, [send]);
+      return add;
+    });
+    await waitFor(() => expect(result.current.result).toBe("done"));
+    expect(result.current.isPending).toBe(false);
+  });
+
+  it("isn't left pending after leaving a workflow and coming back", async () => {
+    let answer: (value: string) => void = () => undefined;
+    const send = vi.fn(
+      () =>
+        new Promise<unknown>((resolve) => {
+          answer = resolve;
+        }),
+    );
+    const { workflow, client } = setup(send);
+    const { result, rerender } = renderHook(
+      ({ id }) => useWorkflowAction({ workflow, id, action, client }),
+      { initialProps: { id: "a" } },
+    );
+    act(() => void result.current.send("x"));
+    expect(result.current.isPending).toBe(true);
+    rerender({ id: "b" });
+    rerender({ id: "a" });
+    await act(async () => answer("late"));
+    expect(result.current.isPending).toBe(false);
+  });
+
+  it("only shows the last call, and starts over for another workflow", async () => {
+    const answers: Array<(value: string) => void> = [];
+    const send = vi.fn(
+      () => new Promise<unknown>((resolve) => answers.push(resolve)),
+    );
+    const { workflow, client } = setup(send);
+    const { result, rerender } = renderHook(
+      ({ id }) => useWorkflowAction({ workflow, id, action, client }),
+      { initialProps: { id: "a" } },
+    );
+    act(() => {
+      void result.current.send("first");
+      void result.current.send("second");
+    });
+    await act(async () => answers[1]?.("second"));
+    await act(async () => answers[0]?.("first"));
+    expect(result.current.result).toBe("second");
+
+    act(() => void result.current.send("pending"));
+    expect(result.current.isPending).toBe(true);
+    rerender({ id: "b" });
+    await waitFor(() => expect(result.current.isPending).toBe(false));
+    await act(async () => answers[2]?.("late"));
+    expect(result.current.result).toBeUndefined();
   });
 });

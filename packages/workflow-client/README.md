@@ -18,6 +18,7 @@ useWorkflow ─ WorkflowSession ─ polling ─ your endpoint ─ query ─ Work
 - [Installation](#installation-)
 - [Quick start](#quick-start-)
 - [Many workflows at once](#many-workflows-at-once-%EF%B8%8F)
+- [Send signals and updates](#send-signals-and-updates-)
 - [Live updates with Workflow Streams](#live-updates-with-workflow-streams-)
 - [Without React](#without-react-%EF%B8%8F)
 - [API reference](#api-reference-)
@@ -294,6 +295,124 @@ useEffect(() => {
 
 It stays in memory until then or until `ttlMs`, and it's never written to `storage`.
 
+## Send signals and updates ✉️
+
+Tell a running workflow something through your own endpoints. Declare the actions as an object, and each key becomes a function.
+
+### 1. Declare the actions
+
+Keep the object in a module both your frontend and backend can import, without anything from either of them:
+
+```ts
+import { signal, update } from "@proyecto26/temporal-workflow-client";
+
+export const orderActions = {
+  // Resolves once Temporal accepts it, without waiting for the workflow to process it
+  approve: signal<{ approved: boolean }>(),
+  // Resolves with what the workflow answers
+  addItem: update<{ item: string }, { count: number }>(),
+  // Called without arguments
+  ping: signal(),
+};
+```
+
+Then add it to the definition:
+
+```ts
+export const orderWorkflow = defineWorkflow({
+  type: "order",
+  transport, // A typed transport brings the types of the state, input and result
+  isFinal: (state) => state.status === "Done",
+  actions: orderActions,
+});
+```
+
+> [!IMPORTANT]
+> TypeScript can't infer some generics while you write others, so `defineWorkflow<State, Input, Result>({ actions })` doesn't compile: `Type '...' is not assignable to type 'undefined'`. Remove the generics and let the types come from the transport. If your transport is a function, annotate its parameter: `({ context }: WorkflowTransportOptions<MyContext>) => createHttpStreamTransport<State, Input, Result>({ ... })`.
+
+### 2. Call them
+
+```tsx
+import { useWorkflow, useWorkflowAction } from "@proyecto26/temporal-workflow-client/react";
+
+function Order({ id }: { id: string }) {
+  // Tracks its last call. Failures go to `add.error`, so it's safe in an event handler
+  const add = useWorkflowAction({ workflow: orderWorkflow, id, action: "addItem" });
+  // These reject if the backend refuses, for you to handle
+  const order = useWorkflow({ workflow: orderWorkflow, id });
+
+  return (
+    <>
+      <button disabled={add.isPending} onClick={() => add.send({ item: "book" })}>
+        Add
+      </button>
+      {add.error && <p>{add.error.message}</p>}
+
+      <button onClick={() => order.actions.approve({ approved: true }).catch(showError)}>
+        Approve
+      </button>
+    </>
+  );
+}
+```
+
+Without React, use the session: `await client.session(orderWorkflow, id).actions.addItem({ item })`. A session you create yourself takes the same `actions` option.
+
+- **A rejected action doesn't break the workflow you're following.** The call fails, while `status` and `error` stay as they were, because the workflow is still running.
+- **New state arrives by following the workflow,** with polling up to `intervalMs` later. What an update returns only goes to the caller.
+- **Leaving the page doesn't cancel an action already sent.** Pass `{ signal }` as the last argument to stop waiting, knowing the backend may already have received it.
+- **There are no automatic retries.** A signal can run twice if you repeat it, so make its handler safe to repeat.
+
+To retry an update safely, pass the same `{ actionId }` with the same input. Temporal runs it once and returns the first result, but only within the same workflow run: this doesn't hold across `continueAsNew` or a new workflow with the same id.
+
+### 3. Implement them in your API
+
+The HTTP transport sends `POST /api/orders/:id/actions/:action` with `{ input, actionId }`. Change them with `actionUrl` and `actionBody`. With polling, give `createPollingTransport` a `send` option.
+
+```ts
+import {
+  defineServerActions,
+  pipeWorkflowResponse,
+  signalAction,
+  updateAction,
+} from "@proyecto26/temporal-workflow-client/server";
+
+// Doesn't compile if a name is missing, or if a kind, input or result doesn't match
+const orderServerActions = defineServerActions(orderActions, {
+  approve: signalAction(approveSignal),
+  addItem: updateAction(addItemUpdate),
+  ping: signalAction(pingSignal),
+});
+
+@Post(":id/actions/:action")
+async send(
+  @Param("id") id: string,
+  @Param("action") action: string,
+  @Body() body: { input?: unknown; actionId?: string },
+  @Res() res: ServerResponse,
+) {
+  // Your check that this user owns the workflow
+  const handle = await this.orders.getOwnedWorkflowHandle(id);
+  const response = await orderServerActions.handle({ handle, name: action, ...body });
+  await pipeWorkflowResponse(response, res);
+}
+```
+
+Only the names in that object reach Temporal, and it also throws when created if they don't match, which covers JavaScript.
+
+> [!WARNING]
+> `input` comes from the browser, so validate it, and check first that the user owns the workflow. `handle` does neither.
+
+| Status | When | The error has |
+|---|---|---|
+| 202 | Temporal accepted the signal, or the update returned nothing | |
+| 200 | The update returned a value | |
+| 404 | The action isn't listed, or the workflow doesn't exist or has closed | `code`: `unknown_action` or `not_found` |
+| 422 | The update's validator or handler rejected it | `code`: `rejected` |
+| 504 | Temporal didn't answer in time. The action may still run, so retry with the same `actionId` | `code`: `outcome_unknown` |
+
+The message of an `ApplicationFailure` and of a validator's error reach the browser, so keep them safe to show. Other failures are thrown for your framework to handle. Without this helper, any endpoint works: answer `{ message, code }` when rejecting and the transport puts them on `WorkflowClientError`.
+
 ## Live updates with Workflow Streams 📡
 
 Polling is enough for many workflows. Add streams when a user is watching and waiting, or when a workflow publishes progress. You keep the same hooks and only change the transport.
@@ -442,6 +561,7 @@ Import them from `@proyecto26/temporal-workflow-client/react`.
 |---|---|---|
 | `useWorkflow(options)` | One workflow | `{ workflow, id, client? }`, `{ session }`, or `{ id, transport, ... }` for one tied to the component |
 | `useWorkflows(options?)` | Several workflows and a derived value | `{ workflow, ids?, combine?, client? }`, or `{ type?, ids?, combine?, client? }` for every kind |
+| `useWorkflowAction(options)` | Sending one action, with its pending state, result and error | `{ workflow, id, action, client? }`, where `action` is a key of `actions` |
 | `useWorkflowClient()` | The client of the provider | |
 
 `useWorkflow` and `WorkflowSession` expose the same values:
@@ -460,6 +580,7 @@ Import them from `@proyecto26/temporal-workflow-client/react`.
 | `start(input)` | Starts and follows. It never starts a second workflow for the same session |
 | `resume()` | Follows a workflow already running |
 | `cancel()` | Requests the cancellation and keeps following until it ends |
+| `actions.name(input, { signal, actionId }?)` | One function for each declared action. Rejects if the backend refuses it, without changing `status` |
 | `stop()` | Stops listening. The workflow keeps running |
 | `clearError()` | Clears the error |
 | `remove()` | `useWorkflow` only. Stops following it and forgets it. The workflow keeps running |
@@ -480,6 +601,7 @@ Options are those of `WorkflowSession`, except `id`, plus:
 |---|---|
 | `type` | Identifies this kind of workflow in the client |
 | `transport` | A transport, or a function of `{ context, limiter }` that builds it |
+| `actions` | What the browser can ask the workflow to do, declared with `signal` and `update` |
 | `ttlMs` | Removes workflows without changes for this long, 24 hours by default, also while the app stays open |
 | `removeOnFinish` | Forgets a workflow after `onFinish` |
 | `removeOnReject` | Forgets a workflow the backend rejected when starting. `true` by default |
@@ -536,6 +658,8 @@ interface WorkflowTransport<TState, TInput, TResult = TState> {
 | `queryPollingEvents(options)` | Events from querying a workflow, which needs nothing from the workflow |
 | `toWorkflowStreamResponse(events, init)` | Sends any events as Server-Sent Events, with keep-alive |
 | `pipeWorkflowResponse(response, res)` | Writes a `Response` to a Node.js response |
+| `defineServerActions(contract, actions)` | Implements the declared actions. Its `handle` runs one and answers with a `Response` |
+| `signalAction(definition)`, `updateAction(definition)` | Run a signal or an update defined with `defineSignal` or `defineUpdate` |
 
 With `getState`, each published item is treated as a full state and a new connection gets the current one. Without it, connections read the log from `fromOffset`, which suits topics that publish deltas.
 

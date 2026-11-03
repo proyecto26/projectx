@@ -105,6 +105,39 @@ export class OrderService {
     };
   }
 
+  /**
+   * Makes sure a cancelled order can't be paid anymore. The customer may have just
+   * paid, so the answer says what happened with the payment.
+   */
+  async cancelPayment(
+    referenceId: string,
+  ): Promise<"cancelled" | "paid" | "processing"> {
+    const order =
+      await this.orderRepositoryService.getOrderByReferenceId(referenceId);
+    const transactionId = order?.payment?.transactionId;
+    if (!transactionId) return "cancelled";
+
+    const outcomeOf = ({ status }: { status: string }) => {
+      if (status === "succeeded") return "paid";
+      if (status === "processing") return "processing";
+      if (status === "canceled") return "cancelled";
+      return undefined;
+    };
+    const current = await this.stripeService.getPaymentIntent(transactionId);
+    const outcome = outcomeOf(current);
+    if (outcome) return outcome;
+    try {
+      await this.stripeService.cancelPaymentIntent(transactionId);
+      return "cancelled";
+    } catch (error) {
+      // It may have changed since reading it. Otherwise the activity retries
+      const latest = await this.stripeService.getPaymentIntent(transactionId);
+      const latestOutcome = outcomeOf(latest);
+      if (latestOutcome) return latestOutcome;
+      throw error;
+    }
+  }
+
   async reportPaymentFailed(orderId: number) {
     this.logger.log(`reportPaymentFailed(${orderId})`);
     const updatedOrder = await this.orderRepositoryService.updateOrderStatus(

@@ -70,6 +70,7 @@ export function createLimitedTransport<
   return {
     start: (options) => primary.start(options),
     cancel: (options) => primary.cancel(options),
+    send: primary.send?.bind(primary),
 
     async *subscribe({ id, fromOffset, signal }) {
       // Freed as soon as it aborts, as the next subscriber can come right after

@@ -1,3 +1,4 @@
+import { orderActions } from "@projectx/models/workflows";
 import {
   createFallbackTransport,
   createHttpStreamTransport,
@@ -5,6 +6,7 @@ import {
   createPollingTransport,
   defineWorkflow,
   WorkflowClientError,
+  type WorkflowTransportOptions,
 } from "@proyecto26/temporal-workflow-client";
 import { toast } from "react-toastify";
 
@@ -70,14 +72,13 @@ async function getOrderStatus({
 }
 
 /** The orders of a user, followed while the app is open. */
-export const orderWorkflow = defineWorkflow<
-  OrderWorkflowState,
-  OrderWorkflowInput,
-  OrderWorkflowResult,
-  WorkflowsContext
->({
+export const orderWorkflow = defineWorkflow({
   type: "order",
-  transport: ({ context, limiter }) => {
+  actions: orderActions,
+  transport: ({
+    context,
+    limiter,
+  }: WorkflowTransportOptions<WorkflowsContext>) => {
     const stream = createHttpStreamTransport<
       OrderWorkflowState,
       OrderWorkflowInput,
@@ -86,6 +87,8 @@ export const orderWorkflow = defineWorkflow<
       startUrl: ordersUrl,
       streamUrl: (id) => `${ordersUrl()}/stream/${encodeURIComponent(id)}`,
       cancelUrl: (id) => `${ordersUrl()}/${encodeURIComponent(id)}`,
+      actionUrl: (id, action) =>
+        `${ordersUrl()}/${encodeURIComponent(id)}/actions/${encodeURIComponent(action)}`,
       headers: () => authHeaders(context),
       body: ({ input }) => input,
     });
@@ -96,6 +99,7 @@ export const orderWorkflow = defineWorkflow<
     >({
       start: stream.start,
       cancel: stream.cancel,
+      send: stream.send,
       getState: (options) => getOrderStatus({ ...options, context }),
     });
     // Open streams hold browser connections, so the rest of the orders poll

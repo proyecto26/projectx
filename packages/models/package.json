@@ -18,18 +18,25 @@
       "import": "./dist/enums.mjs",
       "require": "./dist/enums.js",
       "default": "./dist/enums.js"
+    },
+    "./workflows": {
+      "types": "./dist/workflows.d.ts",
+      "import": "./dist/workflows.mjs",
+      "require": "./dist/workflows.js",
+      "default": "./dist/workflows.js"
     }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts src/enums.ts --format cjs,esm --outDir dist && tsc --emitDeclarationOnly --declaration --declarationMap --outDir dist",
+    "build": "tsup src/index.ts src/enums.ts src/workflows.ts --format cjs,esm --outDir dist && tsc --emitDeclarationOnly --declaration --declarationMap --outDir dist",
     "dev": "tsc -w -p tsconfig.json",
     "lint": "biome check .",
     "test": "echo 'no tests'"
   },
   "dependencies": {
+    "@proyecto26/temporal-workflow-client": "workspace:*",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.3",
     "tslib": "^2.9.1",

@@ -14,19 +14,32 @@ export interface HttpStreamTransportOptions<TInput> {
   startUrl?: (id: string) => string;
   streamUrl?: (id: string) => string;
   cancelUrl?: (id: string) => string;
+  /** Where actions go. Defaults to POST `/:id/actions/:action`. */
+  actionUrl?: (id: string, action: string) => string;
   /** Called on every request, so tokens can change over time. */
   headers?: () => MaybePromise<Headers>;
   credentials?: RequestCredentials;
   /** Body of the start request. Defaults to `{ id, input }`. */
   body?: (options: { id: string; input: TInput }) => unknown;
+  /** Body of an action. Defaults to `{ input, actionId }`. */
+  actionBody?: (options: { input: unknown; actionId?: string }) => unknown;
   fetch?: typeof globalThis.fetch;
 }
 
 async function assertOk(response: Response) {
   if (response.ok) return;
+  // Servers can explain themselves with `{ message, code }`
+  const details: { message?: unknown; code?: unknown } = await response
+    .json()
+    .catch(() => ({}));
   throw new WorkflowClientError(
-    `The request failed with status ${response.status}`,
-    { status: response.status },
+    typeof details?.message === "string"
+      ? details.message
+      : `The request failed with status ${response.status}`,
+    {
+      status: response.status,
+      code: typeof details?.code === "string" ? details.code : undefined,
+    },
   );
 }
 
@@ -46,7 +59,19 @@ export function createHttpStreamTransport<
     startUrl = () => api,
     streamUrl = (id: string) => `${api}/${encodeURIComponent(id)}/stream`,
     cancelUrl = (id: string) => `${api}/${encodeURIComponent(id)}`,
+    actionUrl = (id: string, action: string) =>
+      `${api}/${encodeURIComponent(id)}/actions/${encodeURIComponent(action)}`,
     body = ({ id, input }: { id: string; input: TInput }) => ({ id, input }),
+    actionBody = ({
+      input,
+      actionId,
+    }: {
+      input: unknown;
+      actionId?: string;
+    }) => ({
+      input,
+      actionId,
+    }),
   } = options;
   // Looked up late to work with polyfills and test doubles
   const request: typeof globalThis.fetch = (...args) =>
@@ -77,6 +102,23 @@ export function createHttpStreamTransport<
         headers: await getHeaders(),
       });
       await assertOk(response);
+    },
+
+    async send({ id, action, input, actionId, signal }) {
+      const response = await request(actionUrl(id, action), {
+        method: "POST",
+        credentials,
+        signal,
+        headers: {
+          "content-type": "application/json",
+          ...(await getHeaders()),
+        },
+        body: JSON.stringify(actionBody({ input, actionId })),
+      });
+      await assertOk(response);
+      // A signal has nothing to answer
+      const text = await response.text();
+      return text ? JSON.parse(text) : undefined;
     },
 
     async *subscribe({ id, fromOffset, signal }) {

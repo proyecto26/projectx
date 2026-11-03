@@ -17,8 +17,11 @@ import {
   paymentWebHookEventSignal,
 } from "@projectx/core";
 import type { CreateOrderDto } from "@projectx/models";
+import { orderActions } from "@projectx/models/workflows";
 import { StripeService } from "@projectx/payment";
 import {
+  defineServerActions,
+  signalAction,
   toWorkflowStreamResponse,
   workflowStreamEvents,
 } from "@proyecto26/temporal-workflow-client/server";
@@ -34,6 +37,10 @@ import {
 } from "@temporalio/common";
 
 import { createOrder } from "../workflows/order.workflow";
+
+const orderServerActions = defineServerActions(orderActions, {
+  cancel: signalAction(cancelWorkflowSignal),
+});
 
 @Injectable()
 export class AppService {
@@ -182,6 +189,19 @@ export class AppService {
           this.logger.error(`streamOrderStatus(${referenceId}) failed`, error),
       },
     );
+  }
+
+  /** Runs what the frontend can ask a running order to do. */
+  async sendOrderAction(
+    user: AuthUser,
+    referenceId: string,
+    action: string,
+    actionId?: string,
+  ) {
+    this.logger.log(`sendOrderAction(${referenceId}) - ${action}`);
+    const handle = await this.getOwnedWorkflowHandle(user, referenceId);
+    // No action takes an input yet. Validate it here when one does
+    return orderServerActions.handle({ handle, name: action, actionId });
   }
 
   async cancelOrder(user: AuthUser, referenceId: string) {

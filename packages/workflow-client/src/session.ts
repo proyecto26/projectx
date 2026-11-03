@@ -1,12 +1,13 @@
+import type { WorkflowActionOptions, WorkflowActions } from "./actions";
 import {
   WORKFLOW_NOT_FOUND,
-  type WorkflowClientError,
+  WorkflowClientError,
   type WorkflowEvent,
   type WorkflowExecutionStatus,
   type WorkflowSessionStatus,
   type WorkflowTransport,
 } from "./types";
-import { isAbortError, sleep } from "./utils";
+import { isAbortError, sleep, untilAborted } from "./utils";
 
 export interface WorkflowReconnectOptions {
   initialDelayMs?: number;
@@ -47,9 +48,15 @@ export interface WorkflowSessionCallbacks<TState, TResult = TState> {
   ) => void;
 }
 
-export interface WorkflowSessionOptions<TState, TInput, TResult>
-  extends WorkflowSessionCallbacks<TState, TResult> {
+export interface WorkflowSessionOptions<
+  TState,
+  TInput,
+  TResult,
+  TActions = never,
+> extends WorkflowSessionCallbacks<TState, TResult> {
   id: string;
+  /** Becomes `session.actions`, one function for each key. */
+  actions?: TActions;
   /** The kind of workflow, added to its snapshots. */
   type?: string;
   transport: WorkflowTransport<TState, TInput, TResult>;
@@ -85,15 +92,38 @@ const isFatalByDefault = (error: unknown) => {
  * Follows one workflow. It holds the state outside any UI framework, so hooks
  * and other stores only need to subscribe to it.
  */
-export class WorkflowSession<TState, TInput = unknown, TResult = TState> {
+export class WorkflowSession<
+  TState,
+  TInput = unknown,
+  TResult = TState,
+  TActions = never,
+> {
+  /**
+   * Sends an action to the workflow, such as a signal or an update behind your
+   * endpoint. It rejects if the backend refuses it, without changing the status of
+   * this session, as the workflow is still running. New state arrives by following
+   * it, and the result only goes to the caller. Neither `stop` nor unmounting
+   * abort it, and aborting with `signal` doesn't undo what the backend received.
+   */
+  readonly actions: WorkflowActions<TActions>;
   #id: string;
-  #options: WorkflowSessionOptions<TState, TInput, TResult>;
+  #options: WorkflowSessionOptions<TState, TInput, TResult, TActions>;
   #snapshot: WorkflowSessionSnapshot<TState, TResult>;
   #listeners = new Set<() => void>();
   #controller?: AbortController;
   #startPromise?: Promise<void>;
+  #startOutcome: Promise<boolean> | undefined;
 
-  constructor(options: WorkflowSessionOptions<TState, TInput, TResult>) {
+  constructor(
+    options: WorkflowSessionOptions<TState, TInput, TResult, TActions>,
+  ) {
+    this.actions = Object.fromEntries(
+      Object.keys(options.actions ?? {}).map((name) => [
+        name,
+        (input?: unknown, actionOptions?: WorkflowActionOptions) =>
+          this.#send(name, input, actionOptions),
+      ]),
+    ) as WorkflowActions<TActions>;
     this.#id = options.id;
     this.#options = options;
     this.#snapshot = {
@@ -135,8 +165,14 @@ export class WorkflowSession<TState, TInput = unknown, TResult = TState> {
 
     this.#options.onActivate?.();
     const controller = this.#replaceController();
+    // Ready before publishing, as a listener can send an action right away
+    let started = false;
+    let settleOutcome: (isStarted: boolean) => void = () => undefined;
+    this.#startOutcome = new Promise((resolve) => {
+      settleOutcome = resolve;
+    });
     this.#update({ status: "starting", error: undefined });
-    this.#startPromise = this.#options.transport
+    const startPromise = this.#options.transport
       .start({ id: this.id, input, signal: controller.signal })
       .then((startResult) => {
         if (controller.signal.aborted) return;
@@ -152,6 +188,7 @@ export class WorkflowSession<TState, TInput = unknown, TResult = TState> {
           this.#id = id;
           this.#update({ id, requestedId });
         }
+        started = true;
         this.#update({ status: "running", result: startResult });
         void this.#follow(controller);
       })
@@ -163,7 +200,9 @@ export class WorkflowSession<TState, TInput = unknown, TResult = TState> {
       .finally(() => {
         this.#startPromise = undefined;
       });
-    return this.#startPromise;
+    this.#startPromise = startPromise;
+    void startPromise.then(() => settleOutcome(started));
+    return startPromise;
   };
 
   /** Fills a session that hasn't done anything yet with a stored snapshot. */
@@ -206,6 +245,30 @@ export class WorkflowSession<TState, TInput = unknown, TResult = TState> {
       throw error;
     }
   };
+
+  async #send(
+    name: string,
+    input: unknown,
+    options: WorkflowActionOptions = {},
+  ) {
+    const { transport } = this.#options;
+    if (!transport.send) {
+      throw new WorkflowClientError("This transport can't send actions");
+    }
+    // The backend may decide another id, or reject the workflow
+    if (this.#snapshot.status === "starting" && this.#startOutcome) {
+      if (!(await untilAborted(this.#startOutcome, options.signal))) {
+        throw new WorkflowClientError("The workflow didn't start");
+      }
+    }
+    return transport.send({
+      id: this.id,
+      action: name,
+      input,
+      actionId: options.actionId ?? globalThis.crypto?.randomUUID?.(),
+      signal: options.signal,
+    });
+  }
 
   /** Stops listening. The workflow keeps running in the backend. */
   stop = () => {

@@ -3,7 +3,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "dependsOn": ["db:generate"],
+      "dependsOn": ["^build", "db:generate"],
       "env": ["DATABASE_URL"],
       "outputs": ["dist/**"]
     },

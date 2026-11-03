@@ -27,11 +27,12 @@ export function useWorkflows<
   TInput = unknown,
   TResult = TState,
   TCombined = ReadonlyArray<WorkflowSnapshot<TState, TResult>>,
+  TActions = never,
 >(
   options: UseWorkflowsBaseOptions<
     WorkflowSnapshot<TState, TResult>,
     TCombined
-  > & { workflow: WorkflowDefinitionOf<TState, TInput, TResult> },
+  > & { workflow: WorkflowDefinitionOf<TState, TInput, TResult, TActions> },
 ): TCombined;
 /** Reads the workflows of every kind, each one with its `type`. */
 export function useWorkflows<TCombined = ReadonlyArray<WorkflowSnapshot>>(

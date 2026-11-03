@@ -5,7 +5,7 @@ import {
   type WorkflowEvent,
   type WorkflowExecutionStatus,
 } from "../types";
-import { abortError, isAbortError, sleep } from "../utils";
+import { isAbortError, sleep, untilAborted } from "../utils";
 
 const STREAM_OFFSET_QUERY = "__temporal_workflow_stream_offset";
 
@@ -88,23 +88,6 @@ export async function* queryPollingEvents<TState>({
       throw error;
     }
   }
-}
-
-/** Resolves with the next value or rejects if the signal aborts first. */
-function untilAborted<T>(promise: Promise<T>, signal?: AbortSignal) {
-  if (!signal) return promise;
-  return new Promise<T>((resolve, reject) => {
-    if (signal.aborted) {
-      promise.catch(() => undefined);
-      reject(abortError());
-      return;
-    }
-    const onAbort = () => reject(abortError());
-    signal.addEventListener("abort", onAbort, { once: true });
-    promise
-      .then(resolve, reject)
-      .finally(() => signal.removeEventListener("abort", onAbort));
-  });
 }
 
 /**

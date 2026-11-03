@@ -13,6 +13,10 @@ export class ActivitiesService {
     return await this.orderService.createOrder(data);
   }
 
+  async cancelPayment(referenceId: string) {
+    return this.orderService.cancelPayment(referenceId);
+  }
+
   async reportPaymentFailed(orderId: number) {
     return this.orderService.reportPaymentFailed(orderId);
   }

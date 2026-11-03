@@ -86,6 +86,12 @@ export class StripeService {
     }
   }
 
+  async cancelPaymentIntent(
+    paymentIntentId: string,
+  ): Promise<Stripe.PaymentIntent> {
+    return this.stripe.paymentIntents.cancel(paymentIntentId);
+  }
+
   constructWebhookEvent(
     payload: string | Buffer,
     signature: string,

@@ -50,6 +50,16 @@ export interface WorkflowCancelOptions {
   signal?: AbortSignal;
 }
 
+export interface WorkflowSendOptions {
+  id: string;
+  /** The name of the action. */
+  action: string;
+  input: unknown;
+  /** Lets the backend recognize a retry. Not available in insecure contexts. */
+  actionId?: string;
+  signal?: AbortSignal;
+}
+
 /**
  * How a client talks to a backend. Replace it to use another protocol, such as
  * WebSockets, or to call your API with its own client.
@@ -63,6 +73,8 @@ export interface WorkflowTransport<TState, TInput = unknown, TResult = TState> {
   ): AsyncIterable<WorkflowEvent<TState>>;
   /** Requests the cancellation. The result arrives through `subscribe`. */
   cancel(options: WorkflowCancelOptions): Promise<void>;
+  /** Sends an action, needed by `session.send`. Resolves with its result. */
+  send?(options: WorkflowSendOptions): Promise<unknown>;
 }
 
 /** Thrown by transports and sessions. `status` holds the HTTP status if any. */
