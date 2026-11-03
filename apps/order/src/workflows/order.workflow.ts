@@ -68,7 +68,8 @@ export async function createOrder(
   setHandler(getOrderStateQuery, () => state as OrderStatusResponseDto);
   setHandler(cancelWorkflowSignal, () => {
     log.info("Requesting order cancellation");
-    if (!state?.orderId) {
+    // While it's being created, its payment may exist already: remember the request
+    if (!state?.orderId && !isCreatingOrder) {
       throw ApplicationFailure.nonRetryable(
         CancelledException.name,
         "Order cancelled",

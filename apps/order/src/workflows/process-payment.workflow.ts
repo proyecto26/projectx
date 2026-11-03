@@ -69,7 +69,8 @@ export async function processPayment(
 
   // Attach queries, signals and updates
   setHandler(cancelWorkflowSignal, () => {
-    if (finalPaymentStatuses.includes(state.status)) {
+    // A failed attempt can still be paid later, so only a success is too late
+    if (isPaid()) {
       log.warn("Payment already completed, cannot cancel");
       return;
     }

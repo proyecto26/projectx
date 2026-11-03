@@ -154,6 +154,15 @@ describe("processPayment when cancelling", () => {
     expect(cancelPayment).toHaveBeenCalledTimes(2);
   });
 
+  it("cancels with the provider after a failed attempt", async () => {
+    cancelPayment.mockResolvedValue("cancelled");
+    const run = processPayment(data);
+    webhook("payment_intent.payment_failed");
+    cancel();
+    await expect(run).resolves.toEqual({ status: Status.CANCELLED });
+    expect(cancelPayment).toHaveBeenCalledTimes(1);
+  });
+
   it("doesn't call the provider without a cancellation", async () => {
     const run = processPayment(data);
     webhook("payment_intent.succeeded");

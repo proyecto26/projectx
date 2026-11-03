@@ -1,6 +1,7 @@
 const handlers = new Map<string, (...args: unknown[]) => unknown>();
 const childSignal = jest.fn();
 let finishStart: () => void = () => undefined;
+let creating: Promise<void> = Promise.resolve();
 
 jest.mock("@temporalio/workflow", () => ({
   ApplicationFailure: {
@@ -12,10 +13,13 @@ jest.mock("@temporalio/workflow", () => ({
   allHandlersFinished: () => true,
   log: { info: jest.fn(), warn: jest.fn(), error: jest.fn() },
   proxyActivities: () => ({
-    createOrder: async () => ({
-      order: { id: 1, referenceId: "ref" },
-      clientSecret: "secret",
-    }),
+    createOrder: async () => {
+      await creating;
+      return {
+        order: { id: 1, referenceId: "ref" },
+        clientSecret: "secret",
+      };
+    },
     reportPaymentFailed: jest.fn(),
     reportPaymentConfirmed: jest.fn(),
   }),
@@ -52,8 +56,47 @@ import { createOrder } from "./order.workflow";
 const tick = () => new Promise((resolve) => setImmediate(resolve));
 
 describe("createOrder when cancelling", () => {
+  beforeEach(() => {
+    childSignal.mockClear();
+    handlers.clear();
+    creating = Promise.resolve();
+  });
+
+  it("remembers a cancellation sent while the order is being created", async () => {
+    let finishCreating: () => void = () => undefined;
+    creating = new Promise((resolve) => {
+      finishCreating = resolve;
+    });
+    const run = createOrder(
+      { order: { referenceId: "ref2" } } as never,
+      {
+        status: "Pending",
+        referenceId: "",
+      } as never,
+    );
+    run.catch(() => undefined);
+    await tick();
+    const update = handlers.get("createOrderUpdate")?.();
+    await tick();
+    expect(() => handlers.get("cancelWorkflowSignal")?.()).not.toThrow();
+    finishCreating();
+    await update;
+    await tick();
+    await tick();
+    finishStart();
+    await tick();
+    expect(childSignal).toHaveBeenCalledTimes(1);
+    await run.catch(() => undefined);
+  });
+
   it("forwards a cancellation sent while the payment process starts", async () => {
-    const run = createOrder({ order: { referenceId: "ref" } } as never);
+    const run = createOrder(
+      { order: { referenceId: "ref" } } as never,
+      {
+        status: "Pending",
+        referenceId: "",
+      } as never,
+    );
     run.catch(() => undefined);
     await tick();
     await handlers.get("createOrderUpdate")?.();
