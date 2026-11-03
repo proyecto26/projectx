@@ -1,0 +1,110 @@
+import {
+  ApplicationFailure,
+  allHandlersFinished,
+  condition,
+  defineQuery,
+  defineSignal,
+  isCancellation,
+  log,
+  proxyActivities,
+  setHandler,
+} from "@temporalio/workflow";
+
+import type { ActivitiesService } from "../main";
+
+// Define workflow timeout (adjust as needed)
+const WORKFLOW_TIMEOUT = "10 minutes";
+
+// Define workflow state type
+interface {{pascalCase workflowName}}WorkflowState {
+  status: "pending" | "processing" | "completed" | "failed" | "cancelled";
+  result?: Record<string, unknown>;
+  error?: string;
+}
+
+// Define queries to check workflow state
+export const get{{pascalCase workflowName}}StateQuery = defineQuery<{{pascalCase workflowName}}WorkflowState>(
+  "get{{pascalCase workflowName}}State"
+);
+
+// Define signals to control workflow
+export const cancel{{pascalCase workflowName}}Signal = defineSignal("cancel{{pascalCase workflowName}}");
+
+// TODO: Add your activities here
+// const { yourActivity } = proxyActivities<ActivitiesService>({
+//   startToCloseTimeout: "30 seconds",
+//   retry: {
+//     initialInterval: "2s",
+//     maximumInterval: "30s",
+//     maximumAttempts: 5,
+//     backoffCoefficient: 2,
+//   },
+// });
+
+/**
+ * {{pascalCase workflowName}} Workflow
+ *
+ * {{workflowDescription}}
+ *
+ * @param data - Input data for the workflow
+ */
+export async function {{workflowName}}Workflow(
+  data: Record<string, unknown>
+): Promise<Record<string, unknown>> {
+  // Initialize workflow state
+  const state: {{pascalCase workflowName}}WorkflowState = {
+    status: "pending",
+  };
+
+  let isCancelled = false;
+
+  // Register query handler for state inspection
+  setHandler(get{{pascalCase workflowName}}StateQuery, () => state);
+
+  // Register signal handler for cancellation
+  setHandler(cancel{{pascalCase workflowName}}Signal, () => {
+    log.info("Received cancellation signal for {{workflowName}}");
+    isCancelled = true;
+  });
+
+  try {
+    log.info(`Starting {{workflowName}} workflow with data: ${JSON.stringify(data)}`);
+    state.status = "processing";
+
+    // Check for cancellation before proceeding
+    if (isCancelled) {
+      state.status = "cancelled";
+      return { cancelled: true };
+    }
+
+    // TODO: Implement your workflow logic here
+    // Example:
+    // const result = await yourActivity(data);
+    // state.result = result;
+
+    // Wait for all handlers to finish before completing
+    await condition(allHandlersFinished);
+
+    state.status = "completed";
+    log.info(`{{pascalCase workflowName}} workflow completed successfully`);
+
+    return state.result ?? { success: true };
+  } catch (error) {
+    state.status = "failed";
+
+    if (isCancellation(error)) {
+      log.warn("{{pascalCase workflowName}} workflow was cancelled");
+      state.status = "cancelled";
+      state.error = "Workflow cancelled";
+      return { cancelled: true };
+    }
+
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    state.error = errorMessage;
+    log.error(`{{pascalCase workflowName}} workflow failed: ${errorMessage}`);
+
+    throw ApplicationFailure.nonRetryable(
+      `{{pascalCase workflowName}} workflow failed: ${errorMessage}`
+    );
+  }
+}

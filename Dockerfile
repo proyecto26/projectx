@@ -1,4 +1,4 @@
-FROM node:25
+FROM node:24
 
 # Install bash and other dependencies
 RUN apt-get update && apt-get install -y bash libc6 && rm -rf /var/lib/apt/lists/*
@@ -9,10 +9,10 @@ WORKDIR /app
 # Copy package.json and pnpm-lock.yaml
 COPY package.json .
 COPY pnpm-lock.yaml .
-COPY .npmrc .
+COPY pnpm-workspace.yaml .
 
 # Install pnpm globally
-RUN npm install -g pnpm
+RUN npm install -g pnpm@12.16.1
 
 # Copy the application files
 COPY . .

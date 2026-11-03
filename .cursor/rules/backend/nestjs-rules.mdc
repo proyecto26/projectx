@@ -17,11 +17,11 @@ alwaysApply: true
 ```typescript
 // ❌ WRONG - Type imports are erased at compile time
 import type { ConfigService } from '@nestjs/config';
-import type { ClientService } from '@projectx/workflows';
+import type { ClientService } from '@proyecto26/temporal-workflows';
 import { type AuthService } from '@projectx/core';
 // ✅ CORRECT - Regular imports for dependency injection
 import { ConfigService } from '@nestjs/config';
-import { ClientService } from '@projectx/workflows';
+import { ClientService } from '@proyecto26/temporal-workflows';
 import { AuthService } from '@projectx/core';
 ```
 ### When to use `type` imports:
@@ -52,7 +52,7 @@ ConfigModule.forRoot({
 ## Temporal Integration
 ### All services use Temporal workflows
 - Task queue configured via environment variable: `temporal.taskQueue`
-- Workflow client accessed via `ClientService` from `@projectx/workflows`
+- Workflow client accessed via `ClientService` from `@proyecto26/temporal-workflows`
 - Always check if workflow client is initialized before use
 ### Workflow client pattern:
 ```typescript

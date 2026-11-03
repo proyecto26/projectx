@@ -115,7 +115,7 @@ sequenceDiagram
 - `@projectx/db`: Database access and models
 - `@projectx/email`: Email service integration
 - `@projectx/payment`: Payment provider integration
-- `@projectx/workflows`: Temporal workflow definitions
+- `@proyecto26/temporal-workflows`: Temporal workflow definitions
 
 ## Data Flow
 

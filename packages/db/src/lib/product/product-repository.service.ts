@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { ProductDto } from "@projectx/models";
+import { ProductDto, ProductListResponseDto } from "@projectx/models";
 import { plainToInstance } from "class-transformer";
 
 import type {
@@ -69,6 +69,55 @@ export class ProductRepositoryService {
       excludeExtraneousValues: true,
       enableImplicitConversion: true,
     });
+  }
+
+  async findCategories(): Promise<string[]> {
+    this.logger.verbose("findCategories() - retrieving distinct categories");
+    const results = await this.prisma.product.findMany({
+      where: { category: { not: null }, status: "Available" },
+      select: { category: true },
+      distinct: ["category"],
+      orderBy: { category: "asc" },
+    });
+    return results
+      .map((r) => r.category)
+      .filter((c): c is string => Boolean(c));
+  }
+
+  async findProductsFiltered(params: {
+    category?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<ProductListResponseDto> {
+    const { category, search, page = 1, limit = 12 } = params;
+    const where: Prisma.ProductWhereInput = {
+      status: "Available",
+      ...(category && { category }),
+      ...(search && {
+        OR: [
+          { name: { contains: search, mode: "insensitive" } },
+          { description: { contains: search, mode: "insensitive" } },
+        ],
+      }),
+    };
+
+    const [rawProducts, total] = await Promise.all([
+      this.prisma.product.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      this.prisma.product.count({ where }),
+    ]);
+
+    const products = plainToInstance(ProductDto, rawProducts, {
+      excludeExtraneousValues: true,
+      enableImplicitConversion: true,
+    });
+
+    return { products, total };
   }
 
   async deleteProduct(productId: number): Promise<Product> {

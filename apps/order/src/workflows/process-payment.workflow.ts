@@ -11,8 +11,23 @@ import {
   allHandlersFinished,
   condition,
   log,
+  proxyActivities,
   setHandler,
 } from "@temporalio/workflow";
+
+import type { ActivitiesService } from "../main";
+
+// It retries until the payment provider answers, as giving up would stop tracking
+// a payment that can still happen. Its answer also tells about a payment made
+// while it was retrying.
+const { cancelPayment } = proxyActivities<ActivitiesService>({
+  startToCloseTimeout: "30 seconds",
+  retry: {
+    initialInterval: "2s",
+    maximumInterval: "1 minute",
+    backoffCoefficient: 1.5,
+  },
+});
 
 export const finalPaymentStatuses = [
   OrderProcessPaymentStatus.SUCCESS,
@@ -46,14 +61,21 @@ export async function processPayment(
   };
   log.info("Processing payment", { data });
 
+  // Apart from the status, as a webhook about the payment can't undo the request
+  let isCancelRequested = false;
+  const isSettled = () => finalPaymentStatuses.includes(state.status);
+  // A function, as a signal can change the status during any await
+  const isPaid = () => state.status === OrderProcessPaymentStatus.SUCCESS;
+
   // Attach queries, signals and updates
   setHandler(cancelWorkflowSignal, () => {
-    if (finalPaymentStatuses.includes(state.status)) {
+    // A failed attempt can still be paid later, so only a success is too late
+    if (isPaid()) {
       log.warn("Payment already completed, cannot cancel");
       return;
     }
     log.warn("Cancelling payment");
-    state.status = OrderProcessPaymentStatus.CANCELLED;
+    isCancelRequested = true;
   });
   setHandler(paymentWebHookEventSignal, (event: PaymentWebhookEvent) => {
     log.info("Received payment webhook event", { type: event.type });
@@ -71,9 +93,36 @@ export async function processPayment(
 
   // Wait for payment to complete or timeout
   await condition(
-    () => finalPaymentStatuses.includes(state.status),
+    () => isSettled() || isCancelRequested,
     PROCESS_PAYMENT_TIMEOUT,
   );
+
+  // Cancelling has to stop the payment provider too, where it may be too late
+  // A webhook confirming the payment doesn't need the provider to answer. Only one
+  // wait, as each one stays registered until the workflow closes
+  const paidByWebhook = condition(isPaid).then(() => "paid" as const);
+  while (isCancelRequested && !isPaid()) {
+    const outcome = await Promise.race([
+      cancelPayment(data.order.referenceId),
+      paidByWebhook,
+    ]);
+    // Both can happen at once, and a confirmed payment wins over any other answer
+    if (isPaid()) break;
+    if (outcome === "cancelled") {
+      state.status = OrderProcessPaymentStatus.CANCELLED;
+    } else if (outcome === "paid") {
+      state.status = OrderProcessPaymentStatus.SUCCESS;
+    } else {
+      // Being processed, so wait for its webhook and ask again. Any answer other
+      // than a success, or no answer, doesn't tell the payment can't succeed
+      const hasNews = isSettled();
+      state.status = OrderProcessPaymentStatus.INITIATED;
+      // A failed attempt during the activity may let it be cancelled now
+      if (!hasNews) await condition(isSettled, PROCESS_PAYMENT_TIMEOUT);
+      continue;
+    }
+    break;
+  }
 
   // Wait for all handlers to finish before workflow completion
   await condition(allHandlersFinished);

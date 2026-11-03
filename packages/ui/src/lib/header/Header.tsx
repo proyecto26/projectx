@@ -2,7 +2,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useOnClickOutside } from "usehooks-ts";
 import { useAvatarUrl } from "../../hooks/useAvatarUrl";
 import { useScroll } from "../../hooks/useScroll";
@@ -74,12 +74,12 @@ export function Header({
           "sticky top-0 z-50 w-full transition-all duration-300",
           "border-transparent border-b",
           isScrolled
-            ? "border-slate-200/50 bg-white/80 shadow-sm backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-950/80"
-            : "bg-white/60 backdrop-blur-sm dark:bg-slate-950/60",
+            ? "border-(--border)/50 bg-(--background)/80 shadow-sm backdrop-blur-md"
+            : "bg-(--background)/60 backdrop-blur-sm",
           className,
         )}
       >
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Mobile Menu Trigger & Logo Area */}
           <div className="flex items-center gap-4 lg:hidden">
             <MobileNavigation sections={sections} logoImgSrc={logoImgSrc} />
@@ -92,8 +92,8 @@ export function Header({
             </Link>
           </div>
 
-          {/* Desktop Logo & Title */}
-          <div className="hidden lg:flex lg:flex-none lg:items-center lg:gap-4">
+          {/* Desktop Logo + Nav Links (grouped left) */}
+          <div className="hidden lg:flex lg:flex-none lg:items-center lg:gap-6">
             <Link
               to="/"
               aria-label="Home page"
@@ -105,16 +105,38 @@ export function Header({
                 className="h-9 w-auto object-contain"
               />
               {title && (
-                <span className="font-bold text-slate-900 text-xl tracking-tight dark:text-white">
+                <span className="font-bold text-(--foreground) text-xl tracking-tight">
                   {title}
                 </span>
               )}
             </Link>
+            {/* Desktop Links next to logo */}
+            {desktopLinks && desktopLinks.length > 0 && (
+              <nav>
+                <ul className="flex items-center gap-5">
+                  {desktopLinks.map((link, i) => (
+                    <li key={link.href}>
+                      <Link
+                        className={classnames(
+                          "text-sm transition-colors hover:text-(--foreground)",
+                          i === 0
+                            ? "font-medium text-(--foreground)"
+                            : "text-(--muted-foreground)",
+                        )}
+                        to={link.href}
+                      >
+                        {link.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            )}
           </div>
 
           {/* Desktop Search Center */}
           <div className="hidden flex-1 items-center justify-center px-8 md:flex lg:px-12">
-            <div className="w-full max-w-lg">
+            <div className="w-full max-w-[480px]">
               <Search
                 placeholder={searchPlaceholder}
                 onFocus={openSearch}
@@ -126,28 +148,12 @@ export function Header({
 
           {/* Desktop Navigation & Actions */}
           <div className="flex items-center justify-end gap-3 sm:gap-4 lg:flex-none">
-            {/* Desktop Links */}
-            <nav className="hidden xl:block">
-              <ul className="flex items-center gap-6">
-                {desktopLinks?.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      className="font-medium text-slate-600 text-sm transition-colors hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
-                      to={link.href}
-                    >
-                      {link.title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-
             {/* Mobile Search Toggle */}
             {!isMobileSearchFocused && (
               <Button
                 onClick={openMobileSearch}
                 type="button"
-                className="p-2 text-slate-500 hover:text-slate-700 md:hidden dark:text-slate-400 dark:hover:text-slate-200"
+                className="p-2 text-(--muted-foreground) hover:text-(--foreground) md:hidden"
                 variant="ghost"
               >
                 <MagnifyingGlassIcon className="h-6 w-6" aria-hidden="true" />
@@ -157,19 +163,19 @@ export function Header({
 
             {/* Actions: Cart, Theme, User */}
             <div className="flex items-center gap-4">
-              <div className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+              <div className="text-(--muted-foreground) hover:text-(--foreground)">
                 <ShoppingCartDrawer />
               </div>
 
               <ThemeButton
                 theme={theme}
                 onChange={onThemeChange}
-                className="h-9 w-9 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                className="h-9 w-9 text-(--muted-foreground) hover:text-(--foreground)"
               />
 
               {isAuthenticated ? (
                 <Menu as="div" className="relative ml-2">
-                  <MenuButton className="relative flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-sm ring-2 ring-white focus:outline-none focus:ring-2 focus:ring-primary dark:bg-slate-800 dark:ring-slate-700">
+                  <MenuButton className="relative flex h-9 w-9 items-center justify-center rounded-full bg-(--muted) text-sm ring-2 ring-white focus:outline-none focus:ring-2 focus:ring-primary">
                     <span className="absolute -inset-1.5" />
                     <span className="sr-only">Open user menu</span>
                     <img
@@ -180,17 +186,17 @@ export function Header({
                   </MenuButton>
                   <MenuItems
                     transition
-                    className="absolute right-0 z-20 mt-2 w-48 origin-top-right rounded-xl bg-white py-1 shadow-xl ring-1 ring-black/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in dark:bg-slate-900 dark:ring-white/10"
+                    className="absolute right-0 z-20 mt-2 w-48 origin-top-right rounded-xl bg-(--card) py-1 shadow-xl ring-1 ring-black/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
                   >
                     {[
                       { to: "/profile", label: "Your Profile" },
-                      { to: "/admin", label: "Admin" },
+                      { to: "/admin", label: "Admin Dashboard" },
                       { to: "/logout", label: "Sign out" },
                     ].map((item) => (
                       <MenuItem key={item.to}>
                         <Link
                           to={item.to}
-                          className="block px-4 py-2 text-slate-700 text-sm data-[focus]:bg-slate-50 dark:text-slate-200 dark:data-[focus]:bg-slate-800"
+                          className="block px-4 py-2 text-(--foreground) text-sm data-[focus]:bg-(--muted)"
                         >
                           {item.label}
                         </Link>
@@ -201,7 +207,7 @@ export function Header({
               ) : (
                 <Link
                   to="/login"
-                  className="ml-2 inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-1.5 font-semibold text-sm text-white transition-all hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+                  className="ml-2 inline-flex items-center justify-center rounded-lg bg-(--foreground) px-4 py-1.5 font-semibold text-(--background) text-sm transition-all hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 >
                   Log in
                 </Link>
@@ -216,7 +222,7 @@ export function Header({
             key="search"
             initial="collapsed"
             animate="open"
-            className="border-slate-200 border-t bg-white md:hidden dark:border-slate-800 dark:bg-slate-950"
+            className="border-(--border) border-t bg-(--background) md:hidden"
             variants={{
               open: { opacity: 1, height: "auto" },
               collapsed: { opacity: 0, height: 0 },
@@ -234,7 +240,7 @@ export function Header({
               <Button
                 onClick={onCloseSearch}
                 type="button"
-                className="rounded-full p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+                className="rounded-full p-2 text-(--muted-foreground) hover:bg-(--muted)"
                 variant="ghost"
               >
                 <XMarkIcon className="h-6 w-6" aria-hidden="true" />

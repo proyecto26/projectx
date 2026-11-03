@@ -35,7 +35,7 @@ export function LoginPage() {
   const [formData, setFormData] = useState<FormData>({ email: "", code: "" });
   const [loading, setLoading] = useState(false);
 
-  const handleEmailSubmit = async (e: React.FormEvent) => {
+  const handleEmailSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setLoading(true);
 
@@ -73,7 +73,7 @@ export function LoginPage() {
     );
   };
 
-  const handleCodeSubmit = async (e: React.FormEvent) => {
+  const handleCodeSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     onVerifyCode();
   };

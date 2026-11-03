@@ -4,7 +4,7 @@ import type { Appearance } from "@stripe/stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { motion } from "framer-motion";
 
-import type { OrderWorkflow } from "@/providers/workflows/types";
+import { OrderFailureStatus, type OrderWorkflow } from "@/providers/workflows";
 import { CheckoutForm } from "./checkout/CheckoutForm";
 
 const STRIPE_SECRET_KEY = canUseDOM
@@ -20,6 +20,11 @@ interface CheckoutPageProps {
   error?: Error;
   isLoading: boolean;
   currentCheckoutWorkflow?: OrderWorkflow;
+  cancelOrder?: {
+    send: () => unknown;
+    isPending: boolean;
+    error?: Error;
+  };
 }
 
 const appearance: Appearance = {
@@ -59,6 +64,7 @@ export const CheckoutPage = ({
   error,
   isLoading,
   currentCheckoutWorkflow,
+  cancelOrder,
 }: CheckoutPageProps) => {
   if (isLoading) {
     // Skeleton for payment form
@@ -97,7 +103,25 @@ export const CheckoutPage = ({
     );
   }
 
-  const clientSecret = currentCheckoutWorkflow?.data?.response?.clientSecret;
+  const status = currentCheckoutWorkflow?.state?.status;
+  if (status && OrderFailureStatus.includes(status)) {
+    return (
+      <div className="flex flex-grow items-center justify-center p-4">
+        <div className="text-center">
+          <h1 className="font-bold text-3xl text-gray-900 dark:text-white">
+            This order is no longer active
+          </h1>
+          <p className="mt-2 text-base text-gray-500 dark:text-gray-400">
+            It was cancelled or its payment failed.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const clientSecret =
+    currentCheckoutWorkflow?.result?.clientSecret ??
+    currentCheckoutWorkflow?.state?.clientSecret;
 
   if (!clientSecret) {
     return (
@@ -145,6 +169,23 @@ export const CheckoutPage = ({
           <Elements options={options} stripe={stripePromise}>
             <CheckoutForm currentCheckoutWorkflow={currentCheckoutWorkflow} />
           </Elements>
+          {cancelOrder && (
+            <div className="text-center">
+              <button
+                type="button"
+                disabled={cancelOrder.isPending}
+                onClick={() => cancelOrder.send()}
+                className="text-gray-500 text-sm underline hover:text-gray-700 disabled:opacity-50 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                {cancelOrder.isPending ? "Cancelling..." : "Cancel order"}
+              </button>
+              {cancelOrder.error && (
+                <p role="alert" className="mt-2 text-red-600 text-sm">
+                  {cancelOrder.error.message}
+                </p>
+              )}
+            </div>
+          )}
         </div>
       </motion.div>
     </div>

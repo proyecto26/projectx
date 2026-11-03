@@ -2,7 +2,6 @@ import { fileURLToPath, URL } from "node:url";
 import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig(() => ({
   envDir: "../../",
@@ -10,13 +9,14 @@ export default defineConfig(() => ({
     tailwindcss(),
     // Enable reactRouter when not running tests for vitest
     process.env.VITEST ? undefined : reactRouter(),
-    tsconfigPaths(),
   ].filter(Boolean),
   server: {
     host: true,
     port: 3000,
+    allowedHosts: ["host.docker.internal"],
   },
   resolve: {
+    tsconfigPaths: true,
     alias: [
       {
         find: /^(?:@projectx\/ui\/styles\/base\.css)$/,
@@ -49,6 +49,24 @@ export default defineConfig(() => ({
         ),
       },
       {
+        find: /^(?:@proyecto26\/temporal-workflow-client\/react)(?:$)/,
+        replacement: fileURLToPath(
+          new URL(
+            "../../packages/workflow-client/src/react/index.ts",
+            import.meta.url,
+          ),
+        ),
+      },
+      {
+        find: /^(?:@proyecto26\/temporal-workflow-client)(?:$)/,
+        replacement: fileURLToPath(
+          new URL(
+            "../../packages/workflow-client/src/index.ts",
+            import.meta.url,
+          ),
+        ),
+      },
+      {
         find: /^(?:@projectx\/models)(?:$)/,
         replacement: fileURLToPath(
           new URL("../../packages/models/src/index.ts", import.meta.url),
@@ -69,7 +87,11 @@ export default defineConfig(() => ({
     ],
   },
   ssr: {
-    noExternal: ["@projectx/ui", "@projectx/models"],
+    noExternal: [
+      "@projectx/ui",
+      "@projectx/models",
+      "@proyecto26/temporal-workflow-client",
+    ],
   },
   optimizeDeps: {
     exclude: [

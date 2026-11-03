@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Expose, Transform } from "class-transformer";
 import {
   IsArray,
@@ -135,4 +135,38 @@ export class ProductDto {
   @Expose()
   @Transform(({ value }) => transformToDate(value))
   updatedAt!: Date;
+}
+
+export class ProductListResponseDto {
+  @ApiProperty({ type: [ProductDto], description: "Array of products" })
+  products!: ProductDto[];
+
+  @ApiProperty({ description: "Total number of matching products" })
+  total!: number;
+}
+
+export class ProductFilterQueryDto {
+  @ApiPropertyOptional({ description: "Filter by category" })
+  @IsOptional()
+  @IsString()
+  category?: string;
+
+  @ApiPropertyOptional({ description: "Search by name or description" })
+  @IsOptional()
+  @IsString()
+  search?: string;
+
+  @ApiPropertyOptional({
+    description: "Page number (default: 1)",
+    type: Number,
+  })
+  @IsOptional()
+  page?: number;
+
+  @ApiPropertyOptional({
+    description: "Items per page (default: 12)",
+    type: Number,
+  })
+  @IsOptional()
+  limit?: number;
 }

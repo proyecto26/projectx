@@ -5,24 +5,47 @@ import axios from "axios";
 const PRODUCTS_QUERY_KEY = "products";
 const MAX_RETRY_ATTEMPTS = 3;
 
+type ProductsResponse = {
+  products: ProductDto[];
+  total: number;
+};
+
 export const useProducts = ({
   initialData = [] as ProductDto[],
-  size = 10,
+  category,
+  search,
+  size = 12,
+}: {
+  initialData?: ProductDto[];
+  category?: string;
+  search?: string;
+  size?: number;
 }) => {
-  return useInfiniteQuery<ProductDto[]>({
-    queryKey: [PRODUCTS_QUERY_KEY],
+  return useInfiniteQuery<ProductsResponse>({
+    queryKey: [PRODUCTS_QUERY_KEY, category, search],
     queryFn: async ({ pageParam = 1 }) => {
-      // TODO: Use limit and offset to load more products from the endpoint
-      const response = await axios.get<ProductDto[]>(
-        `${window.ENV.PRODUCT_API_URL}/product?page=${pageParam}`,
+      const params = new URLSearchParams();
+      params.set("page", String(pageParam));
+      params.set("limit", String(size));
+      if (category) params.set("category", category);
+      if (search) params.set("search", search);
+
+      const baseUrl =
+        typeof window !== "undefined"
+          ? window.ENV.PRODUCT_API_URL
+          : "http://localhost:8083";
+
+      const response = await axios.get<ProductsResponse>(
+        `${baseUrl}/product?${params.toString()}`,
       );
       return response.data;
     },
-    enabled: true,
+    enabled: typeof window !== "undefined",
     refetchOnWindowFocus: true,
     retry: (failureCount) => failureCount <= MAX_RETRY_ATTEMPTS,
-    getNextPageParam: (lastPage: ProductDto[], pages: ProductDto[][]) => {
-      if (lastPage.length === size) {
+    getNextPageParam: (lastPage, pages) => {
+      const loadedCount = pages.reduce((sum, p) => sum + p.products.length, 0);
+      if (loadedCount < lastPage.total) {
         return pages.length + 1;
       }
       return undefined;
@@ -30,7 +53,7 @@ export const useProducts = ({
     initialPageParam: 1,
     ...(!!initialData?.length && {
       initialData: {
-        pages: [initialData],
+        pages: [{ products: initialData, total: initialData.length }],
         pageParams: [null],
       },
     }),

@@ -1,253 +1,504 @@
-import {
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-  Radio,
-  RadioGroup,
-  Tab,
-  TabGroup,
-  TabList,
-  TabPanel,
-  TabPanels,
-} from "@headlessui/react";
-import { StarIcon } from "@heroicons/react/20/solid";
-import { HeartIcon, MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { classnames } from "@projectx/ui";
+import { Badge, Breadcrumb } from "@projectx/ui";
+import { motion } from "framer-motion";
+import { Minus, Package, Plus, ShoppingCart, Star, Truck } from "lucide-react";
 import { useState } from "react";
 
+// ---------------------------------------------------------------------------
+// Mock data (will be replaced by loader data once backend wires up)
+// ---------------------------------------------------------------------------
+
 const product = {
-  name: "Zip Tote Basket",
-  price: "$140",
+  id: 1,
+  name: "Wireless Noise-Cancelling Headphones Pro",
+  brand: "SoundMax",
+  price: 79.99,
+  originalPrice: 129.99,
   rating: 4,
-  images: [
+  reviews: 2341,
+  inStock: true,
+  freeShipping: true,
+  description:
+    "Experience premium audio quality with our flagship wireless headphones. Featuring active noise cancellation technology, 30-hour battery life, and ultra-comfortable memory foam ear cushions. Perfect for travel, work, and everyday listening.",
+  features: [
+    "Active Noise Cancellation (ANC)",
+    "30-hour battery life",
+    "Bluetooth 5.0 connectivity",
+    "Memory foam ear cushions",
+    "Built-in microphone for calls",
+    "Foldable design for easy storage",
+    "USB-C fast charging (15 min = 3 hrs playback)",
+  ],
+  shippingInfo:
+    "Free standard shipping on orders over $35. Estimated delivery 3-5 business days. Express shipping available at checkout.",
+  reviewList: [
     {
       id: 1,
-      name: "Angled view",
-      src: "https://tailwindui.com/plus/img/ecommerce-images/product-page-03-product-01.jpg",
-      alt: "Angled front view with bag zipped and handles upright.",
+      author: "Alex M.",
+      rating: 5,
+      date: "Jan 15, 2025",
+      comment:
+        "Absolutely incredible sound quality. The noise cancellation is top-notch and the battery lasts all day.",
     },
-    // More images...
-  ],
-  colors: [
     {
-      name: "Washed Black",
-      bgColor: "bg-gray-700",
-      selectedColor: "ring-gray-700",
+      id: 2,
+      author: "Sarah K.",
+      rating: 4,
+      date: "Jan 10, 2025",
+      comment:
+        "Great headphones! Very comfortable for long sessions. Slight connectivity issues initially but resolved after firmware update.",
     },
-    { name: "White", bgColor: "bg-white", selectedColor: "ring-gray-400" },
     {
-      name: "Washed Gray",
-      bgColor: "bg-gray-500",
-      selectedColor: "ring-gray-500",
+      id: 3,
+      author: "James R.",
+      rating: 4,
+      date: "Dec 28, 2024",
+      comment:
+        "Excellent value for money. The build quality feels premium and the sound is crisp and clear.",
     },
-  ],
-  description: `
-    <p>The Zip Tote Basket is the perfect midpoint between shopping tote and comfy backpack. With convertible straps, you can hand carry, should sling, or backpack this convenient and spacious bag. The zip top and durable canvas construction keeps your goods protected for all-day use.</p>
-  `,
-  details: [
-    {
-      name: "Features",
-      items: [
-        "Multiple strap configurations",
-        "Spacious interior with top zip",
-        "Leather handle and tabs",
-        "Interior dividers",
-        "Stainless strap loops",
-        "Double stitched construction",
-        "Water-resistant",
-      ],
-    },
-    // More sections...
   ],
 };
 
-export function ProductDetail() {
-  const [selectedColor, setSelectedColor] = useState(product.colors[0]);
+const discountPercent = Math.round(
+  ((product.originalPrice - product.price) / product.originalPrice) * 100,
+);
 
+// ---------------------------------------------------------------------------
+// Star rating component
+// ---------------------------------------------------------------------------
+
+function StarRating({
+  rating,
+  max = 5,
+  size = 16,
+}: {
+  rating: number;
+  max?: number;
+  size?: number;
+}) {
   return (
-    <div className="bg-white dark:bg-gray-900">
-      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-        <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
-          {/* Image gallery */}
-          <TabGroup className="flex flex-col-reverse">
-            {/* Image selector */}
-            <div className="mx-auto mt-6 hidden w-full max-w-2xl sm:block lg:max-w-none">
-              <TabList className="grid grid-cols-4 gap-6">
-                {product.images.map((image) => (
-                  <Tab
-                    key={image.id}
-                    className="group relative flex h-24 cursor-pointer items-center justify-center rounded-md bg-white font-medium text-gray-900 text-sm uppercase hover:bg-gray-50 focus:outline-none focus:ring focus:ring-opacity-50 focus:ring-offset-4 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
-                  >
-                    <span className="sr-only">{image.name}</span>
-                    <span className="absolute inset-0 overflow-hidden rounded-md">
-                      <img
-                        alt=""
-                        src={image.src}
-                        className="h-full w-full object-cover object-center"
-                      />
-                    </span>
-                    <span
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-0 rounded-md ring-2 ring-transparent ring-offset-2 group-data-[selected]:ring-indigo-500"
-                    />
-                  </Tab>
-                ))}
-              </TabList>
-            </div>
+    <div className="flex items-center gap-0.5">
+      {Array.from({ length: max }, (_, i) => {
+        const filled = i < rating;
+        return (
+          <Star
+            key={`star-${filled ? "filled" : "empty"}-${i + 1}`}
+            size={size}
+            className={
+              filled
+                ? "fill-[var(--rating)] text-[var(--rating)]"
+                : "fill-[var(--border)] text-[var(--border)]"
+            }
+          />
+        );
+      })}
+    </div>
+  );
+}
 
-            <TabPanels className="aspect-h-1 aspect-w-1 w-full">
-              {product.images.map((image) => (
-                <TabPanel key={image.id}>
-                  <img
-                    alt={image.alt}
-                    src={image.src}
-                    className="h-full w-full object-cover object-center sm:rounded-lg"
+// ---------------------------------------------------------------------------
+// Tab content components
+// ---------------------------------------------------------------------------
+
+function DescriptionTab() {
+  return (
+    <div className="space-y-4">
+      <p className="text-[var(--muted-foreground)] leading-relaxed">
+        {product.description}
+      </p>
+      <div>
+        <h3 className="mb-3 font-semibold text-[var(--foreground)]">
+          Key Features
+        </h3>
+        <ul className="space-y-2">
+          {product.features.map((feature) => (
+            <li
+              key={feature}
+              className="flex items-start gap-2 text-[var(--muted-foreground)] text-sm"
+            >
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--primary)]" />
+              {feature}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function ReviewsTab() {
+  return (
+    <div className="space-y-5">
+      {/* Summary */}
+      <div className="flex items-center gap-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
+        <div className="text-center">
+          <p className="font-bold text-4xl text-[var(--foreground)]">
+            {product.rating}.0
+          </p>
+          <StarRating rating={product.rating} size={14} />
+          <p className="mt-1 text-[var(--muted-foreground)] text-xs">
+            {product.reviews.toLocaleString()} reviews
+          </p>
+        </div>
+        <div className="flex-1">
+          {[5, 4, 3, 2, 1].map((star) => {
+            const pct =
+              star === 5
+                ? 60
+                : star === 4
+                  ? 25
+                  : star === 3
+                    ? 10
+                    : star === 2
+                      ? 3
+                      : 2;
+            return (
+              <div key={star} className="mb-1 flex items-center gap-2 text-xs">
+                <span className="w-3 text-right text-[var(--muted-foreground)]">
+                  {star}
+                </span>
+                <Star
+                  size={11}
+                  className="fill-[var(--rating)] text-[var(--rating)]"
+                />
+                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[var(--border)]">
+                  <div
+                    className="h-full rounded-full bg-[var(--rating)]"
+                    style={{ width: `${pct}%` }}
                   />
-                </TabPanel>
-              ))}
-            </TabPanels>
-          </TabGroup>
-
-          {/* Product info */}
-          <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
-            <h1 className="font-bold text-3xl text-gray-900 tracking-tight dark:text-gray-100">
-              {product.name}
-            </h1>
-
-            <div className="mt-3">
-              <p className="text-3xl text-gray-900 tracking-tight dark:text-gray-100">
-                {product.price}
-              </p>
-            </div>
-
-            {/* Reviews */}
-            <div className="mt-3">
-              <h3 className="sr-only">Reviews</h3>
-              <div className="flex items-center">
-                <div className="flex items-center">
-                  {[0, 1, 2, 3, 4].map((rating) => (
-                    <StarIcon
-                      key={rating}
-                      aria-hidden="true"
-                      className={classnames(
-                        product.rating > rating
-                          ? "text-indigo-500 dark:text-indigo-400"
-                          : "text-gray-300 dark:text-gray-600",
-                        "h-5 w-5 flex-shrink-0",
-                      )}
-                    />
-                  ))}
                 </div>
-                <p className="sr-only">{product.rating} out of 5 stars</p>
+                <span className="w-6 text-[var(--muted-foreground)]">
+                  {pct}%
+                </span>
               </div>
-            </div>
+            );
+          })}
+        </div>
+      </div>
 
-            <div className="mt-6">
-              <h3 className="sr-only">Description</h3>
-
-              <div
-                // biome-ignore lint/security/noDangerouslySetInnerHtml: Safe to use, the info is comming from our API
-                dangerouslySetInnerHTML={{ __html: product.description }}
-                className="prose dark:prose-dark space-y-6 text-base text-gray-700 dark:text-gray-300"
-              />
-            </div>
-
-            <form className="mt-6">
-              {/* Colors */}
-              <div>
-                <h3 className="font-medium text-gray-600 text-sm dark:text-gray-400">
-                  Color
-                </h3>
-
-                <fieldset aria-label="Choose a color" className="mt-2">
-                  <RadioGroup
-                    value={selectedColor}
-                    onChange={setSelectedColor}
-                    className="flex items-center space-x-3"
-                  >
-                    {product.colors.map((color) => (
-                      <Radio
-                        key={color.name}
-                        value={color}
-                        aria-label={color.name}
-                        className={classnames(
-                          color.selectedColor,
-                          "relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none data-[focus]:data-[checked]:ring data-[focus]:data-[checked]:ring-offset-1 data-[checked]:ring-2 dark:data-[focus]:data-[checked]:ring-offset-gray-800 dark:data-[checked]:ring-indigo-400",
-                        )}
-                      >
-                        <span
-                          aria-hidden="true"
-                          className={classnames(
-                            color.bgColor,
-                            "h-8 w-8 rounded-full border border-black border-opacity-10 dark:border-opacity-20",
-                          )}
-                        />
-                      </Radio>
-                    ))}
-                  </RadioGroup>
-                </fieldset>
-              </div>
-
-              <div className="mt-10 flex">
-                <button
-                  type="submit"
-                  className="flex max-w-xs flex-1 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 font-medium text-base text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 sm:w-full dark:bg-indigo-700 dark:focus:ring-offset-gray-800 dark:hover:bg-indigo-800"
-                >
-                  Add to bag
-                </button>
-
-                <button
-                  type="button"
-                  className="ml-4 flex items-center justify-center rounded-md px-3 py-3 text-gray-400 hover:bg-gray-100 hover:text-gray-500 dark:text-gray-500 dark:hover:bg-gray-700 dark:hover:text-gray-400"
-                >
-                  <HeartIcon
-                    aria-hidden="true"
-                    className="h-6 w-6 flex-shrink-0"
-                  />
-                  <span className="sr-only">Add to favorites</span>
-                </button>
-              </div>
-            </form>
-
-            <section aria-labelledby="details-heading" className="mt-12">
-              <h2 id="details-heading" className="sr-only">
-                Additional details
-              </h2>
-
-              <div className="divide-y divide-gray-200 border-gray-200 border-t dark:divide-gray-700 dark:border-gray-700">
-                {product.details.map((detail) => (
-                  <Disclosure key={detail.name} as="div" className="py-6">
-                    <h3>
-                      <DisclosureButton className="group relative flex w-full items-center justify-between py-6 text-left text-gray-900 hover:text-indigo-600 focus:outline-none dark:text-gray-100 dark:hover:text-indigo-400">
-                        <span className="font-medium text-sm">
-                          {detail.name}
-                        </span>
-                        <span className="ml-6 flex items-center">
-                          <PlusIcon
-                            aria-hidden="true"
-                            className="block h-6 w-6 text-gray-400 group-hover:text-gray-500 group-data-[open]:hidden dark:text-gray-500 dark:group-hover:text-gray-400"
-                          />
-                          <MinusIcon
-                            aria-hidden="true"
-                            className="hidden h-6 w-6 text-indigo-400 group-hover:text-indigo-500 group-data-[open]:block dark:text-indigo-500 dark:group-hover:text-indigo-400"
-                          />
-                        </span>
-                      </DisclosureButton>
-                    </h3>
-                    <DisclosurePanel className="prose prose-sm pb-6 text-gray-700 dark:text-gray-300">
-                      <ul>
-                        {detail.items.map((item) => (
-                          <li key={item}>{item}</li>
-                        ))}
-                      </ul>
-                    </DisclosurePanel>
-                  </Disclosure>
-                ))}
-              </div>
-            </section>
+      {/* Review list */}
+      {product.reviewList.map((review) => (
+        <div
+          key={review.id}
+          className="border-[var(--border)] border-b pb-4 last:border-0"
+        >
+          <div className="mb-1 flex items-center justify-between">
+            <span className="font-medium text-[var(--foreground)] text-sm">
+              {review.author}
+            </span>
+            <span className="text-[var(--muted-foreground)] text-xs">
+              {review.date}
+            </span>
           </div>
+          <StarRating rating={review.rating} size={12} />
+          <p className="mt-2 text-[var(--muted-foreground)] text-sm">
+            {review.comment}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ShippingTab() {
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
+        <Truck
+          size={20}
+          className="mt-0.5 shrink-0 text-[var(--primary)]"
+          aria-hidden="true"
+        />
+        <div>
+          <p className="font-medium text-[var(--foreground)] text-sm">
+            Free Standard Shipping
+          </p>
+          <p className="mt-1 text-[var(--muted-foreground)] text-sm">
+            {product.shippingInfo}
+          </p>
+        </div>
+      </div>
+      <div className="flex gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
+        <Package
+          size={20}
+          className="mt-0.5 shrink-0 text-[var(--primary)]"
+          aria-hidden="true"
+        />
+        <div>
+          <p className="font-medium text-[var(--foreground)] text-sm">
+            Easy Returns
+          </p>
+          <p className="mt-1 text-[var(--muted-foreground)] text-sm">
+            30-day hassle-free return policy. Return or exchange your product
+            within 30 days of delivery for any reason.
+          </p>
         </div>
       </div>
     </div>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Main component
+// ---------------------------------------------------------------------------
+
+const TABS = ["Description", "Reviews", "Shipping"] as const;
+type TabName = (typeof TABS)[number];
+
+export function ProductDetail() {
+  const [quantity, setQuantity] = useState(1);
+  const [activeTab, setActiveTab] = useState<TabName>("Description");
+
+  function increment() {
+    setQuantity((q) => q + 1);
+  }
+
+  function decrement() {
+    setQuantity((q) => Math.max(1, q - 1));
+  }
+
+  return (
+    <div className="min-h-screen bg-[var(--background)]">
+      <div className="mx-auto max-w-6xl px-4 py-6">
+        {/* Breadcrumb */}
+        <Breadcrumb
+          className="mb-6"
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Electronics", href: "/marketplace?category=Electronics" },
+            { label: product.name },
+          ]}
+        />
+
+        {/* Product layout */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+          {/* ---------------------------------------------------------------- */}
+          {/* Image area                                                        */}
+          {/* ---------------------------------------------------------------- */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            {/* Main image placeholder */}
+            <div className="flex aspect-square items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30">
+              <div className="flex flex-col items-center gap-3 text-[var(--muted-foreground)]">
+                <div
+                  className="flex h-28 w-28 items-center justify-center rounded-full"
+                  style={{ background: "var(--accent)" }}
+                >
+                  <ShoppingCart
+                    size={56}
+                    className="text-[var(--primary)]"
+                    aria-hidden="true"
+                  />
+                </div>
+                <span className="text-sm">Product image</span>
+              </div>
+            </div>
+
+            {/* Thumbnail row */}
+            <div className="mt-3 grid grid-cols-4 gap-2">
+              {[1, 2, 3, 4].map((thumb) => (
+                <button
+                  key={thumb}
+                  type="button"
+                  className="flex aspect-square cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-[var(--border)] bg-[var(--surface)] transition-colors hover:border-[var(--primary)] focus:outline-none"
+                  aria-label={`View image ${thumb}`}
+                >
+                  <ShoppingCart
+                    size={20}
+                    className="text-[var(--muted-foreground)]"
+                    aria-hidden="true"
+                  />
+                </button>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* ---------------------------------------------------------------- */}
+          {/* Product info                                                      */}
+          {/* ---------------------------------------------------------------- */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="flex flex-col gap-4"
+          >
+            {/* Status badges */}
+            <div className="flex flex-wrap gap-2">
+              {product.inStock && <Badge variant="success" label="In Stock" />}
+              <Badge variant="info" label="Best Seller" />
+            </div>
+
+            {/* Product name */}
+            <div>
+              <p className="mb-1 text-[var(--muted-foreground)] text-sm">
+                {product.brand}
+              </p>
+              <h1 className="font-bold text-2xl text-[var(--foreground)] leading-snug sm:text-3xl">
+                {product.name}
+              </h1>
+            </div>
+
+            {/* Rating */}
+            <div className="flex items-center gap-2">
+              <StarRating rating={product.rating} size={16} />
+              <span className="font-medium text-[var(--primary)] text-sm">
+                {product.rating}.0
+              </span>
+              <span className="text-[var(--muted-foreground)] text-sm">
+                ({product.reviews.toLocaleString()} reviews)
+              </span>
+            </div>
+
+            {/* Price */}
+            <div className="flex flex-wrap items-baseline gap-3">
+              <span className="font-bold text-3xl text-[var(--foreground)]">
+                ${product.price.toFixed(2)}
+              </span>
+              <span className="text-[var(--muted-foreground)] text-lg line-through">
+                ${product.originalPrice.toFixed(2)}
+              </span>
+              <span className="rounded-full bg-[var(--success-muted)] px-2.5 py-1 font-semibold text-[var(--success)] text-sm">
+                {discountPercent}% OFF
+              </span>
+            </div>
+
+            {/* Free shipping indicator */}
+            {product.freeShipping && (
+              <div className="flex items-center gap-2 text-[var(--success)] text-sm">
+                <Truck size={16} aria-hidden="true" />
+                <span className="font-medium">Free Shipping</span>
+              </div>
+            )}
+
+            {/* Description excerpt */}
+            <p className="text-[var(--muted-foreground)] text-sm leading-relaxed">
+              {product.description.slice(0, 140)}…
+            </p>
+
+            {/* Divider */}
+            <hr className="border-[var(--border)]" />
+
+            {/* Quantity selector */}
+            <div className="flex items-center gap-4">
+              <span className="font-medium text-[var(--foreground)] text-sm">
+                Quantity
+              </span>
+              <div className="flex items-center rounded-xl border border-[var(--border)] bg-[var(--card)]">
+                <button
+                  type="button"
+                  onClick={decrement}
+                  disabled={quantity <= 1}
+                  className="flex h-10 w-10 items-center justify-center rounded-l-xl text-[var(--foreground)] transition-colors hover:bg-[var(--surface)] disabled:cursor-not-allowed disabled:opacity-40"
+                  aria-label="Decrease quantity"
+                >
+                  <Minus size={16} />
+                </button>
+                <span className="w-12 text-center font-semibold text-[var(--foreground)]">
+                  {quantity}
+                </span>
+                <button
+                  type="button"
+                  onClick={increment}
+                  className="flex h-10 w-10 items-center justify-center rounded-r-xl text-[var(--foreground)] transition-colors hover:bg-[var(--surface)]"
+                  aria-label="Increase quantity"
+                >
+                  <Plus size={16} />
+                </button>
+              </div>
+            </div>
+
+            {/* Add to cart — desktop */}
+            <div className="hidden sm:flex sm:gap-3">
+              <button
+                type="button"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--primary)] px-6 py-3 font-semibold text-white shadow transition-transform hover:scale-[1.02] hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
+              >
+                <ShoppingCart size={18} aria-hidden="true" />
+                Add to Cart
+              </button>
+              <button
+                type="button"
+                className="flex items-center justify-center rounded-xl border-2 border-[var(--primary)] px-6 py-3 font-semibold text-[var(--primary)] transition-transform hover:scale-[1.02] hover:bg-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
+              >
+                Buy Now
+              </button>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* ------------------------------------------------------------------ */}
+        {/* Tabs section                                                        */}
+        {/* ------------------------------------------------------------------ */}
+        <motion.div
+          className="mt-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+        >
+          {/* Tab list */}
+          <div className="flex border-[var(--border)] border-b">
+            {TABS.map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
+                className={`relative px-5 py-3 font-medium text-sm transition-colors focus:outline-none ${
+                  activeTab === tab
+                    ? "text-[var(--primary)]"
+                    : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                }`}
+              >
+                {tab}
+                {activeTab === tab && (
+                  <motion.span
+                    layoutId="tab-underline"
+                    className="absolute right-0 bottom-0 left-0 h-0.5 rounded-full bg-[var(--primary)]"
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Tab content */}
+          <div className="py-6">
+            {activeTab === "Description" && <DescriptionTab />}
+            {activeTab === "Reviews" && <ReviewsTab />}
+            {activeTab === "Shipping" && <ShippingTab />}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* -------------------------------------------------------------------- */}
+      {/* Sticky bottom bar — mobile only                                       */}
+      {/* -------------------------------------------------------------------- */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-[var(--border)] border-t bg-[var(--card)] px-4 py-3 shadow-lg sm:hidden">
+        <div className="flex items-center gap-3">
+          <div className="flex flex-col">
+            <span className="font-bold text-[var(--foreground)] text-lg">
+              ${product.price.toFixed(2)}
+            </span>
+            {product.freeShipping && (
+              <span className="text-[var(--success)] text-xs">
+                Free Shipping
+              </span>
+            )}
+          </div>
+          <button
+            type="button"
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--primary)] py-3 font-semibold text-sm text-white shadow transition-opacity hover:opacity-90 active:scale-95"
+          >
+            <ShoppingCart size={16} aria-hidden="true" />
+            Add to Cart
+          </button>
+        </div>
+      </div>
+
+      {/* Bottom padding so content doesn't hide behind sticky bar on mobile */}
+      <div className="h-20 sm:hidden" aria-hidden="true" />
+    </div>
+  );
+}
+
+export default ProductDetail;

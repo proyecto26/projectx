@@ -1,0 +1,43 @@
+@import "@xyflow/react/dist/style.css";
+
+.react-flow {
+  background: #0f1117 !important;
+}
+.react-flow__node {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+    sans-serif;
+}
+.react-flow__controls {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+.react-flow__controls button {
+  background: #1e2030;
+  color: #c8cad8;
+  border: 1px solid #2e3148;
+  border-radius: 6px;
+  margin: 2px;
+}
+.react-flow__controls button:hover {
+  background: #262838;
+}
+.react-flow__controls button svg {
+  fill: #c8cad8;
+}
+.react-flow__minimap {
+  background: #181a24 !important;
+  border: 1px solid #2e3148;
+  border-radius: 8px;
+}
+.react-flow__edge-path {
+  stroke-width: 2;
+}
+.react-flow__handle {
+  width: 8px;
+  height: 8px;
+  border: 2px solid #2e3148;
+}
+.react-flow__attribution {
+  display: none;
+}

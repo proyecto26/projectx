@@ -28,8 +28,8 @@ export class PaymentRepositoryService {
       },
     });
 
-    const plainPayment = JSON.parse(JSON.stringify(payment));
-    return plainToInstance(PaymentDto, plainPayment, {
+    // JSON.parse(JSON.stringify()) converts Prisma Decimal to string via toJSON()
+    return plainToInstance(PaymentDto, JSON.parse(JSON.stringify(payment)), {
       excludeExtraneousValues: true,
     });
   }
@@ -42,8 +42,8 @@ export class PaymentRepositoryService {
       where: { orderId },
       data: { status },
     });
-    const plainPayment = JSON.parse(JSON.stringify(payment));
-    return plainToInstance(PaymentDto, plainPayment, {
+    // JSON.parse(JSON.stringify()) converts Prisma Decimal to string via toJSON()
+    return plainToInstance(PaymentDto, JSON.parse(JSON.stringify(payment)), {
       excludeExtraneousValues: true,
     });
   }

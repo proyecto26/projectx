@@ -31,14 +31,20 @@ export function ShoppingCartDrawer() {
         onClick={toggleDrawer}
       >
         <ShoppingCartIcon className="h-6 w-6" />
-        {totalItems > 0 && (
-          <span className="badge badge-sm badge-primary absolute top-0 right-0">
-            {totalItems}
-          </span>
-        )}
+        {/* Cart state lives in localStorage, so the badge can only render after hydration */}
+        <ClientOnly>
+          {() =>
+            totalItems > 0 && (
+              <span className="absolute -top-1 -right-1 flex aspect-square h-5 min-w-5 items-center justify-center rounded-full bg-[var(--primary)] p-0 font-bold text-[10px] text-white leading-none">
+                {totalItems}
+              </span>
+            )
+          }
+        </ClientOnly>
       </Button>
 
-      <ClientOnly fallback={sharedContent}>
+      {/* No SSR fallback: cart items come from localStorage and would not match on hydration */}
+      <ClientOnly>
         {() => createPortal(sharedContent, document.body)}
       </ClientOnly>
     </>

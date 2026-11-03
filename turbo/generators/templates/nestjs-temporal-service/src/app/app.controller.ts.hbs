@@ -1,0 +1,65 @@
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  Post,
+} from "@nestjs/common";
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
+
+import { AppService } from "./app.service";
+
+@ApiTags("{{pascalCase serviceName}}")
+@Controller()
+export class AppController {
+  constructor(@Inject(AppService) private readonly appService: AppService) {}
+
+  @ApiOperation({
+    summary: "Health check",
+    description: "Returns a simple message to verify the service is running",
+  })
+  @ApiOkResponse({
+    description: "Service is healthy",
+    schema: {
+      type: "object",
+      properties: {
+        message: { type: "string", example: "{{pascalCase serviceName}} service is running!" },
+      },
+    },
+  })
+  @Get()
+  getHello(): { message: string } {
+    return this.appService.getHello();
+  }
+
+  @ApiOperation({
+    summary: "Start {{workflowName}} workflow",
+    description: "Initiates the {{workflowName}} workflow process",
+  })
+  @ApiCreatedResponse({
+    description: "Workflow started successfully",
+    schema: {
+      type: "object",
+      properties: {
+        message: { type: "string" },
+        workflowId: { type: "string" },
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: "Failed to start workflow",
+  })
+  @Post("{{workflowName}}")
+  @HttpCode(HttpStatus.CREATED)
+  start{{pascalCase workflowName}}(@Body() body: Record<string, unknown>) {
+    return this.appService.start{{pascalCase workflowName}}Workflow(body);
+  }
+}

@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import type React from "react";
 import type { PropsWithChildren } from "react";
 import { classnames } from "../../utils";
-import Footer from "../footer/Footer";
+import Footer, { type FooterSection } from "../footer/Footer";
 import Header from "../header/Header";
 import FacebookIcon from "../icons/Facebook";
 import GitHubIcon from "../icons/GitHub";
@@ -11,22 +11,78 @@ import type { NavigationSection } from "../navigation";
 
 const sections: NavigationSection[] = [
   {
-    title: "Home",
+    title: "Shop",
     links: [
       {
         title: "Home",
         href: "/",
       },
+      {
+        title: "Marketplace",
+        href: "/marketplace",
+      },
+      {
+        title: "Categories",
+        href: "/marketplace?tab=categories",
+      },
+      {
+        title: "Deals",
+        href: "/marketplace?tab=deals",
+      },
+      {
+        title: "New Arrivals",
+        href: "/marketplace?tab=new",
+      },
     ],
   },
   {
-    title: "About",
+    title: "Account",
     links: [
       {
-        title: "About",
-        href: "/about",
+        title: "Profile",
+        href: "/profile",
+      },
+      {
+        title: "Admin Dashboard",
+        href: "/admin",
+      },
+      {
+        title: "Admin Orders",
+        href: "/admin/orders",
       },
     ],
+  },
+  {
+    title: "Legal",
+    links: [
+      {
+        title: "Terms of Use",
+        href: "/terms",
+      },
+      {
+        title: "Privacy Policy",
+        href: "/privacy",
+      },
+    ],
+  },
+];
+
+const desktopLinks: NavigationSection["links"] = [
+  {
+    title: "Marketplace",
+    href: "/marketplace",
+  },
+  {
+    title: "Categories",
+    href: "/marketplace?tab=categories",
+  },
+  {
+    title: "Deals",
+    href: "/marketplace?tab=deals",
+  },
+  {
+    title: "New Arrivals",
+    href: "/marketplace?tab=new",
   },
 ];
 
@@ -45,6 +101,33 @@ const socialLinks: NavigationSection["links"] = [
     title: "ConcertX on GitHub",
     href: "https://www.github.com/proyecto26",
     icon: GitHubIcon,
+  },
+];
+
+const footerSections: FooterSection[] = [
+  {
+    title: "Shop",
+    links: [
+      { title: "Marketplace", href: "/marketplace" },
+      { title: "Categories", href: "/marketplace?tab=categories" },
+      { title: "Today's Deals", href: "/marketplace?tab=deals" },
+      { title: "New Arrivals", href: "/marketplace?tab=new" },
+    ],
+  },
+  {
+    title: "Account",
+    links: [
+      { title: "Your Profile", href: "/profile" },
+      { title: "Admin Dashboard", href: "/admin" },
+      { title: "Login", href: "/login" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { title: "Privacy Policy", href: "/privacy" },
+      { title: "Terms of Service", href: "/terms" },
+    ],
   },
 ];
 
@@ -77,6 +160,7 @@ export const Layout: React.FC<LayoutProps> = ({
       <Header
         title={title}
         sections={sections}
+        desktopLinks={desktopLinks}
         logoImgSrc="/logo.svg"
         isAuthenticated={isAuthenticated}
         email={email}
@@ -89,7 +173,7 @@ export const Layout: React.FC<LayoutProps> = ({
       >
         {children}
       </main>
-      <Footer socialLinks={socialLinks} />
+      <Footer socialLinks={socialLinks} footerSections={footerSections} />
     </motion.section>
   );
 };

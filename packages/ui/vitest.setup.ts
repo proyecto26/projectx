@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom/vitest";
 import { vi } from "vitest";
 
-// Use real react-router/react-router-dom implementations in tests
+// Use real react-router (and react-router/dom) implementations in tests
 
 // Mock cart library used by drawer/checkout components
 vi.mock("react-use-cart", () => ({

@@ -1,12 +1,15 @@
 {
   "compilerOptions": {
     "composite": true,
+    "outDir": "dist",
+    "rootDir": "src",
     "skipLibCheck": true,
     "jsx": "react-jsx",
     "lib": ["ES2021", "DOM"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "target": "ES2021"
+    "target": "ES2021",
+    "types": ["react", "react-dom"]
   },
   "include": ["src/**/*"],
   "exclude": [

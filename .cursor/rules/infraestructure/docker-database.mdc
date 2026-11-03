@@ -13,13 +13,13 @@ alwaysApply: false
 ### Image Version (DO NOT CHANGE)
 ```yaml
 db:
-  image: postgis/postgis:17-3.5
+  image: postgis/postgis:17-3.6
 ```
 **Why PostGIS?** Provides PostgreSQL with geospatial extensions (PostGIS, pg_trgm, etc.)
 ### Service Definition
 ```yaml
 db:
-  image: postgis/postgis:17-3.5
+  image: postgis/postgis:17-3.6
   environment:
     - POSTGRES_USER=${POSTGRES_USER}
     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -75,13 +75,13 @@ postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRE
 ### Image Version (DO NOT CHANGE)
 ```yaml
 elasticsearch:
-  image: elasticsearch:7.17.27
+  image: elasticsearch:7.17.28
 ```
-**Why 7.17.27?** Compatible with Temporal Server 1.29.2
+**Why 7.17.28?** Compatible with Temporal Server 1.32.1
 ### Service Definition
 ```yaml
 elasticsearch:
-  image: elasticsearch:7.17.27
+  image: elasticsearch:7.17.28
   environment:
     - discovery.type=single-node
     - xpack.security.enabled=false

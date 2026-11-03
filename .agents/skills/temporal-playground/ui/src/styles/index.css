@@ -1,0 +1,384 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0f1117;
+  --color-bg2: #181a24;
+  --color-bg3: #1e2030;
+  --color-bg4: #262838;
+  --color-border: #2e3148;
+  --color-text: #c8cad8;
+  --color-text-dim: #8890b0;
+  --color-text-bright: #e8eafc;
+  --color-blue: #7aa2f7;
+  --color-green: #9ece6a;
+  --color-red: #f7768e;
+  --color-orange: #ff9e64;
+  --color-purple: #bb9af7;
+  --color-cyan: #7dcfff;
+  --color-yellow: #e0af68;
+  --color-pink: #ff007c;
+  --color-teal: #2ac3de;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+:focus-visible {
+  @apply outline-2 outline-blue outline-offset-2 rounded;
+}
+
+.sr-only {
+  @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
+  clip: rect(0, 0, 0, 0);
+}
+
+/* Section titles */
+.section-title {
+  @apply text-[11px] uppercase tracking-widest text-text-dim mb-2 font-semibold;
+}
+
+/* Node items (draggable in palette) */
+.node-list {
+  @apply flex flex-col gap-1;
+}
+.node-item {
+  @apply flex items-center gap-2 px-2.5 py-1.5 bg-bg3 border border-border rounded-md cursor-grab text-xs text-text transition-all duration-150 select-none;
+}
+.node-item:hover {
+  @apply border-blue text-text-bright;
+}
+.node-item:active {
+  @apply cursor-grabbing;
+}
+.node-dot {
+  @apply w-2.5 h-2.5 rounded-sm shrink-0;
+}
+.node-item .desc {
+  @apply text-[10px] text-text-dim ml-auto;
+}
+
+/* Preset buttons */
+.presets {
+  @apply flex flex-col gap-1;
+}
+.preset-btn {
+  @apply bg-bg3 border border-border text-text px-2.5 py-1.5 rounded-md cursor-pointer text-xs transition-all duration-150 text-left w-full;
+}
+.preset-btn:hover {
+  @apply border-blue text-blue;
+}
+.preset-btn.active {
+  @apply bg-blue/15 border-blue text-blue;
+}
+.preset-desc {
+  @apply text-[10px] text-text-dim mt-0.5;
+}
+
+/* New Workflow button */
+.new-wf-btn {
+  @apply flex items-center justify-center gap-1.5 w-full py-2 px-2.5 bg-green/12 border border-green text-green rounded-md cursor-pointer text-xs font-semibold transition-all duration-150;
+}
+.new-wf-btn:hover {
+  @apply bg-green/22;
+}
+
+/* Existing workflows - project groups */
+.existing-wf {
+  @apply flex flex-col gap-2;
+}
+.wf-project-group {
+  @apply flex flex-col gap-1;
+}
+.wf-project-header {
+  @apply flex items-center gap-1.5 py-1 px-0.5 cursor-pointer select-none border-0 bg-transparent w-full text-inherit;
+  font: inherit;
+}
+.wf-project-header:hover .wf-project-name {
+  @apply text-text-bright;
+}
+.wf-project-chevron {
+  @apply text-[10px] text-text-dim transition-transform duration-150 w-3 shrink-0;
+}
+.wf-project-chevron.collapsed {
+  transform: rotate(-90deg);
+}
+.wf-project-icon {
+  @apply w-[18px] h-[18px] rounded flex items-center justify-center text-[9px] font-bold text-white shrink-0;
+}
+.wf-project-icon.order {
+  @apply bg-orange;
+}
+.wf-project-icon.auth {
+  @apply bg-purple;
+}
+.wf-project-icon.product {
+  @apply bg-cyan;
+}
+.wf-project-name {
+  @apply text-[11px] text-text font-semibold capitalize truncate;
+}
+.wf-project-count {
+  @apply text-[10px] text-text-dim ml-auto shrink-0;
+}
+.wf-project-items {
+  @apply flex flex-col gap-[3px] pl-1 overflow-hidden;
+}
+.wf-project-items.collapsed {
+  @apply hidden;
+}
+.existing-wf-item {
+  @apply bg-bg3 border border-border rounded-md py-2 px-2.5 cursor-pointer transition-all duration-150 text-left w-full min-w-0;
+  font: inherit;
+  color: inherit;
+}
+.existing-wf-item:hover {
+  @apply border-green;
+}
+.existing-wf-item.active {
+  @apply bg-green/12 border-green;
+}
+.existing-wf-name {
+  @apply text-xs text-text-bright font-medium truncate;
+}
+.existing-wf-path {
+  @apply text-[10px] text-text-dim mt-0.5 font-mono truncate;
+  direction: rtl;
+  text-align: left;
+}
+.existing-wf-meta {
+  @apply text-[10px] text-text-dim mt-[3px] flex gap-2 flex-wrap;
+}
+.existing-wf-meta span {
+  @apply flex items-center gap-[3px];
+}
+
+/* Toolbar */
+.toolbar-btn {
+  @apply bg-bg3 border border-border text-text py-1 px-3 rounded-md cursor-pointer text-[11px] transition-all duration-150;
+}
+.toolbar-btn:hover {
+  @apply border-blue text-blue;
+}
+
+/* Chat messages */
+.msg {
+  @apply py-2 px-3 rounded-lg text-xs leading-relaxed max-w-[95%] whitespace-pre-wrap break-words;
+}
+.msg.system {
+  @apply bg-bg3 text-text-dim text-[11px] self-center text-center rounded-xl py-1.5 px-3.5;
+}
+.msg.user {
+  @apply bg-blue/15 text-text-bright self-end;
+  border-bottom-right-radius: 2px;
+}
+.msg.claude {
+  @apply bg-bg3 text-text self-start;
+  border-bottom-left-radius: 2px;
+}
+.msg .msg-label {
+  @apply text-[10px] text-text-dim mb-1 font-semibold uppercase tracking-wider;
+}
+
+/* Chat buttons */
+.chat-btn {
+  @apply flex-1 py-1.5 px-3 rounded-md cursor-pointer text-[11px] border border-border transition-all duration-150;
+}
+.chat-btn:hover {
+  @apply border-blue;
+}
+.btn-send {
+  @apply bg-bg3 text-text;
+}
+.btn-apply {
+  @apply bg-green/15 text-green font-semibold;
+  border-color: var(--color-green) !important;
+}
+.btn-apply:hover {
+  @apply bg-green/25;
+}
+
+/* Spec area */
+.spec-tab {
+  @apply bg-bg3 border border-border text-text-dim py-[3px] px-2.5 rounded cursor-pointer text-[10px] transition-all duration-150;
+}
+.spec-tab.active {
+  @apply border-blue text-blue bg-blue/10;
+}
+.spec-buttons button {
+  @apply bg-bg3 border border-border text-text py-1 px-3 rounded-md cursor-pointer text-[11px] transition-all duration-150;
+}
+.spec-buttons button:hover {
+  @apply border-blue text-blue;
+}
+
+/* Status dot */
+.status-dot {
+  @apply w-1.5 h-1.5 rounded-full;
+}
+.status-dot.connected {
+  @apply bg-green;
+}
+.status-dot.disconnected {
+  @apply bg-red;
+}
+
+/* React Flow custom node styles */
+.wf-node {
+  @apply rounded-lg overflow-hidden text-xs shadow-lg;
+  min-width: 240px;
+  border: 2px solid transparent;
+}
+.wf-node-header {
+  @apply px-3 py-1.5 font-bold text-white text-[11px] tracking-wide flex items-center gap-1.5;
+}
+.wf-node-body {
+  @apply bg-bg2 px-3 py-2 flex flex-col gap-1.5;
+}
+.wf-field {
+  @apply flex flex-col gap-0.5;
+}
+.wf-field-label {
+  @apply text-[10px] text-text-dim uppercase tracking-wider font-semibold;
+}
+.wf-field-input {
+  @apply w-full px-2 py-1 bg-bg border border-border text-text rounded text-[11px] font-mono;
+}
+.wf-field-input:focus {
+  @apply outline-none border-blue;
+}
+.wf-field-toggle {
+  @apply flex items-center gap-2;
+}
+
+/* Context menu animation */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Handle hover-to-show (hidden by default, visible on node hover) */
+.react-flow__handle {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: #1a1a1a !important;
+}
+.react-flow__node:hover .react-flow__handle,
+.react-flow__node.selected .react-flow__handle {
+  opacity: 1;
+  pointer-events: all;
+}
+.react-flow__handle:hover {
+  box-shadow: 0 0 10px rgba(122, 162, 247, 0.5);
+  transform: scale(1.4);
+  border-color: rgba(122, 162, 247, 0.8);
+}
+
+/* Connecting state — always show all handles so user can drop */
+.react-flow.connecting .react-flow__handle.connectable {
+  opacity: 1;
+  pointer-events: all;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(122, 162, 247, 0.4); }
+  50% { box-shadow: 0 0 0 5px rgba(122, 162, 247, 0.2); }
+}
+
+/* Compact node style (WeWeb-inspired) */
+.compact-node {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  min-width: 180px;
+  max-width: 260px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(255, 255, 255, 0.06);
+  background: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.compact-node:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Detail panel slide-in animation */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* AI Generation node status animations */
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.status-loading {
+  animation: statusPulse 1.5s ease-in-out infinite;
+}
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #9ece6a;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .palette h1 {
+    @apply text-[13px];
+  }
+  .chat-panel h2 {
+    @apply text-xs;
+  }
+  .palette {
+    @apply w-[210px] min-w-[210px];
+  }
+  .chat-panel {
+    @apply w-[280px] min-w-[280px];
+  }
+}
+@media (max-width: 900px) {
+  .top-area {
+    @apply flex-col;
+  }
+  .palette {
+    @apply w-full min-w-0 max-h-[200px] border-r-0 border-b border-border flex-row overflow-x-auto overflow-y-hidden;
+  }
+  .palette .section {
+    @apply border-b-0 border-r border-border min-w-[200px] shrink-0;
+  }
+  .chat-panel {
+    @apply w-full min-w-0 max-h-[250px] border-l-0 border-t border-border;
+  }
+}

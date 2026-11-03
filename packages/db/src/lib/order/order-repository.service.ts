@@ -32,10 +32,14 @@ export class OrderRepositoryService {
       this.logger.warn(
         `Order with referenceId ${createOrderDto.referenceId} already exists. Returning existing one.`,
       );
-      const plainOrder = JSON.parse(JSON.stringify(existingOrder));
-      return plainToInstance(OrderDto, plainOrder, {
-        excludeExtraneousValues: true,
-      });
+      // JSON.parse(JSON.stringify()) converts Prisma Decimal to string via toJSON()
+      return plainToInstance(
+        OrderDto,
+        JSON.parse(JSON.stringify(existingOrder)),
+        {
+          excludeExtraneousValues: true,
+        },
+      );
     }
 
     return await this.prisma.$transaction(async (tx) => {
@@ -97,8 +101,8 @@ export class OrderRepositoryService {
         },
       });
 
-      const plainOrder = JSON.parse(JSON.stringify(order));
-      return plainToInstance(OrderDto, plainOrder, {
+      // JSON.parse(JSON.stringify()) converts Prisma Decimal to string via toJSON()
+      return plainToInstance(OrderDto, JSON.parse(JSON.stringify(order)), {
         excludeExtraneousValues: true,
       });
     });
@@ -113,8 +117,32 @@ export class OrderRepositoryService {
       where: { id: orderId },
       data: { status },
     });
-    const plainOrder = JSON.parse(JSON.stringify(order));
-    return plainToInstance(OrderDto, plainOrder, {
+    // JSON.parse(JSON.stringify()) converts Prisma Decimal to string via toJSON()
+    return plainToInstance(OrderDto, JSON.parse(JSON.stringify(order)), {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async getOrderByReferenceId(referenceId: string): Promise<OrderDto | null> {
+    this.logger.verbose(`getOrderByReferenceId(${referenceId})`);
+    const order = await this.prisma.order.findUnique({
+      where: { referenceId },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+        payment: true,
+      },
+    });
+
+    if (!order) {
+      return null;
+    }
+
+    // JSON.parse(JSON.stringify()) converts Prisma Decimal to string via toJSON()
+    return plainToInstance(OrderDto, JSON.parse(JSON.stringify(order)), {
       excludeExtraneousValues: true,
     });
   }
@@ -142,23 +170,9 @@ export class OrderRepositoryService {
       },
     });
 
-    try {
-      const plainOrder = JSON.parse(JSON.stringify(order));
-      this.logger.verbose(
-        `transformed plainOrder for ${orderId}: ${JSON.stringify(plainOrder).substring(0, 500)}...`,
-      );
-      return plainToInstance(OrderDto, plainOrder, {
-        excludeExtraneousValues: true,
-      });
-    } catch (error) {
-      this.logger.error(`Error transforming order ${orderId}`, error);
-      // Log more details about the object that failed
-      try {
-        this.logger.debug(
-          `Failed object sample: ${JSON.stringify(order).substring(0, 1000)}`,
-        );
-      } catch (_error) {}
-      throw error;
-    }
+    // JSON.parse(JSON.stringify()) converts Prisma Decimal to string via toJSON()
+    return plainToInstance(OrderDto, JSON.parse(JSON.stringify(order)), {
+      excludeExtraneousValues: true,
+    });
   }
 }

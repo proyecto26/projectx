@@ -18,25 +18,35 @@ export default [
     // Auth routes
     route("logout", "./routes/logout.tsx"),
 
-    // Admin
-    route("admin", "./routes/admin.tsx"),
-
     // Checkout + Email templates (dynamic)
     route("checkout/:referenceId", "./routes/checkout.tsx"),
     route("email/:template", "./routes/email.tsx"),
 
     // Marketplace & product
     route("marketplace", "./routes/marketplace.tsx"),
-    route("product", "./routes/product.tsx"),
+    route("product/:id", "./routes/product.$id.tsx"),
 
     // Orders
     ...prefix("order/:orderId", [
       route("detail", "./routes/order/detail.tsx"),
       route("history", "./routes/order/history.tsx"),
       route("summary", "./routes/order/summary.tsx"),
+      route("confirmation", "./routes/order/confirmation.tsx"),
     ]),
 
     // Profile
     route("profile", "./routes/profile.tsx"),
+
+    // Legal
+    route("terms", "./routes/terms.tsx"),
+    route("privacy", "./routes/privacy.tsx"),
+  ]),
+
+  // Admin
+  layout("./routes/admin/layout.tsx", [
+    ...prefix("admin", [
+      route("/", "./routes/admin/index.tsx"),
+      route("orders", "./routes/admin/orders.tsx"),
+    ]),
   ]),
 ] satisfies RouteConfig;

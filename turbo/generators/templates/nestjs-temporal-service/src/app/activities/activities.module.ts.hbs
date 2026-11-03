@@ -1,0 +1,17 @@
+import { Module } from "@nestjs/common";
+{{#if includeEmail}}
+import { EmailModule } from "@projectx/email";
+{{/if}}
+
+import { ActivitiesService } from "./activities.service";
+
+@Module({
+  imports: [
+{{#if includeEmail}}
+    EmailModule,
+{{/if}}
+  ],
+  providers: [ActivitiesService],
+  exports: [ActivitiesService],
+})
+export class ActivitiesModule {}

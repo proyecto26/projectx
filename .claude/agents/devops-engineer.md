@@ -26,7 +26,7 @@ You are an expert DevOps engineer specializing in Docker containerization, infra
 ├─────────────────────────────────────────────────────────────┤
 │  Infrastructure:                                             │
 │  ├── db              - PostgreSQL 17 + PostGIS 3.5           │
-│  ├── temporal        - Temporal Server 1.29.2                │
+│  ├── temporal        - Temporal Server 1.32.1                │
 │  ├── temporal-ui     - Temporal Web UI (8080)                │
 │  └── elasticsearch   - ES 7.17.27 (for Temporal visibility)  │
 ├─────────────────────────────────────────────────────────────┤
@@ -440,14 +440,14 @@ AUTH_PORT=8091
 ### Multi-Stage Dockerfile
 ```dockerfile
 # Build stage
-FROM node:25-alpine AS builder
+FROM node:24-alpine AS builder
 WORKDIR /app
 COPY . .
 RUN pnpm install --frozen-lockfile
 RUN pnpm turbo run build --filter=auth
 
 # Production stage
-FROM node:25-alpine AS runner
+FROM node:24-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 

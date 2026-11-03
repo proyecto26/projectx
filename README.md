@@ -10,6 +10,20 @@
 
 > **ProjectX** is a comprehensive full-stack template designed to simplify the development of scalable and resilient applications using **React** and **Temporal**. By integrating Temporal's advanced workflow orchestration with React's dynamic frontend framework, ProjectX enables developers to build applications with durable executions and seamless communication between services.
 
+<details>
+  <summary><h2>Features 🧰</h2></summary>
+  - ⏳ Temporal TypeScript SDK running from a Turborepo monorepo<br/>
+  - 🧭 React Router v7 (Framework mode) + React Query<br/>
+  - 🎨 TailwindCSS v4<br/>
+  - 🧱 NestJS for APIs & microservices<br/>
+  - 🐳 Docker setup to run everything locally on any machine<br/>
+  - 🤖 AI-first with Cursor Rules + MCP servers & Claude Subagents + Skills<br/>
+  - 📚 Storybook for building UI components<br/>
+  - 📧 MJML for lightning-fast email templates<br/>
+  - 🛒 Stripe for checkout & payments<br/>
+  - 🪝 Ngrok for local integrations and webhooks<br/>
+</details>
+
 ## Why Temporal? 🤔
 
 <pre align="center" role="img" aria-label="ASCII Temporal">
@@ -151,6 +165,163 @@ For detailed information about the project, please refer to:
 ```
 </details>
 
+## Code Generators 🏗️
+
+ProjectX includes powerful Turborepo generators to scaffold new services quickly and consistently.
+
+### Available Generators
+
+| Command | Description |
+|---------|-------------|
+| `pnpm gen:service` | Create a basic NestJS microservice (like `product`) |
+| `pnpm gen:temporal-service` | Create a NestJS service with Temporal workflows (like `auth`, `order`) |
+| `pnpm gen:workflow` | Add a new workflow to an existing Temporal-enabled service |
+
+### Creating a New Service
+
+#### Basic Service (without Temporal)
+```bash
+pnpm gen:service
+```
+This will prompt you for:
+- Service name (e.g., `inventory`, `notification`)
+- Port number (auto-suggests next available)
+- Description
+- Optional modules (Email, Payment)
+
+#### Temporal-Enabled Service
+```bash
+pnpm gen:temporal-service
+```
+Additional prompts:
+- Initial workflow name (e.g., `process`, `handle`)
+
+### Adding a Workflow to Existing Service
+```bash
+pnpm gen:workflow
+```
+Select the target service and provide workflow details.
+
+### What Gets Generated
+
+**Basic Service:**
+```
+apps/{serviceName}/
+├── src/
+│   ├── app/
+│   │   ├── app.module.ts
+│   │   ├── app.controller.ts
+│   │   └── app.service.ts
+│   ├── config/
+│   │   ├── app.config.ts
+│   │   ├── env.config.ts
+│   │   └── swagger.config.ts
+│   └── main.ts
+├── test/
+├── package.json
+└── tsconfig.json
+```
+
+**Temporal Service (additional):**
+```
+├── src/
+│   ├── app/activities/
+│   │   ├── activities.module.ts
+│   │   └── activities.service.ts
+│   ├── config/
+│   │   └── temporal.config.ts
+│   └── workflows/
+│       ├── index.ts
+│       └── {workflowName}.workflow.ts
+```
+
+### Auto-Configuration
+
+The generators automatically:
+- Add `dev:{serviceName}` and `build:{serviceName}` scripts to root `package.json`
+- Update `docker-compose.yml` with the new service configuration
+- Configure the builder to include the new service in the build pipeline
+
+### Post-Generation Steps
+
+1. Add the environment variable to `.env`:
+   ```bash
+   {SERVICE_NAME}_PORT={port}
+   ```
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+3. Start the service:
+   ```bash
+   pnpm dev:{serviceName}
+   ```
+
+## ProjectX CLI 🖥️
+
+ProjectX includes an interactive CLI tool for a more developer-friendly experience when generating services and customizing the template.
+
+### Running the CLI
+
+```bash
+# Interactive mode (recommended)
+pnpm cli
+
+# Or run specific commands
+pnpm cli generate service
+pnpm cli generate temporal-service
+pnpm cli generate workflow
+pnpm cli init
+pnpm cli info
+```
+
+### CLI Commands
+
+| Command | Description |
+|---------|-------------|
+| `pnpm cli` | Interactive mode - select what to do |
+| `pnpm cli generate [type]` | Generate service or workflow |
+| `pnpm cli init` | Initialize/customize project for your needs |
+| `pnpm cli info` | Display project information |
+
+### Initialize Command
+
+The `init` command helps you customize the template for your own project:
+
+```bash
+pnpm cli init
+```
+
+This allows you to:
+- **Rename the project**: Updates all package names and references from `@projectx/*` to `@your-project/*`
+- **Clean up example services**: Remove auth, order, product services to start fresh
+- **Update Docker configuration**: Adjust docker-compose.yml for your project name
+
+### Example Workflow
+
+```bash
+# 1. Clone the template
+git clone https://github.com/proyecto26/projectx.git my-app
+cd my-app
+
+# 2. Customize for your project
+pnpm install
+pnpm cli init
+# - Enter your project name
+# - Select customizations (rename, cleanup, etc.)
+
+# 3. Generate your first service
+pnpm cli generate temporal-service
+# - Enter service name: "orders"
+# - Select port: 8084
+# - Add Email module: Yes
+# - Initial workflow: "processOrder"
+
+# 4. Start development
+docker-compose up -d
+pnpm dev
+```
+
 ## Development Tools 🔧
 
 ### Monorepo Management
@@ -245,18 +416,31 @@ stripe trigger payment_intent.succeeded
 stripe listen --forward-to localhost:8081/order/webhook // or using the secure tunnel created by Ngrok
 ```
 
-## Supporting 🍻
-I believe in Unicorns 🦄
-Support [me](http://www.paypal.me/jdnichollsc/2), if you do too.
+## Star History 🌟
 
-Donate **Ethereum**, **ADA**, **BNB**, **SHIBA**, **USDT/USDC**, **DOGE**, etc:
+[![Star History Chart](https://api.star-history.com/svg?repos=proyecto26/projectx&type=Date)](https://star-history.com/#proyecto26/projectx&Date)
 
-> Wallet address: jdnichollsc.eth
+## Sponsors 💜
 
-Please let us know your contributions! 🙏
+This project is free and open source. Sponsors help keep it maintained and growing.
 
-## Happy coding 💯
-Made with ❤️
+[**Become a Sponsor**](https://github.com/sponsors/proyecto26) | [Sponsorship Program](https://proyecto26.com/sponsors/)
+
+## Contribution 🤝
+
+When contributing to this repository, please first discuss the change you wish to make via issue,
+email, or any other method with the owners of this repository before making a change.
+ 
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated** ❤️.
+ 
+You can learn more about how you can contribute to this project in the [contribution guide](https://github.com/proyecto26/.github/blob/master/CONTRIBUTING.md).
+
+## License ⚖️
+This repository is available under the [MIT License](./LICENSE).
+
+## Happy vibe coding 💯
+
+Made with ❤️ by [Proyecto 26](https://proyecto26.com)
 
 <pre role="img" aria-label="ASCII Made with Temporal">
 ╔╦╗╔═╗╔╦╗╔═╗╔═╗╦═╗╔═╗╦   <img width="150px" src="https://avatars0.githubusercontent.com/u/28855608?s=200&v=4" align="right">

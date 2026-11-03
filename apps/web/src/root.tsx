@@ -22,11 +22,10 @@ import { THEME } from "./constants";
 import { getAuthSession } from "./cookies/auth.server";
 import { csrf } from "./cookies/session.server";
 import {
-  useWorkflows,
+  WorkflowsProvider,
   withAuthProvider,
   withCartProvider,
   withQueryClientProvider,
-  withStoreProvider,
 } from "./providers";
 import "./styles.css"; // Import global styles here
 
@@ -119,18 +118,18 @@ type AppProps = {
 
 function App({ csrfToken, email, accessToken }: AppProps) {
   // Connect Temporal workflows to your app
-  useWorkflows({ accessToken, email });
-
   return (
-    <AuthenticityTokenProvider token={csrfToken}>
-      <Outlet />
-    </AuthenticityTokenProvider>
+    <WorkflowsProvider accessToken={accessToken} email={email}>
+      <AuthenticityTokenProvider token={csrfToken}>
+        <Outlet />
+      </AuthenticityTokenProvider>
+    </WorkflowsProvider>
   );
 }
 
 // Compose providers in the correct order
 const AppWithProviders = withQueryClientProvider(
-  withStoreProvider(withAuthProvider(withCartProvider(App))),
+  withAuthProvider(withCartProvider(App)),
 );
 
 export default function ({ loaderData }: Route.ComponentProps) {

@@ -24,13 +24,12 @@ export type LoginWorkflowState = {
   code?: string;
 };
 
-export enum LoginWorkflowRetryableErrors {
-  VERIFY_LOGIN_CODE_FAILURE = "VERIFY_LOGIN_CODE_FAILURE",
-}
-
-export enum LoginWorkflowNonRetryableErrors {
-  UNKNOWN_ERROR = "UNKNOWN_ERROR_NON_RETRY",
-  LOGIN_CODE_EXPIRED = "LOGIN_CODE_EXPIRED",
+export class LoginCodeExpiredException extends Error {
+  constructor(message?: string) {
+    super(message);
+    Object.setPrototypeOf(this, new.target.prototype);
+    this.name = LoginCodeExpiredException.name;
+  }
 }
 
 export const LOGIN_WORKFLOW_TIMEOUT = "10m";
