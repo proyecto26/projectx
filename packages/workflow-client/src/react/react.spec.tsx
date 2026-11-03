@@ -362,6 +362,33 @@ describe("useWorkflowAction", () => {
     expect(result.current.error?.message).toBe("Nope");
   });
 
+  it("never shows the result of a previous client, not even for a render", async () => {
+    const first = setup(vi.fn(async () => "user A"));
+    const second = setup(vi.fn(async () => "user B"));
+    const committed: unknown[] = [];
+    const { result, rerender } = renderHook(
+      ({ current }) => {
+        const add = useWorkflowAction({
+          workflow: current.workflow,
+          id: "a",
+          action,
+          client: current.client,
+        });
+        useEffect(() => {
+          committed.push(`${current === first ? "A" : "B"}:${add.result}`);
+        });
+        return add;
+      },
+      { initialProps: { current: first } },
+    );
+    await act(async () => {
+      await result.current.send("x");
+    });
+    rerender({ current: second });
+    expect(committed).not.toContain("B:user A");
+    expect(result.current.result).toBeUndefined();
+  });
+
   it("only shows the last call, and starts over for another workflow", async () => {
     const answers: Array<(value: string) => void> = [];
     const send = vi.fn(

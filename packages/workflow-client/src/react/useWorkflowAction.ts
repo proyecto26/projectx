@@ -55,32 +55,40 @@ export function useWorkflowAction<
     () => current.session(workflow, id),
     [current, workflow.type, id],
   );
-  const [state, setState] = useState<ActionState<Output>>({
-    isPending: false,
-  });
+  // Tied to its target, so a render can't show the result of a previous user
+  const [held, setState] = useState<
+    ActionState<Output> & { session?: unknown; action?: string }
+  >({ isPending: false });
+  const { session: heldSession, action: heldAction, ...heldState } = held;
+  const state: ActionState<Output> =
+    heldSession === session && heldAction === action
+      ? heldState
+      : { isPending: false };
   // Only the last call updates the state, while earlier ones still run
   const lastCall = useRef(0);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: starts over for another target
   useEffect(() => {
     lastCall.current++;
-    setState({ isPending: false });
   }, [session, action]);
 
   const send = useCallback(
     async (...args: WorkflowActionArgs<Input>): Promise<Output | undefined> => {
       const call = ++lastCall.current;
-      setState({ isPending: true });
+      setState({ session, action, isPending: true });
       try {
         const run = session.actions[action] as unknown as (
           ...runArgs: WorkflowActionArgs<Input>
         ) => Promise<Output>;
         const result = await run(...args);
-        if (call === lastCall.current) setState({ isPending: false, result });
+        if (call === lastCall.current)
+          setState({ session, action, isPending: false, result });
         return result;
       } catch (error) {
         if (call === lastCall.current) {
           setState({
+            session,
+            action,
             isPending: false,
             error: error instanceof Error ? error : new Error(String(error)),
           });

@@ -17,12 +17,14 @@ import {
 
 import type { ActivitiesService } from "../main";
 
+// It retries until the payment provider answers, as giving up would stop tracking
+// a payment that can still happen. Its answer also tells about a payment made
+// while it was retrying.
 const { cancelPayment } = proxyActivities<ActivitiesService>({
   startToCloseTimeout: "30 seconds",
   retry: {
     initialInterval: "2s",
-    maximumInterval: "30s",
-    maximumAttempts: 10,
+    maximumInterval: "1 minute",
     backoffCoefficient: 1.5,
   },
 });
@@ -96,8 +98,11 @@ export async function processPayment(
       state.status = OrderProcessPaymentStatus.SUCCESS;
       break;
     }
-    // Being processed, so its webhook decides. Cancelling again is allowed.
-    state.status = OrderProcessPaymentStatus.INITIATED;
+    // Being processed, so its webhook decides, unless it arrived in the meantime.
+    // Cancelling again is allowed.
+    if (state.status === OrderProcessPaymentStatus.CANCELLED) {
+      state.status = OrderProcessPaymentStatus.INITIATED;
+    }
     isWaiting = await condition(
       () => finalPaymentStatuses.includes(state.status),
       PROCESS_PAYMENT_TIMEOUT,
