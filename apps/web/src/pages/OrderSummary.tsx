@@ -1,5 +1,41 @@
 import type { OrderSummaryDto } from "@projectx/models";
-import { useSearchParams } from "react-router";
+import { useEffect } from "react";
+import { Link, useRevalidator, useSearchParams } from "react-router";
+
+import { OrderStatus } from "@/providers/workflows";
+
+// Stripe's redirect only tells how it went in the browser, the order says what happened
+function summaryCopy(status: string, redirectStatus: string | null) {
+  if (status === OrderStatus.Pending) {
+    return redirectStatus === "failed"
+      ? {
+          label: "Payment not completed",
+          title: "Your payment didn't go through",
+          description:
+            "Your order is still open. Go back to the payment to try again or use another card.",
+        }
+      : {
+          label: "Confirming your payment",
+          title: "Almost there",
+          description:
+            "We're waiting for your bank to confirm the payment. This page updates on its own.",
+        };
+  }
+  if (status === OrderStatus.Cancelled || status === OrderStatus.Failed) {
+    return {
+      label:
+        status === OrderStatus.Cancelled ? "Order cancelled" : "Payment failed",
+      title: "This order wasn't completed",
+      description: "Place a new order to try again.",
+    };
+  }
+  return {
+    label: "Payment successful",
+    title: "Thanks for ordering",
+    description:
+      "We appreciate your order, we’re currently processing it. So hang tight and we’ll send you confirmation very soon!",
+  };
+}
 
 interface OrderSummaryProps {
   order: OrderSummaryDto;
@@ -7,6 +43,16 @@ interface OrderSummaryProps {
 
 export default function OrderSummary({ order }: OrderSummaryProps) {
   const [searchParams] = useSearchParams();
+  const isPending = order.status === OrderStatus.Pending;
+  const copy = summaryCopy(order.status, searchParams.get("redirect_status"));
+  const { revalidate } = useRevalidator();
+
+  // Waits for the payment to settle, as the bank confirms it asynchronously
+  useEffect(() => {
+    if (!isPending) return;
+    const timer = setInterval(() => void revalidate(), 3000);
+    return () => clearInterval(timer);
+  }, [isPending, revalidate]);
 
   return (
     <div className="relative lg:min-h-full">
@@ -22,15 +68,22 @@ export default function OrderSummary({ order }: OrderSummaryProps) {
         <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8 lg:py-32 xl:gap-x-24">
           <div className="lg:col-start-2">
             <h1 className="font-medium text-indigo-600 text-sm dark:text-indigo-400">
-              Payment successful
+              {copy.label}
             </h1>
-            <p className="mt-2 font-bold text-4xl text-gray-900 tracking-tight sm:text-5xl dark:text-gray-100">
-              Thanks for ordering
+            <p className="mt-2 font-bold text-4xl text-gray-900 tracking-tight sm:text-5xl dark:text-white">
+              {copy.title}
             </p>
             <p className="mt-2 text-base text-gray-500 dark:text-gray-400">
-              We appreciate your order, we’re currently processing it. So hang
-              tight and we’ll send you confirmation very soon!
+              {copy.description}
             </p>
+            {isPending && (
+              <Link
+                to={`/checkout/${order.referenceId}`}
+                className="mt-4 inline-block font-medium text-indigo-600 text-sm underline dark:text-indigo-400"
+              >
+                Back to the payment
+              </Link>
+            )}
 
             <dl className="mt-16 font-medium text-sm">
               <dt className="text-gray-900 dark:text-gray-100">

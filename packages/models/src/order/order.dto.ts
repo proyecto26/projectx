@@ -11,7 +11,7 @@ import {
   IsString,
   ValidateNested,
 } from "class-validator";
-import { OrderStatus } from "../enums";
+import { type OrderPaymentFailure, OrderStatus } from "../enums";
 import { PaymentDto } from "../payment/payment.dto";
 import { transformToDate, transformToNumber } from "../transforms";
 import { OrderItemDto } from "./order-item.dto";
@@ -144,4 +144,11 @@ export class OrderStatusResponseDto {
   @IsString()
   @IsOptional()
   clientSecret?: string;
+
+  @ApiProperty({
+    description: "The last failed payment attempt, while there is one",
+    required: false,
+  })
+  @IsOptional()
+  paymentFailure?: OrderPaymentFailure;
 }

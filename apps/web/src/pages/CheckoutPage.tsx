@@ -4,7 +4,11 @@ import type { Appearance } from "@stripe/stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { motion } from "framer-motion";
 
-import { OrderFailureStatus, type OrderWorkflow } from "@/providers/workflows";
+import {
+  OrderFailureStatus,
+  OrderStatus,
+  type OrderWorkflow,
+} from "@/providers/workflows";
 import { CheckoutForm } from "./checkout/CheckoutForm";
 
 const STRIPE_SECRET_KEY = canUseDOM
@@ -105,6 +109,9 @@ export const CheckoutPage = ({
 
   const status = currentCheckoutWorkflow?.state?.status;
   if (status && OrderFailureStatus.includes(status)) {
+    const wasDeclined =
+      status !== OrderStatus.Cancelled &&
+      !!currentCheckoutWorkflow?.state?.paymentFailure;
     return (
       <div className="flex flex-grow items-center justify-center p-4">
         <div className="text-center">
@@ -112,7 +119,11 @@ export const CheckoutPage = ({
             This order is no longer active
           </h1>
           <p className="mt-2 text-base text-gray-500 dark:text-gray-400">
-            It was cancelled or its payment failed.
+            {status === OrderStatus.Cancelled
+              ? "It was cancelled."
+              : wasDeclined
+                ? "We couldn't complete the payment. Place a new order with another card, or contact your bank."
+                : "Its payment wasn't completed in time. Place a new order to try again."}
           </p>
         </div>
       </div>

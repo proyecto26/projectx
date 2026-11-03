@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { type SubmitEvent, useState } from "react";
 
 import type { OrderWorkflow } from "@/providers/workflows";
+import { paymentFailureMessage } from "./paymentFailureMessage";
 
 interface CheckoutFormProps {
   currentCheckoutWorkflow?: OrderWorkflow;
@@ -19,6 +20,7 @@ export const CheckoutForm = ({
   const elements = useElements();
 
   const [message, setMessage] = useState<string | null>(null);
+  const paymentFailure = currentCheckoutWorkflow?.state?.paymentFailure;
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: SubmitEvent) => {
@@ -31,6 +33,7 @@ export const CheckoutForm = ({
     }
 
     setIsLoading(true);
+    setMessage(null);
     const orderId =
       currentCheckoutWorkflow?.result?.orderId ??
       currentCheckoutWorkflow?.state?.orderId;
@@ -97,14 +100,17 @@ export const CheckoutForm = ({
           )}
         </span>
       </button>
-      {/* Show any error or success messages */}
-      {message && (
+      {/* Stripe's answer, or the workflow's after a redirect to the bank */}
+      {(message || paymentFailure) && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20"
         >
-          <p className="text-red-600 text-sm dark:text-red-400">{message}</p>
+          <p role="alert" className="text-red-600 text-sm dark:text-red-400">
+            {message ??
+              (paymentFailure && paymentFailureMessage(paymentFailure))}
+          </p>
         </motion.div>
       )}
     </form>

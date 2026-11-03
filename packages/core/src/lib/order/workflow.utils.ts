@@ -1,4 +1,9 @@
-import type { CreateOrderDto, OrderStatusResponseDto } from "@projectx/models";
+import type {
+  CreateOrderDto,
+  OrderPaymentFailure,
+  OrderStatusResponseDto,
+  PaymentFailureReason,
+} from "@projectx/models";
 import { defineQuery, defineSignal, defineUpdate } from "@temporalio/workflow";
 
 import type { AuthUser } from "../user";
@@ -24,6 +29,7 @@ export enum OrderProcessPaymentStatus {
 
 export type OrderProcessPaymentState = {
   status: OrderProcessPaymentStatus;
+  failure?: OrderPaymentFailure;
 };
 
 /**
@@ -44,10 +50,22 @@ export type PaymentWebhookEvent = {
       referenceId: string;
     };
   };
+  /** For a failed attempt, already classified by the payment provider adapter */
+  failure?: {
+    /** Identifies the attempt, so duplicated events count once */
+    attempt: string;
+    reason: PaymentFailureReason;
+    retryable: boolean;
+  };
 };
 
 export const ORDER_TIMEOUT = "20 minutes";
 export const PROCESS_PAYMENT_TIMEOUT = "15 minutes";
+/**
+ * Failed attempts before the order closes. Customers confirm with Stripe directly,
+ * so it's a best-effort limit: Radar is what stops card testing.
+ */
+export const MAX_PAYMENT_ATTEMPTS = 5;
 
 // DEFINE QUERIES
 export const getOrderStateQuery =
@@ -62,6 +80,10 @@ export const getOrderStateQuery =
 export const paymentWebHookEventSignal = defineSignal<[PaymentWebhookEvent]>(
   "paymentWebhookEvent",
 );
+
+/** Sent by the payment workflow to its parent after each failed attempt */
+export const paymentProgressSignal =
+  defineSignal<[OrderPaymentFailure]>("paymentProgress");
 
 // DEFINE UPDATES
 export const createOrderUpdate = defineUpdate<OrderStatusResponseDto, []>(
