@@ -102,11 +102,13 @@ export const orderWorkflow = defineWorkflow({
       send: stream.send,
       getState: (options) => getOrderStatus({ ...options, context }),
     });
-    // Open streams hold browser connections, so the rest of the orders poll
-    return createLimitedTransport(
-      createFallbackTransport(stream, polling),
+    // Open streams hold browser connections, so the rest of the orders poll.
+    // A stream that fails before sending anything polls and frees its slot,
+    // then tries the stream again, since the stream starts with a snapshot.
+    return createFallbackTransport(
+      createLimitedTransport(stream, polling, { limiter }),
       polling,
-      { limiter },
+      { retryPrimary: true },
     );
   },
   isFinal: ({ status }) => finalStatus.includes(status),
