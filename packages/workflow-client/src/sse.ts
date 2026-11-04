@@ -4,9 +4,15 @@ export interface SseMessage {
   data: string;
 }
 
+export interface ParseSseOptions {
+  /** Called on every chunk read, comments included, so idle streams can be told apart. */
+  onChunk?: () => void;
+}
+
 /** Reads Server-Sent Events from a response body, with any chunk boundaries. */
 export async function* parseSse(
   body: ReadableStream<Uint8Array>,
+  { onChunk }: ParseSseOptions = {},
 ): AsyncGenerator<SseMessage> {
   const reader = body
     .pipeThrough(
@@ -20,6 +26,7 @@ export async function* parseSse(
     while (true) {
       const { done, value } = await reader.read();
       if (done) return;
+      onChunk?.();
       buffer += value;
       const lines = buffer.split(/\r\n|\n|\r(?!$)/);
       buffer = lines.pop() ?? "";

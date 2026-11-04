@@ -532,6 +532,8 @@ Keep the limit inside the fallback: a stream that fails then gives its slot back
 
 `retryPrimary` is off by default, so a stream that fails before its first event polls until the session reconnects, for example after a polling error or a reload. With it, polling goes on while each try runs, and the transport moves back to the stream on its first event. A try that sends nothing within `timeoutMs`, 10 s by default, counts as failed, so the stream should start with an event, such as the snapshot from `getState`. Tune it with `{ initialDelayMs, maxDelayMs, timeoutMs }`.
 
+The stream transport also fails a stream that sends nothing for `idleTimeoutMs`, 45 s by default, so the session reconnects from the last offset. Keep-alive comments count, and `toWorkflowStreamResponse` sends one every 15 s, so a custom server must send something more often than the timeout. This catches connections dropped without closing. Behind a proxy that passes the first event and then buffers the rest, each connection still brings a fresh snapshot, so the state updates about once per timeout instead of hanging. Fix the proxy (`x-accel-buffering: no` is sent for nginx), or set `idleTimeoutMs: 0` to turn the check off. `retryPrimary.timeoutMs` is separate: it limits the wait for the first event of a try.
+
 By default the stream transport uses `POST /api/orders` to start, `GET /api/orders/:id/stream` to read and `DELETE /api/orders/:id` to cancel, sending `{ id, input }` as the body. Change them with `startUrl`, `streamUrl`, `cancelUrl` and `body`.
 
 > [!WARNING]

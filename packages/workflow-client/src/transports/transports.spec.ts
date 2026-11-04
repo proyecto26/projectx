@@ -2,13 +2,14 @@ import { describe, expect, it, vi } from "vitest";
 
 import { toWorkflowStreamResponse } from "../server/response";
 import { parseSse } from "../sse";
-import type {
-  WorkflowEvent,
-  WorkflowSubscribeOptions,
-  WorkflowTransport,
+import {
+  WorkflowClientError,
+  type WorkflowEvent,
+  type WorkflowSubscribeOptions,
+  type WorkflowTransport,
 } from "../types";
 import { createFallbackTransport } from "./fallback";
-import { createHttpStreamTransport } from "./http-stream";
+import { createHttpStreamTransport, STREAM_IDLE } from "./http-stream";
 import { createLimitedTransport } from "./limited";
 import { createPollingTransport } from "./polling";
 
@@ -399,5 +400,151 @@ describe("createLimitedTransport", () => {
       message: "Down",
     });
     expect(opened).toEqual([]);
+  });
+});
+
+describe("http stream transport idle timeout", () => {
+  /** A stream response the test writes to, recording when the request is aborted. */
+  const openStream = () => {
+    let controller!: ReadableStreamDefaultController<Uint8Array>;
+    const body = new ReadableStream<Uint8Array>({
+      start(c) {
+        controller = c;
+      },
+    });
+    const requests: { signal: AbortSignal; url: string }[] = [];
+    const fetch = vi.fn(
+      async (url: string | URL | Request, init?: RequestInit) => {
+        const requestSignal = init?.signal as AbortSignal;
+        requests.push({ signal: requestSignal, url: String(url) });
+        requestSignal.addEventListener("abort", () =>
+          controller.error(new DOMException("Aborted", "AbortError")),
+        );
+        return new Response(body, {
+          headers: { "content-type": "text/event-stream" },
+        });
+      },
+    ) as unknown as typeof globalThis.fetch;
+    const write = (text: string) => controller.enqueue(encoder.encode(text));
+    return { fetch, write, requests };
+  };
+  const event = (state: number) =>
+    `data: ${JSON.stringify({ type: "state", state })}\n\n`;
+
+  it("fails a stream that goes silent, with a code the session retries", async () => {
+    const { fetch, write, requests } = openStream();
+    const transport = createHttpStreamTransport<number>({
+      api: "/x",
+      fetch,
+      idleTimeoutMs: 40,
+    });
+    const seen: number[] = [];
+    const reading = (async () => {
+      for await (const e of transport.subscribe({
+        id: "a",
+        signal: signal(),
+      })) {
+        if (e.type === "state") seen.push(e.state);
+      }
+    })();
+    write(event(1));
+    const error = await reading.catch((e: unknown) => e);
+    expect(seen).toEqual([1]);
+    expect(error).toBeInstanceOf(WorkflowClientError);
+    expect((error as WorkflowClientError).code).toBe(STREAM_IDLE);
+    expect((error as WorkflowClientError).status).toBeUndefined();
+    expect(requests[0]?.signal.aborted).toBe(true);
+  });
+
+  it("counts keep-alive comments and events as activity", async () => {
+    const { fetch, write } = openStream();
+    const transport = createHttpStreamTransport<number>({
+      api: "/x",
+      fetch,
+      idleTimeoutMs: 40,
+    });
+    const controller = new AbortController();
+    const seen: number[] = [];
+    const reading = (async () => {
+      for await (const e of transport.subscribe({
+        id: "a",
+        signal: controller.signal,
+      })) {
+        if (e.type === "state") seen.push(e.state);
+      }
+    })().catch((e: unknown) => e);
+    write(event(1));
+    for (let i = 0; i < 6; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      write(": keep-alive\n\n");
+    }
+    write(event(2));
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    // Still open after 120 ms, three times the timeout
+    expect(seen).toEqual([1, 2]);
+    controller.abort();
+    const error = await reading;
+    expect((error as WorkflowClientError | undefined)?.code).not.toBe(
+      STREAM_IDLE,
+    );
+  });
+
+  it("doesn't count a slow reader as an idle stream", async () => {
+    const { fetch, write } = openStream();
+    const transport = createHttpStreamTransport<number>({
+      api: "/x",
+      fetch,
+      idleTimeoutMs: 30,
+    });
+    const controller = new AbortController();
+    const iterator = transport
+      .subscribe({ id: "a", signal: controller.signal })
+      [Symbol.asyncIterator]();
+    write(event(1));
+    write(event(2));
+    expect(await iterator.next()).toMatchObject({ value: { state: 1 } });
+    // The reader takes longer than the timeout before asking for more
+    await new Promise((resolve) => setTimeout(resolve, 60));
+    expect(await iterator.next()).toMatchObject({ value: { state: 2 } });
+    controller.abort();
+    await iterator.next().catch(() => undefined);
+  });
+
+  it("counts a header lookup that hangs as idle", async () => {
+    const fetch = vi.fn();
+    const transport = createHttpStreamTransport<number>({
+      api: "/x",
+      fetch: fetch as unknown as typeof globalThis.fetch,
+      idleTimeoutMs: 30,
+      headers: () => new Promise<Record<string, string>>(() => undefined),
+    });
+    const error = await collect(
+      transport.subscribe({ id: "a", signal: signal() }),
+    ).catch((e: unknown) => e);
+    expect((error as WorkflowClientError).code).toBe(STREAM_IDLE);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("can be turned off, and an abort by the subscriber stays an abort", async () => {
+    const { fetch, write } = openStream();
+    const transport = createHttpStreamTransport<number>({
+      api: "/x",
+      fetch,
+      idleTimeoutMs: 0,
+    });
+    const controller = new AbortController();
+    const reading = (async () => {
+      for await (const _ of transport.subscribe({
+        id: "a",
+        signal: controller.signal,
+      })) {
+        // Reads until aborted
+      }
+    })().catch((e: unknown) => e);
+    write(event(1));
+    await new Promise((resolve) => setTimeout(resolve, 60));
+    controller.abort();
+    const error = await reading;
+    expect(error).not.toBeInstanceOf(WorkflowClientError);
   });
 });
