@@ -516,16 +516,21 @@ export const orderWorkflow = defineWorkflow<OrderState, OrderInput, unknown>({
       api: "/api/orders",
       headers: () => ({ Authorization: `Bearer ${getToken()}` }),
     });
-    return createLimitedTransport(
-      // Polls if the stream fails before sending anything, such as behind a proxy
-      createFallbackTransport(stream, polling),
+    // Polls if the stream fails before sending anything, such as behind a proxy
+    return createFallbackTransport(
       // Polls above the limit of streams of the client, see below
+      createLimitedTransport(stream, polling, { limiter }),
       polling,
-      { limiter },
+      // While polling, tries the stream again: after 30 s, then waiting twice as long each time, up to 5 min
+      { retryPrimary: true },
     );
   },
 });
 ```
+
+Keep the limit inside the fallback: a stream that fails then gives its slot back while it polls.
+
+`retryPrimary` is off by default, so a stream that fails before its first event polls until the session reconnects, for example after a polling error or a reload. With it, polling goes on while each try runs, and the transport moves back to the stream on its first event. A try that sends nothing within `timeoutMs`, 10 s by default, counts as failed, so the stream should start with an event, such as the snapshot from `getState`. Tune it with `{ initialDelayMs, maxDelayMs, timeoutMs }`.
 
 By default the stream transport uses `POST /api/orders` to start, `GET /api/orders/:id/stream` to read and `DELETE /api/orders/:id` to cancel, sending `{ id, input }` as the body. Change them with `startUrl`, `streamUrl`, `cancelUrl` and `body`.
 
@@ -636,7 +641,7 @@ Options are those of `WorkflowSession`, except `id`, plus:
 |---|---|
 | `createPollingTransport` | You only have an endpoint returning the state |
 | `createHttpStreamTransport` | Your server uses `toWorkflowStreamResponse` |
-| `createFallbackTransport` | You want to stream, and poll if the stream fails before sending anything |
+| `createFallbackTransport` | You want to stream, and poll if the stream fails before sending anything, trying the stream again with `retryPrimary` |
 | `createLimitedTransport` | You can have more workflows than connections to spare |
 | `createStreamLimiter` | You want to share that limit without a client |
 
