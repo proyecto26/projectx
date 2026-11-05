@@ -363,6 +363,33 @@ pnpm add -D <package> -w
 pnpm update --recursive
 ```
 
+## Product Catalog MCP Server 🤖
+
+The product service is also an [MCP](https://modelcontextprotocol.io) server, built with [`@nestjs/mcp`](https://docs.nestjs.com/mcp/overview), so an assistant can browse the store's catalog. It's read-only and serves the same public data as `GET /product`, `/product/categories` and `/product/:id`, without the products' download URLs. It needs no token.
+
+| | Name | What it does |
+| --- | --- | --- |
+| Tool | `search_products` | Search available products by words (`query`), `category` and price range (`minPrice`, `maxPrice`), with `page` and `limit` (up to 50) |
+| Tool | `get_product` | One product by `id` |
+| Resource | `catalog://categories` | Every category with available products |
+| Resource template | `product://{id}` | One product by id |
+
+**Over HTTP.** With the product service running (`docker-compose up -d` or `pnpm dev:product`), it's at `http://localhost:8083/mcp` (Streamable HTTP). To add it to Claude Code:
+
+```bash
+claude mcp add --transport http projectx-catalog http://localhost:8083/mcp
+```
+
+**Over stdio.** Build the app (`pnpm build:product`), and let the client start it with `pnpm mcp:product` from the repository root. It reads the root `.env`, but `.env` uses Docker hostnames and `${...}` references that Nest doesn't expand, so pass a `DATABASE_URL` the host can reach:
+
+```bash
+claude mcp add projectx-catalog \
+  -e DATABASE_URL="postgresql://<user>:<password>@localhost:5432/<db>?schema=public" \
+  -- pnpm --silent mcp:product
+```
+
+Other clients take the same settings: the URL above, or the command `pnpm --silent mcp:product` with that `DATABASE_URL`. To inspect the server, run `npx @modelcontextprotocol/inspector` and connect to the URL with **Streamable HTTP**.
+
 ## Docker Configuration 🐳
 
 Services defined in [docker-compose.yml](./docker-compose.yml):
