@@ -47,7 +47,7 @@
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
-    "@nestjs/common": "11.1.12"
+    "@nestjs/common": "12.3.3"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

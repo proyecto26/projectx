@@ -64,7 +64,7 @@ Additionally, workflows support scheduled and time-based executions with configu
 ### Prerequisites 🧰
 
 - [Docker Compose](https://docs.docker.com/compose/install)
-- [Node.js LTS Version](https://nodejs.org)
+- [Node.js 24](https://nodejs.org) (24.9 or later; the Jest suites load the ESM-only NestJS 12 packages through `require(esm)`)
 - [Git](https://git-scm.com/downloads)
 
 ### Quick Setup 🛠️
