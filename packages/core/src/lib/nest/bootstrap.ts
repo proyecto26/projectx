@@ -49,8 +49,9 @@ export async function bootstrapApp<T extends NestExpressApplication>(
     const port = configService.get("app.port");
     const apiPrefix = configService.get("app.apiPrefix");
 
+    // An app's MCP endpoint (@nestjs/mcp) is served at /mcp, next to /health
     app.setGlobalPrefix(apiPrefix, {
-      exclude: ["/health"],
+      exclude: ["/health", "/mcp"],
     });
 
     // PARSE HTTP REQUESTS
