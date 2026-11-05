@@ -261,8 +261,32 @@ export class AppService {
         },
       };
 
+      // Classified here, as the workflow knows nothing about Stripe. It throws if
+      // Stripe can't tell, so Stripe sends the event again later
+      if (event.type === "payment_intent.payment_failed") {
+        const failure =
+          await this.stripeService.describePaymentFailure(paymentIntent);
+        webhookEvent.failure = failure && {
+          attempt: failure.attempt ?? event.id,
+          reason: failure.reason,
+          retryable: failure.retryable,
+        };
+      }
+
       // Signal the workflow
-      await handle.signal(paymentWebHookEventSignal, webhookEvent);
+      try {
+        await handle.signal(paymentWebHookEventSignal, webhookEvent);
+      } catch (error) {
+        // It closed after settling the payment with Stripe, so there's nothing left
+        // to tell it. Stripe would otherwise send it again for days
+        if (error instanceof WorkflowNotFoundError) {
+          this.logger.warn(
+            `handleWebhook(${event.id}) - ${event.type} for a closed order ${referenceId}`,
+          );
+          return { received: true };
+        }
+        throw error;
+      }
 
       // Return true to indicate the webhook was received
       return { received: true };

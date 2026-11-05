@@ -8,6 +8,7 @@ import {
   ORDER_TIMEOUT,
   OrderProcessPaymentStatus,
   type OrderWorkflowData,
+  paymentProgressSignal,
   paymentWebHookEventSignal,
   UnkownException,
 } from "@projectx/core/workflows";
@@ -47,6 +48,8 @@ const initialState: Partial<OrderStatusResponseDto> = {
   referenceId: "",
 };
 
+type PaymentWorkflowHandle = ChildWorkflowHandle<typeof processPayment>;
+
 export async function createOrder(
   data: OrderWorkflowData,
   state = initialState,
@@ -58,11 +61,24 @@ export async function createOrder(
   state.referenceId = data.order.referenceId;
   let isCreatingOrder = false;
   // Define references to child workflows
-  let processPaymentWorkflow:
-    | ChildWorkflowHandle<typeof processPayment>
-    | undefined;
+  let processPaymentWorkflow: PaymentWorkflowHandle | undefined;
 
   let isCancelRequested = false;
+  // Events for the payment process, kept in order until it exists
+  const pendingEvents: unknown[] = [];
+  let isPaymentOver = false;
+  // One at a time, so the payment process gets them in order
+  let forwarding: Promise<void> = Promise.resolve();
+  const forward = (send: (child: PaymentWorkflowHandle) => Promise<void>) => {
+    const child = processPaymentWorkflow;
+    if (!child) return;
+    forwarding = forwarding
+      .then(() => send(child))
+      .catch((error: unknown) =>
+        // It already closed, after settling the payment with the provider
+        log.warn("Couldn't reach the payment process", { error }),
+      );
+  };
 
   // Attach queries, signals and updates
   setHandler(getOrderStateQuery, () => state as OrderStatusResponseDto);
@@ -78,16 +94,25 @@ export async function createOrder(
     // Remembered, as the payment process may still be starting
     isCancelRequested = true;
     if (processPaymentWorkflow) {
-      void processPaymentWorkflow.signal(cancelWorkflowSignal);
+      forward((child) => child.signal(cancelWorkflowSignal));
     } else {
       log.info("The payment process isn't running");
     }
   });
-  setHandler(
-    paymentWebHookEventSignal,
-    (e: unknown) =>
-      void processPaymentWorkflow?.signal(paymentWebHookEventSignal, e),
-  );
+  setHandler(paymentWebHookEventSignal, (event) => {
+    if (processPaymentWorkflow) {
+      forward((child) => child.signal(paymentWebHookEventSignal, event));
+    } else if (!isPaymentOver) {
+      pendingEvents.push(event);
+    } else {
+      log.warn("The payment process already finished");
+    }
+  });
+  // The payment process decides, this only shows it to the customer
+  setHandler(paymentProgressSignal, (failure) => {
+    state.paymentFailure = failure;
+    publishState();
+  });
   // Create the order and the payment intent with the payment provider
   setHandler(createOrderUpdate, async () => {
     isCreatingOrder = true;
@@ -126,21 +151,34 @@ export async function createOrder(
         args: [data],
         workflowId: getWorkflowIdByPaymentOrder(state.referenceId),
       });
+      for (const event of pendingEvents.splice(0)) {
+        forward((child) =>
+          child.signal(paymentWebHookEventSignal, event as never),
+        );
+      }
       if (isCancelRequested) {
-        void processPaymentWorkflow.signal(cancelWorkflowSignal);
+        forward((child) => child.signal(cancelWorkflowSignal));
       }
       const processPaymentResult = await processPaymentWorkflow.result();
+      // Late events have nowhere to go, as it settled the payment before closing
+      processPaymentWorkflow = undefined;
+      isPaymentOver = true;
       if (processPaymentResult.status !== OrderProcessPaymentStatus.SUCCESS) {
+        // The customer sees why it ended, a cancellation isn't a failed payment
+        const endStatus =
+          processPaymentResult.status === OrderProcessPaymentStatus.CANCELLED
+            ? OrderStatus.Cancelled
+            : OrderStatus.Failed;
         // Report payment failure before throwing the error
-        await reportPaymentFailed(state.orderId as number);
-        state.status = OrderStatus.Failed;
+        await reportPaymentFailed(state.orderId as number, endStatus);
+        state.status = endStatus;
         publishState();
         throw ApplicationFailure.nonRetryable(
           UnkownException.name,
           "Payment failed",
         );
       }
-      processPaymentWorkflow = undefined;
+      state.paymentFailure = undefined;
       state.status = OrderStatus.Confirmed;
       await reportPaymentConfirmed(state.orderId as number);
       publishState();
@@ -150,6 +188,7 @@ export async function createOrder(
   } finally {
     // Answer the waiting subscribers before the workflow closes
     stream.detachPollers();
+    await forwarding;
     await condition(allHandlersFinished);
   }
 }

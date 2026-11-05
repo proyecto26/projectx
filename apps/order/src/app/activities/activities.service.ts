@@ -1,5 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { OrderWorkflowData } from "@projectx/core";
+import type { OrderStatus } from "@projectx/models";
 
 import { OrderService } from "../order/order.service";
 
@@ -17,8 +18,11 @@ export class ActivitiesService {
     return this.orderService.cancelPayment(referenceId);
   }
 
-  async reportPaymentFailed(orderId: number) {
-    return this.orderService.reportPaymentFailed(orderId);
+  async reportPaymentFailed(
+    orderId: number,
+    status?: OrderStatus.Failed | OrderStatus.Cancelled,
+  ) {
+    return this.orderService.reportPaymentFailed(orderId, status);
   }
 
   async reportPaymentConfirmed(orderId: number) {

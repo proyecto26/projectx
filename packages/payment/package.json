@@ -21,14 +21,16 @@
     "build": "tsup src/index.ts --format cjs,esm --splitting --sourcemap --clean && tsc -p tsconfig.json --emitDeclarationOnly --outDir dist",
     "dev": "tsc -w -p tsconfig.json",
     "lint": "biome check .",
-    "test": "echo 'no tests'"
+    "test": "vitest run"
   },
   "dependencies": {
+    "@projectx/models": "workspace:*",
     "stripe": "20.2.0",
     "tslib": "^2.9.1"
   },
   "devDependencies": {
     "tsup": "^8.5.1",
+    "vitest": "4.1.11",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {

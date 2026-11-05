@@ -9,6 +9,11 @@ import Stripe from "stripe";
 
 import type { PaymentConfig } from "../../config";
 
+import {
+  classifyPaymentFailure,
+  type PaymentFailureClassification,
+} from "./payment-failure";
+
 @Injectable()
 export class StripeService {
   private readonly logger = new Logger(StripeService.name);
@@ -142,6 +147,14 @@ export class StripeService {
           `handleWebhookEvent(${paymentIntent.id}) - Payment succeeded:`,
         );
         break;
+      // Let the workflow know about an attempt in progress, and a cancellation
+      case "payment_intent.processing":
+      case "payment_intent.canceled":
+        paymentIntent = event.data.object as Stripe.PaymentIntent;
+        this.logger.log(
+          `handleWebhookEvent(${paymentIntent.id}) - ${event.type}`,
+        );
+        break;
       case "payment_intent.payment_failed":
         paymentIntent = event.data.object as Stripe.PaymentIntent;
         this.logger.log(
@@ -156,6 +169,35 @@ export class StripeService {
     }
 
     return paymentIntent;
+  }
+
+  /**
+   * Classifies the last failed attempt of a payment intent. It reads the charge to
+   * know if Radar blocked it, and throws if it can't, so that a fraud block is
+   * never taken for a decline the customer can retry.
+   */
+  async describePaymentFailure(
+    paymentIntent: Stripe.PaymentIntent,
+  ): Promise<
+    (PaymentFailureClassification & { attempt?: string }) | undefined
+  > {
+    const error = paymentIntent.last_payment_error;
+    if (!error) return undefined;
+    const chargeId =
+      typeof error.charge === "string" ? error.charge : undefined;
+    const outcome = chargeId
+      ? (await this.stripe.charges.retrieve(chargeId)).outcome
+      : null;
+    return {
+      attempt: chargeId,
+      ...classifyPaymentFailure({
+        code: error.code,
+        declineCode: error.decline_code,
+        outcomeType: outcome?.type,
+        outcomeReason: outcome?.reason,
+        riskLevel: outcome?.risk_level,
+      }),
+    };
   }
 
   async refundPaymentIntent(

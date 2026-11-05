@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { type SubmitEvent, useState } from "react";
 
 import type { OrderWorkflow } from "@/providers/workflows";
+import { paymentFailureMessage } from "./paymentFailureMessage";
 
 interface CheckoutFormProps {
   currentCheckoutWorkflow?: OrderWorkflow;
@@ -19,6 +20,9 @@ export const CheckoutForm = ({
   const elements = useElements();
 
   const [message, setMessage] = useState<string | null>(null);
+  const paymentFailure = currentCheckoutWorkflow?.state?.paymentFailure;
+  // The order is closing, and its payment is being cancelled
+  const isClosing = paymentFailure?.retryable === false;
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: SubmitEvent) => {
@@ -31,6 +35,7 @@ export const CheckoutForm = ({
     }
 
     setIsLoading(true);
+    setMessage(null);
     const orderId =
       currentCheckoutWorkflow?.result?.orderId ??
       currentCheckoutWorkflow?.state?.orderId;
@@ -62,7 +67,7 @@ export const CheckoutForm = ({
       <PaymentElement id="payment-element" className="mb-8" />
       <button
         type="submit"
-        disabled={isLoading || !stripe || !elements}
+        disabled={isLoading || isClosing || !stripe || !elements}
         id="submit"
         className="w-full rounded-lg bg-purple-600 px-4 py-2 font-semibold text-white transition-colors duration-200 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
       >
@@ -97,14 +102,19 @@ export const CheckoutForm = ({
           )}
         </span>
       </button>
-      {/* Show any error or success messages */}
-      {message && (
+      {/* Stripe's answer, or the workflow's after a redirect to the bank */}
+      {(message || paymentFailure) && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20"
         >
-          <p className="text-red-600 text-sm dark:text-red-400">{message}</p>
+          <p role="alert" className="text-red-600 text-sm dark:text-red-400">
+            {isClosing
+              ? "This order can't take another payment."
+              : (message ??
+                (paymentFailure && paymentFailureMessage(paymentFailure)))}
+          </p>
         </motion.div>
       )}
     </form>
