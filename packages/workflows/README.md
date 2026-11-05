@@ -28,7 +28,7 @@ Register a module with your activities and workflows, and it starts the worker w
 npm install @proyecto26/temporal-workflows @nestjs/common @nestjs/config @temporalio/client @temporalio/proto @temporalio/worker
 ```
 
-Requires NestJS 10 or 11, `@nestjs/config` 3 or 4, and the Temporal TypeScript SDK 1.25 or later.
+Requires NestJS 10, 11 or 12, `@nestjs/config` 3, 4 or 12, and the Temporal TypeScript SDK 1.25 or later.
 
 ## Quick start 🚀
 

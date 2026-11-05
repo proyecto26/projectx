@@ -11,7 +11,7 @@ alwaysApply: true
 - This is a monorepo using pnpm and Turborepo
 - NestJS apps are compiled with **CommonJS** (required for NestJS)
 - Apps: `auth`, `order`, `product`
-- All apps use NestJS 11.x with TypeScript 5.9.x
+- All apps use NestJS 12.x with TypeScript 5.9.x
 ## Critical: TypeScript Imports for Dependency Injection
 ### ❌ NEVER use `type` imports for services
 ```typescript
