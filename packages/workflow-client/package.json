@@ -1,6 +1,6 @@
 {
   "name": "@proyecto26/temporal-workflow-client",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Connect any JavaScript app to Temporal workflows: a framework agnostic store, swappable transports, React hooks and server helpers",
   "license": "MIT",
   "author": "Proyecto 26 <https://github.com/proyecto26>",
