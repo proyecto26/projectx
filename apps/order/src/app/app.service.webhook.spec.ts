@@ -1,5 +1,6 @@
 import { BadRequestException } from "@nestjs/common";
 import type { ConfigService } from "@nestjs/config";
+import type { OrderRepositoryService } from "@projectx/db";
 import type { StripeService } from "@projectx/payment";
 import type { ClientService } from "@proyecto26/temporal-workflows";
 import { WorkflowNotFoundError } from "@temporalio/client";
@@ -27,6 +28,7 @@ function setup(type: string) {
       client: { workflow: { getHandle: () => ({ signal }) } },
     } as unknown as ClientService,
     stripe as unknown as StripeService,
+    {} as unknown as OrderRepositoryService,
   );
   return { service, signal, stripe };
 }

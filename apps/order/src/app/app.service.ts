@@ -14,8 +14,10 @@ import {
   getOrderStateQuery,
   type OrderWorkflowData,
   type PaymentWebhookEvent,
+  PRODUCT_UNAVAILABLE,
   paymentWebHookEventSignal,
 } from "@projectx/core";
+import { OrderRepositoryService } from "@projectx/db";
 import type { CreateOrderDto } from "@projectx/models";
 import { orderActions } from "@projectx/models/workflows";
 import { StripeService } from "@projectx/payment";
@@ -31,6 +33,7 @@ import {
   WorkflowNotFoundError,
 } from "@temporalio/client";
 import {
+  ApplicationFailure,
   WorkflowExecutionAlreadyStartedError,
   WorkflowIdConflictPolicy,
   WorkflowIdReusePolicy,
@@ -42,6 +45,39 @@ const orderServerActions = defineServerActions(orderActions, {
   cancel: signalAction(cancelWorkflowSignal),
 });
 
+/** Ids of the products that can't be sold, found anywhere in the failure's causes */
+export function unavailableProductIds(error: unknown): number[] | undefined {
+  for (
+    let current: unknown = error;
+    current instanceof Error;
+    // Temporal errors set cause, the build targets a lib without Error.cause
+    current = (current as { cause?: unknown }).cause
+  ) {
+    if (
+      current instanceof ApplicationFailure &&
+      current.type === PRODUCT_UNAVAILABLE
+    ) {
+      const [details] = current.details ?? [];
+      const ids = (details as { productIds?: unknown } | undefined)?.productIds;
+      return Array.isArray(ids)
+        ? ids.filter((id): id is number => typeof id === "number")
+        : [];
+    }
+  }
+  return undefined;
+}
+
+/** Error code clients get in the 400 body, separate from the Temporal failure type */
+export const PRODUCT_UNAVAILABLE_CODE = "PRODUCT_UNAVAILABLE";
+
+const productUnavailable = (productIds: number[]) =>
+  new BadRequestException({
+    statusCode: HttpStatus.BAD_REQUEST,
+    code: PRODUCT_UNAVAILABLE_CODE,
+    message: "Some products in the cart aren't available anymore",
+    productIds,
+  });
+
 @Injectable()
 export class AppService {
   private readonly logger = new Logger(AppService.name);
@@ -50,6 +86,7 @@ export class AppService {
     private readonly configService: ConfigService,
     private readonly clientService: ClientService,
     private readonly stripeService: StripeService,
+    private readonly orderRepository: OrderRepositoryService,
   ) {
     const taskQueue = this.configService.get<string>("temporal.taskQueue");
     if (!taskQueue) {
@@ -75,6 +112,13 @@ export class AppService {
 
   async createOrder(user: AuthUser, orderDto: CreateOrderDto) {
     this.logger.log(`createOrder(${user.email}) - creating order`);
+    // Checked before starting anything, so a stale cart gets a clear answer
+    const unavailable = await this.orderRepository.findUnavailableProductIds(
+      orderDto.items.map((item) => item.productId),
+    );
+    if (unavailable.length > 0) {
+      throw productUnavailable(unavailable);
+    }
     try {
       // Start workflow with order data
       const workflowData: OrderWorkflowData = {
@@ -120,6 +164,11 @@ export class AppService {
           "Order already in progress",
           HttpStatus.CONFLICT,
         );
+      }
+      // Discontinued between the check above and the activity
+      const productIds = unavailableProductIds(error);
+      if (productIds) {
+        throw productUnavailable(productIds);
       }
       this.logger.error(
         `createOrder(${user.email}) - Error creating order`,

@@ -122,6 +122,62 @@ export class ProductDto {
   @Expose()
   status!: ProductStatus;
 
+  @ApiPropertyOptional({
+    description: "SPDX license identifier of the model files",
+    example: "CC-BY-4.0",
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  @Expose()
+  license?: string | null;
+
+  @ApiPropertyOptional({
+    description: "Attribution to show with the product",
+    example: "Smithsonian Institution, NMNH Paleobiology (CC0)",
+  })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => trimTransform(value))
+  @Expose()
+  credit?: string | null;
+
+  @ApiPropertyOptional({
+    description: "Page where the original asset is published",
+  })
+  @IsOptional()
+  @IsUrl()
+  @Expose()
+  sourceUrl?: string | null;
+
+  @ApiPropertyOptional({ description: "GLB file used by the 3D preview" })
+  @IsOptional()
+  @IsUrl()
+  @Expose()
+  modelUrl?: string | null;
+
+  @ApiPropertyOptional({
+    description: "File formats available for download",
+    example: ["glb", "stl"],
+    type: [String],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @Expose()
+  formats?: string[];
+
+  @ApiPropertyOptional({
+    description: "Source metadata such as triangle count and dataset revision",
+    type: Object,
+  })
+  @IsOptional()
+  @Expose()
+  // Free-form JSON: keep it as is, excludeExtraneousValues would empty it.
+  // Left undefined when omitted, so a partial update doesn't clear it.
+  @Transform(({ obj }) => (obj as { attributes?: unknown }).attributes)
+  attributes?: Record<string, unknown> | null;
+
   @ApiProperty({ description: "Date the product was created" })
   @IsDefined()
   @IsDate()
