@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
-import type { OrderWorkflowData } from "@projectx/core";
-import type { OrderStatus } from "@projectx/models";
+import { type OrderWorkflowData, PRODUCT_UNAVAILABLE } from "@projectx/core";
+import { type OrderStatus, ProductUnavailableError } from "@projectx/models";
+import { ApplicationFailure } from "@temporalio/common";
 
 import { OrderService } from "../order/order.service";
 
@@ -11,7 +12,19 @@ export class ActivitiesService {
   ) {}
 
   async createOrder(data: OrderWorkflowData) {
-    return await this.orderService.createOrder(data);
+    try {
+      return await this.orderService.createOrder(data);
+    } catch (error) {
+      // Retrying can't make a discontinued product available again
+      if (error instanceof ProductUnavailableError) {
+        throw ApplicationFailure.nonRetryable(
+          error.message,
+          PRODUCT_UNAVAILABLE,
+          { productIds: error.productIds },
+        );
+      }
+      throw error;
+    }
   }
 
   async cancelPayment(referenceId: string) {

@@ -24,8 +24,12 @@ export const frameSrc = replaceNewLinesWithSpaces(`
   ${defaultSrc}
 `);
 
+// 3D catalog assets: Hugging Face redirects file downloads to its *.hf.co CDNs
+const catalogAssets = "https://huggingface.co https://*.hf.co";
+
 export const connectSrc = replaceNewLinesWithSpaces(`
   ${defaultSrc}
+  ${catalogAssets}
 `);
 export const mediaSrc = replaceNewLinesWithSpaces(`
   ${defaultSrc}
@@ -36,8 +40,9 @@ export const imgSrc = replaceNewLinesWithSpaces(`
   https://*.unsplash.com
   https://placehold.co
   https://gravatar.com
-  https://*.githubusercontent.com\
+  https://*.githubusercontent.com
   https://tailwindui.com
+  ${catalogAssets}
 `);
 
 export const contentSecurityPolicy = replaceNewLinesWithSpaces(`

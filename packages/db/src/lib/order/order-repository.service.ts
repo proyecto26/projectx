@@ -1,7 +1,15 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { CreateOrderDto, OrderDto } from "@projectx/models";
+import {
+  CreateOrderDto,
+  OrderDto,
+  ProductUnavailableError,
+} from "@projectx/models";
 import { plainToInstance } from "class-transformer";
-import { OrderStatus, Prisma } from "../../../generated/prisma/client";
+import {
+  OrderStatus,
+  Prisma,
+  ProductStatus,
+} from "../../../generated/prisma/client";
 import { PrismaService } from "../prisma.service";
 
 @Injectable()
@@ -9,6 +17,19 @@ export class OrderRepositoryService {
   private logger = new Logger(OrderRepositoryService.name);
 
   constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
+
+  /**
+   * Returns the ids that can't be ordered: products that don't exist or
+   * aren't available anymore.
+   */
+  async findUnavailableProductIds(productIds: number[]): Promise<number[]> {
+    const available = await this.prisma.product.findMany({
+      where: { id: { in: productIds }, status: ProductStatus.Available },
+      select: { id: true },
+    });
+    const availableIds = new Set(available.map((product) => product.id));
+    return [...new Set(productIds)].filter((id) => !availableIds.has(id));
+  }
 
   async createOrder(userId: number, createOrderDto: CreateOrderDto) {
     this.logger.verbose(
@@ -50,8 +71,20 @@ export class OrderRepositoryService {
         select: {
           id: true,
           estimatedPrice: true,
+          status: true,
         },
       });
+      // Checked again here: a product can be discontinued after the cart was checked
+      const unavailable = createOrderDto.items
+        .map((item) => item.productId)
+        .filter(
+          (id) =>
+            products.find((p) => p.id === id)?.status !==
+            ProductStatus.Available,
+        );
+      if (unavailable.length > 0) {
+        throw new ProductUnavailableError([...new Set(unavailable)]);
+      }
       // Map of productId to price at purchase
       const pricesMap = {} as Record<number, number>;
       // Calculate total price using Prisma.Decimal

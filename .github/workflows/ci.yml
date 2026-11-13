@@ -44,3 +44,48 @@ jobs:
         run: pnpm test
       - name: Check the published packages
         run: pnpm check:packages
+
+  database:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgis/postgis:17-3.6
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Generate the Prisma client
+        run: pnpm --filter @projectx/db prisma:generate
+      - name: Build the packages the tests import
+        run: pnpm turbo run build --filter=@projectx/db^...
+      - name: Apply the migrations to an empty database
+        run: pnpm --filter @projectx/db prisma:migrate
+      - name: Upgrade and seed a database with legacy data
+        run: pnpm --filter @projectx/db test:integration
+      - name: Check catalog.json against the pinned datasets
+        run: pnpm --filter @projectx/db catalog:check

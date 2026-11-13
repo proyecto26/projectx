@@ -1,0 +1,3144 @@
+[
+  {
+    "sku": "SI-9d1b798a",
+    "name": "Glass sponge (Acanthascus koltuni)",
+    "description": "Scan of a deep-sea glass sponge specimen from the NMNH invertebrate collection.",
+    "category": "Shells & Corals",
+    "tags": ["sponge", "marine", "specimen"],
+    "estimatedPrice": 34,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/acanthascus-koltuni-9d1b798a.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/acanthascus-koltuni-9d1b798a/acanthascus-koltuni-9d1b798a_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/acanthascus-koltuni-9d1b798a/acanthascus-koltuni-9d1b798a.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, NMNH - Invertebrate Zoology Dept. (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/acanthascus-koltuni-9d1b798a",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "acanthascus-koltuni-9d1b798a",
+      "originalTitle": "Acanthascus koltuni",
+      "triangles": 149999,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-50a5728c",
+    "name": "Short-spined sea star (Acanthaster brevispinus)",
+    "description": "Scan of a sea star specimen from the NMNH invertebrate collection.",
+    "category": "Shells & Corals",
+    "tags": ["sea star", "marine", "specimen"],
+    "estimatedPrice": 34,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/acanthaster-brevispinus-50a5728c.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/acanthaster-brevispinus-50a5728c/acanthaster-brevispinus-50a5728c_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/acanthaster-brevispinus-50a5728c/acanthaster-brevispinus-50a5728c.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, NMNH - Invertebrate Zoology Dept. (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/acanthaster-brevispinus-50a5728c",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "acanthaster-brevispinus-50a5728c",
+      "originalTitle": "Acanthaster brevispinus",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-b3a05c85",
+    "name": "Freshwater oyster shell (Acostaea dalyi)",
+    "description": "Scan of a freshwater oyster shell from the NMNH invertebrate collection.",
+    "category": "Shells & Corals",
+    "tags": ["shell", "mollusk", "specimen"],
+    "estimatedPrice": 38,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/acostaea-pseudomulleria-dalyi-b3a05c85.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/acostaea-pseudomulleria-dalyi-b3a05c85/acostaea-pseudomulleria-dalyi-b3a05c85_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/acostaea-pseudomulleria-dalyi-b3a05c85/acostaea-pseudomulleria-dalyi-b3a05c85.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, NMNH - Invertebrate Zoology Dept. (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/acostaea-pseudomulleria-dalyi-b3a05c85",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "acostaea-pseudomulleria-dalyi-b3a05c85",
+      "originalTitle": "Acostaea (Pseudomulleria) dalyi",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-e2fe113a",
+    "name": "Branching coral (Acropora murrayensis)",
+    "description": "Scan of a branching Acropora coral from the NMNH invertebrate collection.",
+    "category": "Shells & Corals",
+    "tags": ["coral", "reef", "specimen"],
+    "estimatedPrice": 30,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/acropora-rhabdocyathus-murrayensis-e2fe113a.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/acropora-rhabdocyathus-murrayensis-e2fe113a/acropora-rhabdocyathus-murrayensis-e2fe113a_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/acropora-rhabdocyathus-murrayensis-e2fe113a/acropora-rhabdocyathus-murrayensis-e2fe113a.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, NMNH - Invertebrate Zoology Dept. (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/acropora-rhabdocyathus-murrayensis-e2fe113a",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "acropora-rhabdocyathus-murrayensis-e2fe113a",
+      "originalTitle": "Acropora (Rhabdocyathus) murrayensis",
+      "triangles": 149999,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-31d1de41",
+    "name": "Staghorn coral (Acropora cervicornis)",
+    "description": "Scan of a staghorn coral branch from the NMNH invertebrate collection.",
+    "category": "Shells & Corals",
+    "tags": ["coral", "reef", "specimen"],
+    "estimatedPrice": 22,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/acropora-cervicornis-31d1de41.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/acropora-cervicornis-31d1de41/acropora-cervicornis-31d1de41_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/acropora-cervicornis-31d1de41/acropora-cervicornis-31d1de41.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, NMNH - Invertebrate Zoology Dept. (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/acropora-cervicornis-31d1de41",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "acropora-cervicornis-31d1de41",
+      "originalTitle": "Acropora cervicornis",
+      "triangles": 100000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-3d911744",
+    "name": "Reef coral (Acropora diomedeae)",
+    "description": "Scan of an Acropora reef coral from the NMNH invertebrate collection.",
+    "category": "Shells & Corals",
+    "tags": ["coral", "reef", "specimen"],
+    "estimatedPrice": 22,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/acropora-diomedeae-3d911744.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/acropora-diomedeae-3d911744/acropora-diomedeae-3d911744_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/acropora-diomedeae-3d911744/acropora-diomedeae-3d911744.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, NMNH - Invertebrate Zoology Dept. (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/acropora-diomedeae-3d911744",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "acropora-diomedeae-3d911744",
+      "originalTitle": "Acropora diomedeae",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-193dd6e2",
+    "name": "Reef coral (Acropora mangarevensis)",
+    "description": "Scan of an Acropora reef coral from the NMNH invertebrate collection.",
+    "category": "Shells & Corals",
+    "tags": ["coral", "reef", "specimen"],
+    "estimatedPrice": 30,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/acropora-mangarevensis-193dd6e2.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/acropora-mangarevensis-193dd6e2/acropora-mangarevensis-193dd6e2_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/acropora-mangarevensis-193dd6e2/acropora-mangarevensis-193dd6e2.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, NMNH - Invertebrate Zoology Dept. (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/acropora-mangarevensis-193dd6e2",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "acropora-mangarevensis-193dd6e2",
+      "originalTitle": "Acropora mangarevensis",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-ea466b91",
+    "name": "Reef coral (Acropora pagoensis)",
+    "description": "Scan of an Acropora reef coral from the NMNH invertebrate collection.",
+    "category": "Shells & Corals",
+    "tags": ["coral", "reef", "specimen"],
+    "estimatedPrice": 30,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/acropora-pagoensis-ea466b91.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/acropora-pagoensis-ea466b91/acropora-pagoensis-ea466b91_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/acropora-pagoensis-ea466b91/acropora-pagoensis-ea466b91.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, NMNH - Invertebrate Zoology Dept. (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/acropora-pagoensis-ea466b91",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "acropora-pagoensis-ea466b91",
+      "originalTitle": "Acropora pagoensis",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-926b31df",
+    "name": "Early whale sternum (Aetiocetus cotylalveus)",
+    "description": "Scan of a fossil whale sternum from the NMNH paleobiology collection.",
+    "category": "Fossils",
+    "tags": ["fossil", "whale", "bone"],
+    "estimatedPrice": 29,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/aetiocetus-cotylalveus-emlong-sternum-926b31df.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/aetiocetus-cotylalveus-emlong-sternum-926b31df/aetiocetus-cotylalveus-emlong-sternum-926b31df_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/aetiocetus-cotylalveus-emlong-sternum-926b31df/aetiocetus-cotylalveus-emlong-sternum-926b31df.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, NMNH - Paleobiology Dept. (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/aetiocetus-cotylalveus-emlong-sternum-926b31df",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "aetiocetus-cotylalveus-emlong-sternum-926b31df",
+      "originalTitle": "Aetiocetus cotylalveus Emlong",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-19a6f17f",
+    "name": "Early toothed whale (Albertocetus meffordorum)",
+    "description": "Scan of a fossil toothed whale from the NMNH paleobiology collection.",
+    "category": "Fossils",
+    "tags": ["fossil", "whale"],
+    "estimatedPrice": 33,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/albertocetus-meffordorum-19a6f17f.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/albertocetus-meffordorum-19a6f17f/albertocetus-meffordorum-19a6f17f_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/albertocetus-meffordorum-19a6f17f/albertocetus-meffordorum-19a6f17f.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, NMNH - Paleobiology Dept. (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/albertocetus-meffordorum-19a6f17f",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "albertocetus-meffordorum-19a6f17f",
+      "originalTitle": "Albertocetus meffordorum",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-1a090f67",
+    "name": "Allosaurus upper jaw (Allosaurus fragilis)",
+    "description": "Scan of an Allosaurus maxilla, the upper jaw bone, from the NMNH paleobiology collection.",
+    "category": "Fossils",
+    "tags": ["fossil", "dinosaur", "jaw"],
+    "estimatedPrice": 41,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/allosaurus-fragilis-marsh-1877-maxilla-1a090f67.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/allosaurus-fragilis-marsh-1877-maxilla-1a090f67/allosaurus-fragilis-marsh-1877-maxilla-1a090f67_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/allosaurus-fragilis-marsh-1877-maxilla-1a090f67/allosaurus-fragilis-marsh-1877-maxilla-1a090f67.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, NMNH - Paleobiology Dept. (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/allosaurus-fragilis-marsh-1877-maxilla-1a090f67",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "allosaurus-fragilis-marsh-1877-maxilla-1a090f67",
+      "originalTitle": "Allosaurus fragilis Marsh, 1877",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-36c95795",
+    "name": "Fossil clam (Anthonya cultriformis)",
+    "description": "Scan of a fossil bivalve shell from the NMNH paleobiology collection.",
+    "category": "Fossils",
+    "tags": ["fossil", "shell", "bivalve"],
+    "estimatedPrice": 37,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/anthonya-cultriformis-gabb-36c95795.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/anthonya-cultriformis-gabb-36c95795/anthonya-cultriformis-gabb-36c95795_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/anthonya-cultriformis-gabb-36c95795/anthonya-cultriformis-gabb-36c95795.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, NMNH - Paleobiology Dept. (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/anthonya-cultriformis-gabb-36c95795",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "anthonya-cultriformis-gabb-36c95795",
+      "originalTitle": "Anthonya cultriformis Gabb",
+      "triangles": 101494,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-23c39243",
+    "name": "Fossil clam (Anthonya elongata)",
+    "description": "Scan of a fossil bivalve shell from the NMNH paleobiology collection.",
+    "category": "Fossils",
+    "tags": ["fossil", "shell", "bivalve"],
+    "estimatedPrice": 45,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/anthonya-elongata-tenison-woods-23c39243.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/anthonya-elongata-tenison-woods-23c39243/anthonya-elongata-tenison-woods-23c39243_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/anthonya-elongata-tenison-woods-23c39243/anthonya-elongata-tenison-woods-23c39243.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, NMNH - Paleobiology Dept. (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/anthonya-elongata-tenison-woods-23c39243",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "anthonya-elongata-tenison-woods-23c39243",
+      "originalTitle": "Anthonya elongata Tenison Woods",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-6b3b2ddd",
+    "name": "Fossil leaf (Aralia kellingtoniana)",
+    "description": "Scan of a fossil plant leaf from the NMNH paleobiology collection.",
+    "category": "Fossils",
+    "tags": ["fossil", "plant", "leaf"],
+    "estimatedPrice": 33,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/aralia-kellingtoniana-newberry-saporta-marion-6b3b2ddd.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/aralia-kellingtoniana-newberry-saporta-marion-6b3b2ddd/aralia-kellingtoniana-newberry-saporta-marion-6b3b2ddd_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/aralia-kellingtoniana-newberry-saporta-marion-6b3b2ddd/aralia-kellingtoniana-newberry-saporta-marion-6b3b2ddd.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, NMNH - Paleobiology Dept. (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/aralia-kellingtoniana-newberry-saporta-marion-6b3b2ddd",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "aralia-kellingtoniana-newberry-saporta-marion-6b3b2ddd",
+      "originalTitle": "Aralia kellingtoniana (Newberry) Saporta & Marion",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-391660da",
+    "name": "Archaeopteryx fossil (Archaeopteryx siemensii)",
+    "description": "Scan of an Archaeopteryx specimen from the NMNH paleobiology collection.",
+    "category": "Fossils",
+    "tags": ["fossil", "bird", "dinosaur"],
+    "estimatedPrice": 45,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/archaeopteryx-siemensii-dames-391660da.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/archaeopteryx-siemensii-dames-391660da/archaeopteryx-siemensii-dames-391660da_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/archaeopteryx-siemensii-dames-391660da/archaeopteryx-siemensii-dames-391660da.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, NMNH - Paleobiology Dept. (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/archaeopteryx-siemensii-dames-391660da",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "archaeopteryx-siemensii-dames-391660da",
+      "originalTitle": "Archaeopteryx siemensii Dames",
+      "triangles": 99999,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-0fc17c4b",
+    "name": "Archaeotherium skull (Archaeotherium mortoni)",
+    "description": "Scan of a fossil Archaeotherium skull from the NMNH paleobiology collection.",
+    "category": "Fossils",
+    "tags": ["fossil", "mammal", "skull"],
+    "estimatedPrice": 33,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/archaeotherium-mortoni-leidy-1850-a-skull-0fc17c4b.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/archaeotherium-mortoni-leidy-1850-a-skull-0fc17c4b/archaeotherium-mortoni-leidy-1850-a-skull-0fc17c4b_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/archaeotherium-mortoni-leidy-1850-a-skull-0fc17c4b/archaeotherium-mortoni-leidy-1850-a-skull-0fc17c4b.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, NMNH - Paleobiology Dept. (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/archaeotherium-mortoni-leidy-1850-a-skull-0fc17c4b",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "archaeotherium-mortoni-leidy-1850-a-skull-0fc17c4b",
+      "originalTitle": "Archaeotherium mortoni Leidy, 1850",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-ba7962eb",
+    "name": "Archaeotherium fossil (Archaeotherium sp.)",
+    "description": "Scan of an Archaeotherium fossil from the NMNH paleobiology collection.",
+    "category": "Fossils",
+    "tags": ["fossil", "mammal"],
+    "estimatedPrice": 45,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/archaeotherium-sp-ba7962eb.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/archaeotherium-sp-ba7962eb/archaeotherium-sp-ba7962eb_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/archaeotherium-sp-ba7962eb/archaeotherium-sp-ba7962eb.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, NMNH - Paleobiology Dept. (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/archaeotherium-sp-ba7962eb",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "archaeotherium-sp-ba7962eb",
+      "originalTitle": "Archaeotherium sp",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-0832cf77",
+    "name": "Fossil seal (Australophoca changorum)",
+    "description": "Scan of a fossil seal specimen from the NMNH paleobiology collection.",
+    "category": "Fossils",
+    "tags": ["fossil", "seal", "mammal"],
+    "estimatedPrice": 33,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/australophoca-changorum-valenzuela-toro-et-al-2016-d-0832cf77.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/australophoca-changorum-valenzuela-toro-et-al-2016-d-0832cf77/australophoca-changorum-valenzuela-toro-et-al-2016-d-0832cf77_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/australophoca-changorum-valenzuela-toro-et-al-2016-d-0832cf77/australophoca-changorum-valenzuela-toro-et-al-2016-d-0832cf77.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, NMNH - Paleobiology Dept. (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/australophoca-changorum-valenzuela-toro-et-al-2016-d-0832cf77",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "australophoca-changorum-valenzuela-toro-et-al-2016-d-0832cf77",
+      "originalTitle": "Australophoca changorum Valenzuela-Toro et al., 2016",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-2632d078",
+    "name": "Armchair with slip seat",
+    "description": "Scan of an armchair from the Cooper Hewitt, Smithsonian Design Museum.",
+    "category": "Sculpture & Design",
+    "tags": ["furniture", "chair", "design"],
+    "estimatedPrice": 42,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/armchair-with-slip-seat-2632d078.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/armchair-with-slip-seat-2632d078/armchair-with-slip-seat-2632d078_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/armchair-with-slip-seat-2632d078/armchair-with-slip-seat-2632d078.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, Cooper Hewitt, Smithsonian Design Museum (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/armchair-with-slip-seat-2632d078",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "armchair-with-slip-seat-2632d078",
+      "originalTitle": "Armchair with slip seat",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-d8c6393a",
+    "name": "Baluster vase",
+    "description": "Scan of a baluster vase from a five-piece garniture, National Museum of Asian Art.",
+    "category": "Sculpture & Design",
+    "tags": ["vase", "ceramic"],
+    "estimatedPrice": 50,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/baluster-vase-from-a-five-piece-garniture-f1980-190-194-d8c6393a.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/baluster-vase-from-a-five-piece-garniture-f1980-190-194-d8c6393a/baluster-vase-from-a-five-piece-garniture-f1980-190-194-d8c6393a_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/baluster-vase-from-a-five-piece-garniture-f1980-190-194-d8c6393a/baluster-vase-from-a-five-piece-garniture-f1980-190-194-d8c6393a.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, National Museum of Asian Art (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/baluster-vase-from-a-five-piece-garniture-f1980-190-194-d8c6393a",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "baluster-vase-from-a-five-piece-garniture-f1980-190-194-d8c6393a",
+      "originalTitle": "Baluster vase, from a five-piece garniture (F1980.190-.194)",
+      "triangles": 149999,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-d8c64b96",
+    "name": "Beaker-shaped vase",
+    "description": "Scan of a beaker-shaped vase from a five-piece garniture, National Museum of Asian Art.",
+    "category": "Sculpture & Design",
+    "tags": ["vase", "ceramic"],
+    "estimatedPrice": 50,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/beaker-shaped-vase-from-a-five-piece-garniture-d8c64b96.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/beaker-shaped-vase-from-a-five-piece-garniture-d8c64b96/beaker-shaped-vase-from-a-five-piece-garniture-d8c64b96_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/beaker-shaped-vase-from-a-five-piece-garniture-d8c64b96/beaker-shaped-vase-from-a-five-piece-garniture-d8c64b96.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, National Museum of Asian Art (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/beaker-shaped-vase-from-a-five-piece-garniture-d8c64b96",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "beaker-shaped-vase-from-a-five-piece-garniture-d8c64b96",
+      "originalTitle": "Beaker-shaped vase, from a five-piece garniture",
+      "triangles": 149999,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-349e8fa2",
+    "name": "Ewer",
+    "description": "Scan of a ewer, a pouring vessel, from the Cooper Hewitt, Smithsonian Design Museum.",
+    "category": "Sculpture & Design",
+    "tags": ["vessel", "design"],
+    "estimatedPrice": 46,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/ewer-349e8fa2.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/ewer-349e8fa2/ewer-349e8fa2_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/ewer-349e8fa2/ewer-349e8fa2.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, Cooper Hewitt, Smithsonian Design Museum (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/ewer-349e8fa2",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "ewer-349e8fa2",
+      "originalTitle": "Ewer",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-e8d1f790",
+    "name": "Girl Skating, sculpture",
+    "description": "Scan of the sculpture Girl Skating from the Smithsonian American Art Museum.",
+    "category": "Sculpture & Design",
+    "tags": ["sculpture", "figure"],
+    "estimatedPrice": 38,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/girl-skating-e8d1f790.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/girl-skating-e8d1f790/girl-skating-e8d1f790_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/girl-skating-e8d1f790/girl-skating-e8d1f790.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, Smithsonian American Art Museum (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/girl-skating-e8d1f790",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "girl-skating-e8d1f790",
+      "originalTitle": "Girl Skating",
+      "triangles": 149999,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-0dc68216",
+    "name": "Kneeling winged monster",
+    "description": "Scan of a kneeling winged monster figure from the National Museum of Asian Art.",
+    "category": "Sculpture & Design",
+    "tags": ["sculpture", "creature"],
+    "estimatedPrice": 50,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/kneeling-winged-monster-0dc68216.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/kneeling-winged-monster-0dc68216/kneeling-winged-monster-0dc68216_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/kneeling-winged-monster-0dc68216/kneeling-winged-monster-0dc68216.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, National Museum of Asian Art (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/kneeling-winged-monster-0dc68216",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "kneeling-winged-monster-0dc68216",
+      "originalTitle": "Kneeling winged monster",
+      "triangles": 149999,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-547c78d1",
+    "name": "Kylix drinking cup",
+    "description": "Scan of a kylix, a shallow drinking cup, from the Cooper Hewitt, Smithsonian Design Museum.",
+    "category": "Sculpture & Design",
+    "tags": ["vessel", "cup"],
+    "estimatedPrice": 38,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/kylix-547c78d1.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/kylix-547c78d1/kylix-547c78d1_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/kylix-547c78d1/kylix-547c78d1.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, Cooper Hewitt, Smithsonian Design Museum (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/kylix-547c78d1",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "kylix-547c78d1",
+      "originalTitle": "Kylix",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-ce850625",
+    "name": "Lidded incense burner (xianglu)",
+    "description": "Scan of a lidded incense burner with geometric decoration, National Museum of Asian Art.",
+    "category": "Sculpture & Design",
+    "tags": ["vessel", "bronze"],
+    "estimatedPrice": 46,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/lidded-incense-burner-xianglu-with-geometric-decoration-and-ce850625.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/lidded-incense-burner-xianglu-with-geometric-decoration-and-ce850625/lidded-incense-burner-xianglu-with-geometric-decoration-and-ce850625_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/lidded-incense-burner-xianglu-with-geometric-decoration-and-ce850625/lidded-incense-burner-xianglu-with-geometric-decoration-and-ce850625.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, National Museum of Asian Art (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/lidded-incense-burner-xianglu-with-geometric-decoration-and-ce850625",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "lidded-incense-burner-xianglu-with-geometric-decoration-and-ce850625",
+      "originalTitle": "Lidded incense burner (xianglu) with geometric decoration and narrative scenes",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-dc9e437b",
+    "name": "Cabinet door panel",
+    "description": "Scan of a carved cabinet door panel from the Cooper Hewitt, Smithsonian Design Museum.",
+    "category": "Sculpture & Design",
+    "tags": ["panel", "relief", "design"],
+    "estimatedPrice": 42,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/panel-for-a-cabinet-door-dc9e437b.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/panel-for-a-cabinet-door-dc9e437b/panel-for-a-cabinet-door-dc9e437b_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/panel-for-a-cabinet-door-dc9e437b/panel-for-a-cabinet-door-dc9e437b.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, Cooper Hewitt, Smithsonian Design Museum (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/panel-for-a-cabinet-door-dc9e437b",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "panel-for-a-cabinet-door-dc9e437b",
+      "originalTitle": "Panel for a cabinet door",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-81b195cd",
+    "name": "Baseball",
+    "description": "Scan of a baseball from the National Museum of American History.",
+    "category": "History",
+    "tags": ["sports", "ball"],
+    "estimatedPrice": 26,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/baseball-81b195cd.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/baseball-81b195cd/baseball-81b195cd_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/baseball-81b195cd/baseball-81b195cd.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, National Museum of American History (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/baseball-81b195cd",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "baseball-81b195cd",
+      "originalTitle": "Baseball",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-687b5a18",
+    "name": "Cher Ami, carrier pigeon",
+    "description": "Scan of Cher Ami, the World War I carrier pigeon, National Museum of American History.",
+    "category": "History",
+    "tags": ["bird", "history"],
+    "estimatedPrice": 30,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/cher-ami-687b5a18.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/cher-ami-687b5a18/cher-ami-687b5a18_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/cher-ami-687b5a18/cher-ami-687b5a18.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, National Museum of American History (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/cher-ami-687b5a18",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "cher-ami-687b5a18",
+      "originalTitle": "Cher Ami",
+      "triangles": 154214,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-d44e9327",
+    "name": "Telegraph relay",
+    "description": "Scan of a Chester telegraph relay from the National Museum of American History.",
+    "category": "History",
+    "tags": ["telegraph", "electrical"],
+    "estimatedPrice": 26,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/chester-telegraph-relay-d44e9327.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/chester-telegraph-relay-d44e9327/chester-telegraph-relay-d44e9327_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/chester-telegraph-relay-d44e9327/chester-telegraph-relay-d44e9327.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, National Museum of American History (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/chester-telegraph-relay-d44e9327",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "chester-telegraph-relay-d44e9327",
+      "originalTitle": "Chester telegraph relay",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-80c485f9",
+    "name": "Cowbell",
+    "description": "Scan of a cowbell instrument from the National Museum of American History.",
+    "category": "History",
+    "tags": ["instrument", "music"],
+    "estimatedPrice": 38,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/cowbell-80c485f9.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/cowbell-80c485f9/cowbell-80c485f9_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/cowbell-80c485f9/cowbell-80c485f9.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, National Museum of American History (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/cowbell-80c485f9",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "cowbell-80c485f9",
+      "originalTitle": "Cowbell instrument",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-a18922b9",
+    "name": "Davenport electric motor",
+    "description": "Scan of the Davenport electric motor patent model (US patent #132), National Museum of American History.",
+    "category": "History",
+    "tags": ["motor", "patent model", "electrical"],
+    "estimatedPrice": 30,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/davenport-electric-motor-patent-132-a18922b9.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/davenport-electric-motor-patent-132-a18922b9/davenport-electric-motor-patent-132-a18922b9_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/davenport-electric-motor-patent-132-a18922b9/davenport-electric-motor-patent-132-a18922b9.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, National Museum of American History (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/davenport-electric-motor-patent-132-a18922b9",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "davenport-electric-motor-patent-132-a18922b9",
+      "originalTitle": "Davenport electric motor, US patent #132",
+      "triangles": 100002,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-4dafe5d9",
+    "name": "Sugar beet knife",
+    "description": "Scan of a sugar beet knife from the National Museum of American History.",
+    "category": "History",
+    "tags": ["tool", "agriculture"],
+    "estimatedPrice": 26,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/de-la-fuente-sugar-beet-knife-4dafe5d9.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/de-la-fuente-sugar-beet-knife-4dafe5d9/de-la-fuente-sugar-beet-knife-4dafe5d9_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/de-la-fuente-sugar-beet-knife-4dafe5d9/de-la-fuente-sugar-beet-knife-4dafe5d9.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, National Museum of American History (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/de-la-fuente-sugar-beet-knife-4dafe5d9",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "de-la-fuente-sugar-beet-knife-4dafe5d9",
+      "originalTitle": "De la Fuente sugar beet knife",
+      "triangles": 100000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-9a096c5a",
+    "name": "Portable writing desk",
+    "description": "Scan of the portable desk used to draft the Declaration of Independence, National Museum of American History.",
+    "category": "History",
+    "tags": ["desk", "furniture", "history"],
+    "estimatedPrice": 42,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/portable-desk-thomas-jefferson-used-to-draft-the-declaration-9a096c5a.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/portable-desk-thomas-jefferson-used-to-draft-the-declaration-9a096c5a/portable-desk-thomas-jefferson-used-to-draft-the-declaration-9a096c5a_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/portable-desk-thomas-jefferson-used-to-draft-the-declaration-9a096c5a/portable-desk-thomas-jefferson-used-to-draft-the-declaration-9a096c5a.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, National Museum of American History (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/portable-desk-thomas-jefferson-used-to-draft-the-declaration-9a096c5a",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "portable-desk-thomas-jefferson-used-to-draft-the-declaration-9a096c5a",
+      "originalTitle": "Declaration of Independence Desk",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-6c69a6bb",
+    "name": "Bell X-1 aircraft",
+    "description": "Scan of the Bell X-1 rocket plane from the National Air and Space Museum.",
+    "category": "Air & Space",
+    "tags": ["aircraft", "rocket plane"],
+    "estimatedPrice": 47,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/bell-x-1-6c69a6bb.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/bell-x-1-6c69a6bb/bell-x-1-6c69a6bb_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/bell-x-1-6c69a6bb/bell-x-1-6c69a6bb.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, National Air and Space Museum (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/bell-x-1-6c69a6bb",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "bell-x-1-6c69a6bb",
+      "originalTitle": "Bell X-1",
+      "triangles": 103678,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-732d123d",
+    "name": "Cassiopeia A supernova remnant",
+    "description": "3D model of the Cassiopeia A supernova remnant from the Smithsonian Astrophysical Observatory.",
+    "category": "Air & Space",
+    "tags": ["astronomy", "supernova"],
+    "estimatedPrice": 39,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/cassiopeia-a-supernova-remnant-732d123d.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/cassiopeia-a-supernova-remnant-732d123d/cassiopeia-a-supernova-remnant-732d123d_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/cassiopeia-a-supernova-remnant-732d123d/cassiopeia-a-supernova-remnant-732d123d.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, Smithsonian Astrophysical Observatory (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/cassiopeia-a-supernova-remnant-732d123d",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "cassiopeia-a-supernova-remnant-732d123d",
+      "originalTitle": "Cassiopeia A Supernova Remnant",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-571330ee",
+    "name": "Chandra X-ray Observatory",
+    "description": "3D model of the Chandra X-ray Observatory from the Smithsonian Astrophysical Observatory.",
+    "category": "Air & Space",
+    "tags": ["spacecraft", "telescope"],
+    "estimatedPrice": 39,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/chandra-x-ray-observatory-571330ee.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/chandra-x-ray-observatory-571330ee/chandra-x-ray-observatory-571330ee_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/chandra-x-ray-observatory-571330ee/chandra-x-ray-observatory-571330ee.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, Smithsonian Astrophysical Observatory (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/chandra-x-ray-observatory-571330ee",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "chandra-x-ray-observatory-571330ee",
+      "originalTitle": "Chandra X-ray Observatory",
+      "triangles": 130629,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-d8c63e8a",
+    "name": "Apollo 11 command module",
+    "description": "Scan of the Apollo 11 command module Columbia from the National Air and Space Museum.",
+    "category": "Air & Space",
+    "tags": ["spacecraft", "apollo"],
+    "estimatedPrice": 47,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/command-module-apollo-11-d8c63e8a.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/command-module-apollo-11-d8c63e8a/command-module-apollo-11-d8c63e8a_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/command-module-apollo-11-d8c63e8a/command-module-apollo-11-d8c63e8a.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, National Air and Space Museum (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/command-module-apollo-11-d8c63e8a",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "command-module-apollo-11-d8c63e8a",
+      "originalTitle": "Command Module, Apollo 11",
+      "triangles": 481457,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-6634445f",
+    "name": "Crab Nebula",
+    "description": "3D model of the Crab Nebula from the Smithsonian Astrophysical Observatory.",
+    "category": "Air & Space",
+    "tags": ["astronomy", "nebula"],
+    "estimatedPrice": 55,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/crab-nebula-6634445f.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/crab-nebula-6634445f/crab-nebula-6634445f_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/crab-nebula-6634445f/crab-nebula-6634445f.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, Smithsonian Astrophysical Observatory (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/crab-nebula-6634445f",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "crab-nebula-6634445f",
+      "originalTitle": "Crab Nebula",
+      "triangles": 149999,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "SI-d8c636ce",
+    "name": "Space Shuttle Discovery",
+    "description": "Scan of the Space Shuttle orbiter Discovery (OV-103) from the National Air and Space Museum.",
+    "category": "Air & Space",
+    "tags": ["spacecraft", "shuttle"],
+    "estimatedPrice": 39,
+    "imageUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/orbiter-space-shuttle-ov-103-discovery-d8c636ce.webp",
+    "modelUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/lods/orbiter-space-shuttle-ov-103-discovery-d8c636ce/orbiter-space-shuttle-ov-103-discovery-d8c636ce_lod2.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/orbiter-space-shuttle-ov-103-discovery-d8c636ce/orbiter-space-shuttle-ov-103-discovery-d8c636ce.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC0-1.0",
+    "credit": "Smithsonian Institution, National Air and Space Museum (CC0)",
+    "sourceUrl": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/tree/18f91b07be69a28eed646eb1e60b5b36d3e70f31/objects/orbiter-space-shuttle-ov-103-discovery-d8c636ce",
+    "attributes": {
+      "source": "smithsonian",
+      "assetId": "orbiter-space-shuttle-ov-103-discovery-d8c636ce",
+      "originalTitle": "Orbiter, Space Shuttle, OV-103, Discovery",
+      "triangles": 150000,
+      "dataset": "cfahlgren1/smithsonian-3d-glb",
+      "revision": "18f91b07be69a28eed646eb1e60b5b36d3e70f31"
+    }
+  },
+  {
+    "sku": "AT-01",
+    "name": "Controller board, 14 ports",
+    "description": "Model of a 14-port controller board for maker projects.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "board"],
+    "estimatedPrice": 28,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/01_atech_board_14port/simready_usd/.thumbs/256x256/atech_board_14port.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/01_atech_board_14port/gltf/atech_board_14port.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/01_atech_board_14port/gltf/atech_board_14port.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/01_atech_board_14port/mjcf/meshes/atech_board_14port/board.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/01_atech_board_14port/mjcf/meshes/atech_board_14port/frame.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/01_atech_board_14port/mjcf/meshes/atech_board_14port/grey.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/01_atech_board_14port/mjcf/meshes/atech_board_14port/satin.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/01_atech_board_14port/mjcf/meshes/atech_board_14port/silk.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/01_atech_board_14port/mjcf/meshes/atech_board_14port/socket.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/01_atech_board_14port",
+    "attributes": {
+      "source": "atech",
+      "assetId": "01_atech_board_14port",
+      "stlParts": 6,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-02",
+    "name": "Controller board, 10 ports",
+    "description": "Model of a 10-port controller board for maker projects.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "board"],
+    "estimatedPrice": 16,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/02_atech_board_10port/simready_usd/.thumbs/256x256/atech_board_10port.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/02_atech_board_10port/gltf/atech_board_10port.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/02_atech_board_10port/gltf/atech_board_10port.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/02_atech_board_10port/mjcf/meshes/atech_board_10port/board.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/02_atech_board_10port/mjcf/meshes/atech_board_10port/grey.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/02_atech_board_10port/mjcf/meshes/atech_board_10port/satin.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/02_atech_board_10port/mjcf/meshes/atech_board_10port/socket.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/02_atech_board_10port",
+    "attributes": {
+      "source": "atech",
+      "assetId": "02_atech_board_10port",
+      "stlParts": 4,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-03",
+    "name": "Controller board, 8 ports",
+    "description": "Model of an 8-port controller board for maker projects.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "board"],
+    "estimatedPrice": 16,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/03_atech_board_8port/simready_usd/.thumbs/256x256/atech_board_8port.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/03_atech_board_8port/gltf/atech_board_8port.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/03_atech_board_8port/gltf/atech_board_8port.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/03_atech_board_8port/mjcf/meshes/atech_board_8port/board.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/03_atech_board_8port/mjcf/meshes/atech_board_8port/glass.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/03_atech_board_8port/mjcf/meshes/atech_board_8port/pins.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/03_atech_board_8port/mjcf/meshes/atech_board_8port/satin.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/03_atech_board_8port/mjcf/meshes/atech_board_8port/socket.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/03_atech_board_8port",
+    "attributes": {
+      "source": "atech",
+      "assetId": "03_atech_board_8port",
+      "stlParts": 5,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-04",
+    "name": "Soil moisture sensor",
+    "description": "Model of a soil moisture sensor module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "sensor"],
+    "estimatedPrice": 28,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/simready_usd/.thumbs/256x256/atech_soil_sensor.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/gltf/atech_soil_sensor.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/gltf/atech_soil_sensor.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/mjcf/meshes/atech_soil_sensor/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/mjcf/meshes/atech_soil_sensor/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/mjcf/meshes/atech_soil_sensor/derived_coprocessor.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/mjcf/meshes/atech_soil_sensor/derived_pad_left.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/mjcf/meshes/atech_soil_sensor/derived_pad_right.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/mjcf/meshes/atech_soil_sensor/derived_passive_1.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/mjcf/meshes/atech_soil_sensor/derived_passive_2.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/mjcf/meshes/atech_soil_sensor/derived_passive_3.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/mjcf/meshes/atech_soil_sensor/derived_passive_4.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/mjcf/meshes/atech_soil_sensor/derived_probe_bridge.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/mjcf/meshes/atech_soil_sensor/derived_probe_left.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/mjcf/meshes/atech_soil_sensor/derived_probe_right.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/mjcf/meshes/atech_soil_sensor/derived_status_led.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/mjcf/meshes/atech_soil_sensor/glass.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/mjcf/meshes/atech_soil_sensor/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/mjcf/meshes/atech_soil_sensor/grey.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor/mjcf/meshes/atech_soil_sensor/pcb.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/04_atech_soil_sensor",
+    "attributes": {
+      "source": "atech",
+      "assetId": "04_atech_soil_sensor",
+      "stlParts": 17,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-05",
+    "name": "DC motor",
+    "description": "Model of a small DC motor module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "motor"],
+    "estimatedPrice": 12,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/05_atech_dc_motor/simready_usd/.thumbs/256x256/atech_dc_motor.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/05_atech_dc_motor/gltf/atech_dc_motor.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/05_atech_dc_motor/gltf/atech_dc_motor.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/05_atech_dc_motor/mjcf/meshes/atech_dc_motor/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/05_atech_dc_motor/mjcf/meshes/atech_dc_motor/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/05_atech_dc_motor/mjcf/meshes/atech_dc_motor/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/05_atech_dc_motor/mjcf/meshes/atech_dc_motor/grey.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/05_atech_dc_motor/mjcf/meshes/atech_dc_motor/pcb.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/05_atech_dc_motor",
+    "attributes": {
+      "source": "atech",
+      "assetId": "05_atech_dc_motor",
+      "stlParts": 5,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-06",
+    "name": "AHT20 temperature and humidity sensor",
+    "description": "Model of an AHT20 temperature and humidity sensor module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "sensor"],
+    "estimatedPrice": 16,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/06_atech_aht20/simready_usd/.thumbs/256x256/atech_aht20.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/06_atech_aht20/gltf/atech_aht20.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/06_atech_aht20/gltf/atech_aht20.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/06_atech_aht20/mjcf/meshes/atech_aht20/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/06_atech_aht20/mjcf/meshes/atech_aht20/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/06_atech_aht20/mjcf/meshes/atech_aht20/glass.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/06_atech_aht20/mjcf/meshes/atech_aht20/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/06_atech_aht20/mjcf/meshes/atech_aht20/grey.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/06_atech_aht20/mjcf/meshes/atech_aht20/pcb.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/06_atech_aht20/mjcf/meshes/atech_aht20/white.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/06_atech_aht20",
+    "attributes": {
+      "source": "atech",
+      "assetId": "06_atech_aht20",
+      "stlParts": 7,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-07",
+    "name": "Distance sensor",
+    "description": "Model of a distance sensor module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "sensor"],
+    "estimatedPrice": 28,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/07_atech_distance_sensor/simready_usd/.thumbs/256x256/atech_distance_sensor.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/07_atech_distance_sensor/gltf/atech_distance_sensor.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/07_atech_distance_sensor/gltf/atech_distance_sensor.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/07_atech_distance_sensor/mjcf/meshes/atech_distance_sensor/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/07_atech_distance_sensor/mjcf/meshes/atech_distance_sensor/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/07_atech_distance_sensor/mjcf/meshes/atech_distance_sensor/black_matte.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/07_atech_distance_sensor/mjcf/meshes/atech_distance_sensor/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/07_atech_distance_sensor/mjcf/meshes/atech_distance_sensor/led_red.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/07_atech_distance_sensor/mjcf/meshes/atech_distance_sensor/pcb.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/07_atech_distance_sensor",
+    "attributes": {
+      "source": "atech",
+      "assetId": "07_atech_distance_sensor",
+      "stlParts": 6,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-08",
+    "name": "ICM-40608 motion sensor",
+    "description": "Model of an ICM-40608 motion sensor module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "sensor", "imu"],
+    "estimatedPrice": 28,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/08_atech_icm40608/simready_usd/.thumbs/256x256/atech_icm40608.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/08_atech_icm40608/gltf/atech_icm40608.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/08_atech_icm40608/gltf/atech_icm40608.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/08_atech_icm40608/mjcf/meshes/atech_icm40608/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/08_atech_icm40608/mjcf/meshes/atech_icm40608/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/08_atech_icm40608/mjcf/meshes/atech_icm40608/glass.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/08_atech_icm40608/mjcf/meshes/atech_icm40608/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/08_atech_icm40608/mjcf/meshes/atech_icm40608/grey.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/08_atech_icm40608/mjcf/meshes/atech_icm40608/pcb.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/08_atech_icm40608",
+    "attributes": {
+      "source": "atech",
+      "assetId": "08_atech_icm40608",
+      "stlParts": 6,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-09",
+    "name": "SCD40 air quality sensor",
+    "description": "Model of an SCD40 CO2 and air quality sensor module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "sensor"],
+    "estimatedPrice": 20,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/09_atech_scd40_air_quality/simready_usd/.thumbs/256x256/atech_scd40_air_quality.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/09_atech_scd40_air_quality/gltf/atech_scd40_air_quality.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/09_atech_scd40_air_quality/gltf/atech_scd40_air_quality.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/09_atech_scd40_air_quality/mjcf/meshes/atech_scd40_air_quality/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/09_atech_scd40_air_quality/mjcf/meshes/atech_scd40_air_quality/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/09_atech_scd40_air_quality/mjcf/meshes/atech_scd40_air_quality/derived_passive_1.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/09_atech_scd40_air_quality/mjcf/meshes/atech_scd40_air_quality/derived_passive_2.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/09_atech_scd40_air_quality/mjcf/meshes/atech_scd40_air_quality/derived_passive_3.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/09_atech_scd40_air_quality/mjcf/meshes/atech_scd40_air_quality/derived_sensor_base.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/09_atech_scd40_air_quality/mjcf/meshes/atech_scd40_air_quality/derived_sensor_can.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/09_atech_scd40_air_quality/mjcf/meshes/atech_scd40_air_quality/glass.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/09_atech_scd40_air_quality/mjcf/meshes/atech_scd40_air_quality/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/09_atech_scd40_air_quality/mjcf/meshes/atech_scd40_air_quality/grey.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/09_atech_scd40_air_quality/mjcf/meshes/atech_scd40_air_quality/pcb.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/09_atech_scd40_air_quality",
+    "attributes": {
+      "source": "atech",
+      "assetId": "09_atech_scd40_air_quality",
+      "stlParts": 11,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-10",
+    "name": "Robot arm integrator",
+    "description": "Model of a robot arm integrator module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "robotics"],
+    "estimatedPrice": 12,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/simready_usd/.thumbs/256x256/atech_robot_arm_integrator.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/gltf/atech_robot_arm_integrator.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/gltf/atech_robot_arm_integrator.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/mjcf/meshes/atech_robot_arm_integrator/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/mjcf/meshes/atech_robot_arm_integrator/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/mjcf/meshes/atech_robot_arm_integrator/derived_capacitor.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/mjcf/meshes/atech_robot_arm_integrator/derived_capacitor_base.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/mjcf/meshes/atech_robot_arm_integrator/derived_passive_1.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/mjcf/meshes/atech_robot_arm_integrator/derived_passive_2.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/mjcf/meshes/atech_robot_arm_integrator/derived_servo_connector_back.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/mjcf/meshes/atech_robot_arm_integrator/derived_servo_connector_base.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/mjcf/meshes/atech_robot_arm_integrator/derived_servo_connector_side_a.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/mjcf/meshes/atech_robot_arm_integrator/derived_servo_connector_side_b.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/mjcf/meshes/atech_robot_arm_integrator/derived_servo_pin_1.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/mjcf/meshes/atech_robot_arm_integrator/derived_servo_pin_2.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/mjcf/meshes/atech_robot_arm_integrator/derived_servo_pin_3.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/mjcf/meshes/atech_robot_arm_integrator/glass.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/mjcf/meshes/atech_robot_arm_integrator/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator/mjcf/meshes/atech_robot_arm_integrator/pcb.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/10_atech_robot_arm_integrator",
+    "attributes": {
+      "source": "atech",
+      "assetId": "10_atech_robot_arm_integrator",
+      "stlParts": 16,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-11",
+    "name": "Microphone module",
+    "description": "Model of a microphone module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "audio"],
+    "estimatedPrice": 16,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/11_atech_microphone/simready_usd/.thumbs/256x256/atech_microphone.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/11_atech_microphone/gltf/atech_microphone.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/11_atech_microphone/gltf/atech_microphone.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/11_atech_microphone/mjcf/meshes/atech_microphone/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/11_atech_microphone/mjcf/meshes/atech_microphone/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/11_atech_microphone/mjcf/meshes/atech_microphone/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/11_atech_microphone/mjcf/meshes/atech_microphone/pcb.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/11_atech_microphone",
+    "attributes": {
+      "source": "atech",
+      "assetId": "11_atech_microphone",
+      "stlParts": 4,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-12",
+    "name": "Speaker module",
+    "description": "Model of a speaker module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "audio"],
+    "estimatedPrice": 12,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/12_atech_speaker/simready_usd/.thumbs/256x256/atech_speaker.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/12_atech_speaker/gltf/atech_speaker.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/12_atech_speaker/gltf/atech_speaker.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/12_atech_speaker/mjcf/meshes/atech_speaker/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/12_atech_speaker/mjcf/meshes/atech_speaker/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/12_atech_speaker/mjcf/meshes/atech_speaker/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/12_atech_speaker/mjcf/meshes/atech_speaker/pcb.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/12_atech_speaker",
+    "attributes": {
+      "source": "atech",
+      "assetId": "12_atech_speaker",
+      "stlParts": 4,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-13",
+    "name": "NeoPixel LED module",
+    "description": "Model of an addressable RGB LED module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "led"],
+    "estimatedPrice": 28,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/13_atech_neopixel/simready_usd/.thumbs/256x256/atech_neopixel.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/13_atech_neopixel/gltf/atech_neopixel.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/13_atech_neopixel/gltf/atech_neopixel.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/13_atech_neopixel/mjcf/meshes/atech_neopixel/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/13_atech_neopixel/mjcf/meshes/atech_neopixel/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/13_atech_neopixel/mjcf/meshes/atech_neopixel/glass.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/13_atech_neopixel/mjcf/meshes/atech_neopixel/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/13_atech_neopixel/mjcf/meshes/atech_neopixel/led_or.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/13_atech_neopixel/mjcf/meshes/atech_neopixel/led_warm.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/13_atech_neopixel/mjcf/meshes/atech_neopixel/pcb.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/13_atech_neopixel",
+    "attributes": {
+      "source": "atech",
+      "assetId": "13_atech_neopixel",
+      "stlParts": 7,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-14",
+    "name": "Rotary encoder",
+    "description": "Model of a rotary encoder module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "input"],
+    "estimatedPrice": 12,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/14_atech_rotary_encoder/simready_usd/.thumbs/256x256/atech_rotary_encoder.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/14_atech_rotary_encoder/gltf/atech_rotary_encoder.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/14_atech_rotary_encoder/gltf/atech_rotary_encoder.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/14_atech_rotary_encoder/mjcf/meshes/atech_rotary_encoder/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/14_atech_rotary_encoder/mjcf/meshes/atech_rotary_encoder/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/14_atech_rotary_encoder/mjcf/meshes/atech_rotary_encoder/glass.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/14_atech_rotary_encoder/mjcf/meshes/atech_rotary_encoder/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/14_atech_rotary_encoder/mjcf/meshes/atech_rotary_encoder/grey.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/14_atech_rotary_encoder/mjcf/meshes/atech_rotary_encoder/led_ring.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/14_atech_rotary_encoder/mjcf/meshes/atech_rotary_encoder/pcb.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/14_atech_rotary_encoder/mjcf/meshes/atech_rotary_encoder/satin.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/14_atech_rotary_encoder",
+    "attributes": {
+      "source": "atech",
+      "assetId": "14_atech_rotary_encoder",
+      "stlParts": 8,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-15",
+    "name": "Push button module",
+    "description": "Model of a push button module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "input"],
+    "estimatedPrice": 28,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/15_atech_button/simready_usd/.thumbs/256x256/atech_button.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/15_atech_button/gltf/atech_button.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/15_atech_button/gltf/atech_button.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/15_atech_button/mjcf/meshes/atech_button/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/15_atech_button/mjcf/meshes/atech_button/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/15_atech_button/mjcf/meshes/atech_button/glass.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/15_atech_button/mjcf/meshes/atech_button/gloss.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/15_atech_button/mjcf/meshes/atech_button/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/15_atech_button/mjcf/meshes/atech_button/grey.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/15_atech_button/mjcf/meshes/atech_button/pcb.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/15_atech_button",
+    "attributes": {
+      "source": "atech",
+      "assetId": "15_atech_button",
+      "stlParts": 7,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-16",
+    "name": "ST7735 TFT display",
+    "description": "Model of a small ST7735 TFT display module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "display"],
+    "estimatedPrice": 24,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/16_atech_st7735_tft/simready_usd/.thumbs/256x256/atech_st7735_tft.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/16_atech_st7735_tft/gltf/atech_st7735_tft.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/16_atech_st7735_tft/gltf/atech_st7735_tft.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/16_atech_st7735_tft/mjcf/meshes/atech_st7735_tft/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/16_atech_st7735_tft/mjcf/meshes/atech_st7735_tft/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/16_atech_st7735_tft/mjcf/meshes/atech_st7735_tft/glass.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/16_atech_st7735_tft/mjcf/meshes/atech_st7735_tft/gloss.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/16_atech_st7735_tft/mjcf/meshes/atech_st7735_tft/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/16_atech_st7735_tft/mjcf/meshes/atech_st7735_tft/pcb.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/16_atech_st7735_tft/mjcf/meshes/atech_st7735_tft/screen_art.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/16_atech_st7735_tft",
+    "attributes": {
+      "source": "atech",
+      "assetId": "16_atech_st7735_tft",
+      "stlParts": 7,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-17",
+    "name": "Large display module",
+    "description": "Model of a large display module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "display"],
+    "estimatedPrice": 20,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/17_atech_big_screen/simready_usd/.thumbs/256x256/atech_big_screen.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/17_atech_big_screen/gltf/atech_big_screen.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/17_atech_big_screen/gltf/atech_big_screen.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/17_atech_big_screen/mjcf/meshes/atech_big_screen/amber.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/17_atech_big_screen/mjcf/meshes/atech_big_screen/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/17_atech_big_screen/mjcf/meshes/atech_big_screen/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/17_atech_big_screen/mjcf/meshes/atech_big_screen/gloss.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/17_atech_big_screen/mjcf/meshes/atech_big_screen/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/17_atech_big_screen/mjcf/meshes/atech_big_screen/grey.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/17_atech_big_screen/mjcf/meshes/atech_big_screen/lid_grey.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/17_atech_big_screen/mjcf/meshes/atech_big_screen/pcb.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/17_atech_big_screen/mjcf/meshes/atech_big_screen/screen_art.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/17_atech_big_screen",
+    "attributes": {
+      "source": "atech",
+      "assetId": "17_atech_big_screen",
+      "stlParts": 9,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-18",
+    "name": "Camera module",
+    "description": "Model of a camera module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "camera"],
+    "estimatedPrice": 12,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/18_atech_camera/simready_usd/.thumbs/256x256/atech_camera.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/18_atech_camera/gltf/atech_camera.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/18_atech_camera/gltf/atech_camera.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/18_atech_camera/mjcf/meshes/atech_camera/amber.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/18_atech_camera/mjcf/meshes/atech_camera/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/18_atech_camera/mjcf/meshes/atech_camera/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/18_atech_camera/mjcf/meshes/atech_camera/gloss.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/18_atech_camera/mjcf/meshes/atech_camera/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/18_atech_camera/mjcf/meshes/atech_camera/pcb.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/18_atech_camera",
+    "attributes": {
+      "source": "atech",
+      "assetId": "18_atech_camera",
+      "stlParts": 6,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-19",
+    "name": "PIR motion sensor",
+    "description": "Model of a passive infrared motion sensor module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "sensor"],
+    "estimatedPrice": 24,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/19_atech_pir/simready_usd/.thumbs/256x256/atech_pir.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/19_atech_pir/gltf/atech_pir.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/19_atech_pir/gltf/atech_pir.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/19_atech_pir/mjcf/meshes/atech_pir/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/19_atech_pir/mjcf/meshes/atech_pir/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/19_atech_pir/mjcf/meshes/atech_pir/derived_lens_collar.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/19_atech_pir/mjcf/meshes/atech_pir/derived_lens_dome.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/19_atech_pir/mjcf/meshes/atech_pir/derived_passive_1.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/19_atech_pir/mjcf/meshes/atech_pir/derived_passive_2.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/19_atech_pir/mjcf/meshes/atech_pir/glass.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/19_atech_pir/mjcf/meshes/atech_pir/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/19_atech_pir/mjcf/meshes/atech_pir/grey.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/19_atech_pir/mjcf/meshes/atech_pir/pcb.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/19_atech_pir",
+    "attributes": {
+      "source": "atech",
+      "assetId": "19_atech_pir",
+      "stlParts": 10,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-20",
+    "name": "Stepper motor",
+    "description": "Model of a stepper motor module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "motor"],
+    "estimatedPrice": 28,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/20_atech_stepper_motor/simready_usd/.thumbs/256x256/atech_stepper_motor.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/20_atech_stepper_motor/gltf/atech_stepper_motor.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/20_atech_stepper_motor/gltf/atech_stepper_motor.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/20_atech_stepper_motor/mjcf/meshes/atech_stepper_motor/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/20_atech_stepper_motor/mjcf/meshes/atech_stepper_motor/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/20_atech_stepper_motor/mjcf/meshes/atech_stepper_motor/derived_driver_chip.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/20_atech_stepper_motor/mjcf/meshes/atech_stepper_motor/derived_motor_terminal.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/20_atech_stepper_motor/mjcf/meshes/atech_stepper_motor/glass.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/20_atech_stepper_motor/mjcf/meshes/atech_stepper_motor/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/20_atech_stepper_motor/mjcf/meshes/atech_stepper_motor/pcb.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/20_atech_stepper_motor",
+    "attributes": {
+      "source": "atech",
+      "assetId": "20_atech_stepper_motor",
+      "stlParts": 7,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-21",
+    "name": "Load cell",
+    "description": "Model of a load cell for weight sensing.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "sensor"],
+    "estimatedPrice": 24,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/21_atech_load_cell/simready_usd/.thumbs/256x256/atech_load_cell.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/21_atech_load_cell/gltf/atech_load_cell.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/21_atech_load_cell/gltf/atech_load_cell.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/21_atech_load_cell/mjcf/meshes/atech_load_cell/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/21_atech_load_cell/mjcf/meshes/atech_load_cell/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/21_atech_load_cell/mjcf/meshes/atech_load_cell/derived_amplifier.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/21_atech_load_cell/mjcf/meshes/atech_load_cell/derived_header.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/21_atech_load_cell/mjcf/meshes/atech_load_cell/derived_passive_1.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/21_atech_load_cell/mjcf/meshes/atech_load_cell/derived_passive_2.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/21_atech_load_cell/mjcf/meshes/atech_load_cell/derived_passive_3.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/21_atech_load_cell/mjcf/meshes/atech_load_cell/derived_passive_4.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/21_atech_load_cell/mjcf/meshes/atech_load_cell/glass.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/21_atech_load_cell/mjcf/meshes/atech_load_cell/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/21_atech_load_cell/mjcf/meshes/atech_load_cell/grey.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/21_atech_load_cell/mjcf/meshes/atech_load_cell/pcb.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/21_atech_load_cell",
+    "attributes": {
+      "source": "atech",
+      "assetId": "21_atech_load_cell",
+      "stlParts": 12,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-22",
+    "name": "MicroSD card module",
+    "description": "Model of a microSD card module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "storage"],
+    "estimatedPrice": 12,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/22_atech_micro_sd_card/simready_usd/.thumbs/256x256/atech_micro_sd_card.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/22_atech_micro_sd_card/gltf/atech_micro_sd_card.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/22_atech_micro_sd_card/gltf/atech_micro_sd_card.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/22_atech_micro_sd_card/mjcf/meshes/atech_micro_sd_card/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/22_atech_micro_sd_card/mjcf/meshes/atech_micro_sd_card/glass.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/22_atech_micro_sd_card/mjcf/meshes/atech_micro_sd_card/grey.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/22_atech_micro_sd_card/mjcf/meshes/atech_micro_sd_card/pcb.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/22_atech_micro_sd_card/mjcf/meshes/atech_micro_sd_card/satin.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/22_atech_micro_sd_card",
+    "attributes": {
+      "source": "atech",
+      "assetId": "22_atech_micro_sd_card",
+      "stlParts": 5,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-23",
+    "name": "USB-C connector module",
+    "description": "Model of a USB-C connector module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "power"],
+    "estimatedPrice": 12,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/23_atech_usb_c/simready_usd/.thumbs/256x256/atech_usb_c.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/23_atech_usb_c/gltf/atech_usb_c.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/23_atech_usb_c/gltf/atech_usb_c.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/23_atech_usb_c/mjcf/meshes/atech_usb_c/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/23_atech_usb_c/mjcf/meshes/atech_usb_c/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/23_atech_usb_c/mjcf/meshes/atech_usb_c/glass.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/23_atech_usb_c/mjcf/meshes/atech_usb_c/gloss.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/23_atech_usb_c/mjcf/meshes/atech_usb_c/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/23_atech_usb_c/mjcf/meshes/atech_usb_c/grey.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/23_atech_usb_c/mjcf/meshes/atech_usb_c/pcb.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/23_atech_usb_c",
+    "attributes": {
+      "source": "atech",
+      "assetId": "23_atech_usb_c",
+      "stlParts": 7,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-24",
+    "name": "Power jack module",
+    "description": "Model of a DC power jack module.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "power"],
+    "estimatedPrice": 28,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/24_atech_power_jack/simready_usd/.thumbs/256x256/atech_power_jack.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/24_atech_power_jack/gltf/atech_power_jack.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/24_atech_power_jack/gltf/atech_power_jack.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/24_atech_power_jack/mjcf/meshes/atech_power_jack/black.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/24_atech_power_jack/mjcf/meshes/atech_power_jack/black_m.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/24_atech_power_jack/mjcf/meshes/atech_power_jack/derived_controller.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/24_atech_power_jack/mjcf/meshes/atech_power_jack/derived_jack_barrel.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/24_atech_power_jack/mjcf/meshes/atech_power_jack/derived_jack_body.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/24_atech_power_jack/mjcf/meshes/atech_power_jack/derived_jack_socket.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/24_atech_power_jack/mjcf/meshes/atech_power_jack/derived_passive_1.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/24_atech_power_jack/mjcf/meshes/atech_power_jack/derived_passive_2.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/24_atech_power_jack/mjcf/meshes/atech_power_jack/derived_passive_3.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/24_atech_power_jack/mjcf/meshes/atech_power_jack/derived_regulator.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/24_atech_power_jack/mjcf/meshes/atech_power_jack/glass.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/24_atech_power_jack/mjcf/meshes/atech_power_jack/gold.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/24_atech_power_jack/mjcf/meshes/atech_power_jack/pcb.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/24_atech_power_jack",
+    "attributes": {
+      "source": "atech",
+      "assetId": "24_atech_power_jack",
+      "stlParts": 13,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-25",
+    "name": "N20 wheel, 50 mm",
+    "description": "Model of a 50 mm wheel for N20 gear motors.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "robotics", "wheel"],
+    "estimatedPrice": 24,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/25_atech_wheel_n20_50mm/simready_usd/.thumbs/256x256/atech_wheel_n20_50mm.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/25_atech_wheel_n20_50mm/gltf/atech_wheel_n20_50mm.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/25_atech_wheel_n20_50mm/gltf/atech_wheel_n20_50mm.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/25_atech_wheel_n20_50mm/mjcf/meshes/atech_wheel_n20_50mm/visual.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/25_atech_wheel_n20_50mm",
+    "attributes": {
+      "source": "atech",
+      "assetId": "25_atech_wheel_n20_50mm",
+      "stlParts": 1,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "AT-26",
+    "name": "N20 shaft coupler",
+    "description": "Model of a shaft coupler for N20 gear motors.",
+    "category": "Maker Electronics",
+    "tags": ["electronics", "robotics"],
+    "estimatedPrice": 16,
+    "imageUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/26_atech_n20_coupler/simready_usd/.thumbs/256x256/atech_n20_coupler.usd_transparent.png",
+    "modelUrl": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/26_atech_n20_coupler/gltf/atech_n20_coupler.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/26_atech_n20_coupler/gltf/atech_n20_coupler.glb",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/26_atech_n20_coupler/mjcf/meshes/atech_n20_coupler/collision_hull.stl",
+      "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/26_atech_n20_coupler/mjcf/meshes/atech_n20_coupler/visual.stl"
+    ],
+    "formats": ["glb", "stl"],
+    "license": "CC-BY-4.0",
+    "credit": "Atech, SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/atechdev/simready-assets/tree/3404e3eb601f188a64147f826cecf0ccb921e5c6/26_atech_n20_coupler",
+    "attributes": {
+      "source": "atech",
+      "assetId": "26_atech_n20_coupler",
+      "stlParts": 2,
+      "dataset": "atechdev/simready-assets",
+      "revision": "3404e3eb601f188a64147f826cecf0ccb921e5c6"
+    }
+  },
+  {
+    "sku": "NV-1EGFYD9",
+    "name": "Cross peen hammer",
+    "description": "Model of a cross peen hammer.",
+    "category": "Tools",
+    "tags": ["hammer", "hand tool"],
+    "estimatedPrice": 26,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/handTool_hammer_crossPeen_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_hammer_crossPeen_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_hammer_crossPeen_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "handTool_hammer_crossPeen_a01",
+      "triangles": 79132,
+      "sizeMb": 0.49,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-MSTN58",
+    "name": "Rubber mallet",
+    "description": "Model of a rubber mallet.",
+    "category": "Tools",
+    "tags": ["hammer", "hand tool"],
+    "estimatedPrice": 18,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/handTool_hammer_rubberMallet_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_hammer_rubberMallet_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_hammer_rubberMallet_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "handTool_hammer_rubberMallet_a01",
+      "triangles": 60232,
+      "sizeMb": 0.36,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1P1MS0S",
+    "name": "T-handle hex driver set",
+    "description": "Model of a T-handle hex driver set in its stand.",
+    "category": "Tools",
+    "tags": ["hex", "hand tool"],
+    "estimatedPrice": 18,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/handTool_hexDriver_tHandle_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_hexDriver_tHandle_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_hexDriver_tHandle_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "handTool_hexDriver_tHandle_a01",
+      "triangles": 364585,
+      "sizeMb": 1.98,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1A5OXEP",
+    "name": "L-shaped hex key set",
+    "description": "Model of a folded set of L-shaped hex keys.",
+    "category": "Tools",
+    "tags": ["hex", "hand tool"],
+    "estimatedPrice": 26,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/handTool_hexKey_lShape_assembled_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_hexKey_lShape_assembled_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_hexKey_lShape_assembled_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "handTool_hexKey_lShape_assembled_a01",
+      "triangles": 65861,
+      "sizeMb": 0.5,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1U5U7OV",
+    "name": "Retractable utility knife",
+    "description": "Model of a utility knife with a retractable blade.",
+    "category": "Tools",
+    "tags": ["knife", "hand tool"],
+    "estimatedPrice": 30,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/handTool_knife_retractableBlade_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_knife_retractableBlade_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_knife_retractableBlade_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "handTool_knife_retractableBlade_a01",
+      "triangles": 56436,
+      "sizeMb": 0.52,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1L0VOYQ",
+    "name": "Long nose pliers",
+    "description": "Model of a pair of long nose pliers.",
+    "category": "Tools",
+    "tags": ["pliers", "hand tool"],
+    "estimatedPrice": 26,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/handTool_pliers_long_nose_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_pliers_long_nose_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_pliers_long_nose_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "handTool_pliers_long_nose_a01",
+      "triangles": 67794,
+      "sizeMb": 0.56,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-OH7LWR",
+    "name": "Locking pliers",
+    "description": "Model of a pair of locking pliers.",
+    "category": "Tools",
+    "tags": ["pliers", "hand tool"],
+    "estimatedPrice": 30,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/handTool_pliers_locking_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_pliers_locking_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_pliers_locking_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "handTool_pliers_locking_a01",
+      "triangles": 76872,
+      "sizeMb": 0.63,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-158XO45",
+    "name": "Phillips screwdriver PH2",
+    "description": "Model of a PH2 Phillips screwdriver.",
+    "category": "Tools",
+    "tags": ["screwdriver", "hand tool"],
+    "estimatedPrice": 18,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/handTool_screwdriver_phillips_ph2_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_screwdriver_phillips_ph2_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_screwdriver_phillips_ph2_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "handTool_screwdriver_phillips_ph2_a01",
+      "triangles": 43430,
+      "sizeMb": 0.35,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1I4TIU3",
+    "name": "Adjustable wrench",
+    "description": "Model of an adjustable wrench.",
+    "category": "Tools",
+    "tags": ["wrench", "hand tool"],
+    "estimatedPrice": 30,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/handTool_wrench_adjustable_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_wrench_adjustable_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_wrench_adjustable_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "handTool_wrench_adjustable_a01",
+      "triangles": 99646,
+      "sizeMb": 0.67,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-11J5KO0",
+    "name": "Torque wrench",
+    "description": "Model of a click-type torque wrench.",
+    "category": "Tools",
+    "tags": ["wrench", "hand tool"],
+    "estimatedPrice": 18,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/handTool_torque_wrench_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_torque_wrench_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/handTool_torque_wrench_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "handTool_torque_wrench_a01",
+      "triangles": 112903,
+      "sizeMb": 0.82,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-165QGLD",
+    "name": "Cordless drill",
+    "description": "Model of a cordless drill.",
+    "category": "Tools",
+    "tags": ["drill", "power tool"],
+    "estimatedPrice": 30,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/powerTool_drill_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/powerTool_drill_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/powerTool_drill_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "powerTool_drill_a01",
+      "triangles": 230950,
+      "sizeMb": 1.66,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-M54JK9",
+    "name": "Angle grinder",
+    "description": "Model of an angle grinder.",
+    "category": "Tools",
+    "tags": ["grinder", "power tool"],
+    "estimatedPrice": 34,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/powerTool_grinder_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/powerTool_grinder_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/powerTool_grinder_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "powerTool_grinder_a01",
+      "triangles": 219916,
+      "sizeMb": 2.01,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-5DO9GQ",
+    "name": "Cordless heat gun",
+    "description": "Model of a cordless heat gun.",
+    "category": "Tools",
+    "tags": ["heat gun", "power tool"],
+    "estimatedPrice": 30,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/powerTool_heatGun_cordless_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/powerTool_heatGun_cordless_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/powerTool_heatGun_cordless_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "powerTool_heatGun_cordless_a01",
+      "triangles": 305897,
+      "sizeMb": 1.74,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-9SB9A1",
+    "name": "Digital multimeter",
+    "description": "Model of a digital multimeter with probes.",
+    "category": "Tools",
+    "tags": ["multimeter", "electronics"],
+    "estimatedPrice": 30,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/testingTool_multimeter_digital_b01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/testingTool_multimeter_digital_b01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/testingTool_multimeter_digital_b01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "testingTool_multimeter_digital_b01",
+      "triangles": 167728,
+      "sizeMb": 1.18,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1IMKXDJ",
+    "name": "Kettle",
+    "description": "Model of a stovetop kettle.",
+    "category": "Kitchen & Home",
+    "tags": ["kitchen"],
+    "estimatedPrice": 18,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/kitchenware_kettle_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/kitchenware_kettle_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/kitchenware_kettle_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "kitchenware_kettle_a01",
+      "triangles": 62000,
+      "sizeMb": 0.4,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1F46ECP",
+    "name": "Frying pan",
+    "description": "Model of a frying pan.",
+    "category": "Kitchen & Home",
+    "tags": ["kitchen", "cookware"],
+    "estimatedPrice": 22,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/kitchenware_pan_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/kitchenware_pan_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/kitchenware_pan_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "kitchenware_pan_a01",
+      "triangles": 12202,
+      "sizeMb": 0.24,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-15WDDU8",
+    "name": "Rolling pin",
+    "description": "Model of a wooden rolling pin.",
+    "category": "Kitchen & Home",
+    "tags": ["kitchen", "baking"],
+    "estimatedPrice": 22,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/kitchenware_rollingPin_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/kitchenware_rollingPin_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/kitchenware_rollingPin_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "kitchenware_rollingPin_a01",
+      "triangles": 8400,
+      "sizeMb": 0.08,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1MA634S",
+    "name": "Cutting board",
+    "description": "Model of a cutting board.",
+    "category": "Kitchen & Home",
+    "tags": ["kitchen"],
+    "estimatedPrice": 30,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/kitchenware_cuttingBoard_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/kitchenware_cuttingBoard_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/kitchenware_cuttingBoard_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "kitchenware_cuttingBoard_a01",
+      "triangles": 2360,
+      "sizeMb": 0.09,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1FKEJNW",
+    "name": "Jug",
+    "description": "Model of a pouring jug.",
+    "category": "Kitchen & Home",
+    "tags": ["kitchen"],
+    "estimatedPrice": 30,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/kitchenware_jug_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/kitchenware_jug_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/kitchenware_jug_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "kitchenware_jug_a01",
+      "triangles": 16968,
+      "sizeMb": 0.2,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-13S3TRI",
+    "name": "Coffee mug",
+    "description": "Model of a coffee mug.",
+    "category": "Kitchen & Home",
+    "tags": ["mug", "tableware"],
+    "estimatedPrice": 30,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/dishware_mug_coffee_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/dishware_mug_coffee_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/dishware_mug_coffee_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "dishware_mug_coffee_a01",
+      "triangles": 11766,
+      "sizeMb": 0.12,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-P3FGEX",
+    "name": "Teacup",
+    "description": "Model of a teacup.",
+    "category": "Kitchen & Home",
+    "tags": ["cup", "tableware"],
+    "estimatedPrice": 18,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/dishware_cup_tea_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/dishware_cup_tea_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/dishware_cup_tea_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "dishware_cup_tea_a01",
+      "triangles": 6760,
+      "sizeMb": 0.08,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-9SMV36",
+    "name": "Wine glass",
+    "description": "Model of a wine glass.",
+    "category": "Kitchen & Home",
+    "tags": ["glass", "tableware"],
+    "estimatedPrice": 30,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/dishware_glass_wine_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/dishware_glass_wine_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/dishware_glass_wine_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "dishware_glass_wine_a01",
+      "triangles": 10368,
+      "sizeMb": 0.04,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1RXHB40",
+    "name": "Thermos",
+    "description": "Model of an insulated thermos.",
+    "category": "Kitchen & Home",
+    "tags": ["bottle"],
+    "estimatedPrice": 26,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/dishware_thermos_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/dishware_thermos_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/dishware_thermos_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "dishware_thermos_a01",
+      "triangles": 72528,
+      "sizeMb": 0.84,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-AK4BOR",
+    "name": "Glass jar with gold lid",
+    "description": "Model of a glass jar with a gold lid.",
+    "category": "Kitchen & Home",
+    "tags": ["jar", "storage"],
+    "estimatedPrice": 18,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/container_jar_glass_gold_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/container_jar_glass_gold_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/container_jar_glass_gold_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "container_jar_glass_gold_a01",
+      "triangles": 25676,
+      "sizeMb": 0.31,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1V99AXX",
+    "name": "Pillar candle",
+    "description": "Model of a pillar candle.",
+    "category": "Kitchen & Home",
+    "tags": ["decor", "candle"],
+    "estimatedPrice": 18,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/decor_candle_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/decor_candle_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/decor_candle_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "decor_candle_a01",
+      "triangles": 9804,
+      "sizeMb": 0.08,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1HXTMT",
+    "name": "Glass vase",
+    "description": "Model of a glass vase.",
+    "category": "Kitchen & Home",
+    "tags": ["decor", "vase"],
+    "estimatedPrice": 18,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/misc_glass_vase_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/misc_glass_vase_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/misc_glass_vase_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "misc_glass_vase_a01",
+      "triangles": 96472,
+      "sizeMb": 0.36,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-YR9LFW",
+    "name": "Two-tier fruit basket",
+    "description": "Model of a two-tier wire fruit basket.",
+    "category": "Kitchen & Home",
+    "tags": ["basket", "storage"],
+    "estimatedPrice": 26,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/storage_basket_fruitHanger_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/storage_basket_fruitHanger_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/storage_basket_fruitHanger_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "storage_basket_fruitHanger_a01",
+      "triangles": 486820,
+      "sizeMb": 2.36,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-W318LW",
+    "name": "Metal ballpoint pen",
+    "description": "Model of a metal ballpoint pen.",
+    "category": "Desk & Office",
+    "tags": ["pen", "stationery"],
+    "estimatedPrice": 17,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/stationery_pen_metal_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/stationery_pen_metal_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/stationery_pen_metal_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "stationery_pen_metal_a01",
+      "triangles": 35700,
+      "sizeMb": 0.29,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-ACVIOY",
+    "name": "Alcohol marker set",
+    "description": "Model of a boxed set of alcohol markers.",
+    "category": "Desk & Office",
+    "tags": ["marker", "art supplies"],
+    "estimatedPrice": 25,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/stationery_marker_alcohol_box_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/stationery_marker_alcohol_box_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/stationery_marker_alcohol_box_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "stationery_marker_alcohol_box_a01",
+      "triangles": 68536,
+      "sizeMb": 0.45,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-TQ2UEN",
+    "name": "Watercolor pencil",
+    "description": "Model of an azure watercolor pencil.",
+    "category": "Desk & Office",
+    "tags": ["pencil", "art supplies"],
+    "estimatedPrice": 25,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/stationery_pencil_watercolor_azure_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/stationery_pencil_watercolor_azure_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/stationery_pencil_watercolor_azure_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "stationery_pencil_watercolor_azure_a01",
+      "triangles": 1920,
+      "sizeMb": 0.13,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-HHA758",
+    "name": "Cork with push pins",
+    "description": "Model of a cork stopper holding push pins.",
+    "category": "Desk & Office",
+    "tags": ["pins", "stationery"],
+    "estimatedPrice": 25,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/stationery_tacks_cork_a02.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/stationery_tacks_cork_a02.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/stationery_tacks_cork_a02.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "stationery_tacks_cork_a02",
+      "triangles": 49536,
+      "sizeMb": 0.75,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1MHIGGX",
+    "name": "Tape dispenser",
+    "description": "Model of a desktop tape dispenser.",
+    "category": "Desk & Office",
+    "tags": ["tape", "stationery"],
+    "estimatedPrice": 21,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/misc_tape_dispenser_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/misc_tape_dispenser_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/misc_tape_dispenser_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "misc_tape_dispenser_a01",
+      "triangles": 61624,
+      "sizeMb": 0.54,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1GMDR9W",
+    "name": "Notebook",
+    "description": "Model of a notebook.",
+    "category": "Desk & Office",
+    "tags": ["notebook", "stationery"],
+    "estimatedPrice": 9,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/misc_notebook_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/misc_notebook_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/misc_notebook_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "misc_notebook_a01",
+      "triangles": 5036,
+      "sizeMb": 0.23,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-GX1ACQ",
+    "name": "Adjustable arm desk lamp",
+    "description": "Model of a bench lamp with an adjustable arm.",
+    "category": "Desk & Office",
+    "tags": ["lamp", "lighting"],
+    "estimatedPrice": 21,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/lighting_taskLight_adjustableArmBench_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/lighting_taskLight_adjustableArmBench_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/lighting_taskLight_adjustableArmBench_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "lighting_taskLight_adjustableArmBench_a01",
+      "triangles": 67938,
+      "sizeMb": 0.44,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1QKSC4C",
+    "name": "Engine piston",
+    "description": "Model of an engine piston with connecting rod.",
+    "category": "Auto Parts",
+    "tags": ["engine"],
+    "estimatedPrice": 44,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/engineComponent_cylinder_piston_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/engineComponent_cylinder_piston_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/engineComponent_cylinder_piston_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "engineComponent_cylinder_piston_a01",
+      "triangles": 175020,
+      "sizeMb": 1.2,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-YKBY3C",
+    "name": "Crankshaft",
+    "description": "Model of an engine crankshaft.",
+    "category": "Auto Parts",
+    "tags": ["engine"],
+    "estimatedPrice": 48,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/engineComponent_crankshaft_b01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/engineComponent_crankshaft_b01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/engineComponent_crankshaft_b01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "engineComponent_crankshaft_b01",
+      "triangles": 166060,
+      "sizeMb": 1.09,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-ROZOZ3",
+    "name": "Turbocharger",
+    "description": "Model of a turbocharger.",
+    "category": "Auto Parts",
+    "tags": ["engine", "turbo"],
+    "estimatedPrice": 44,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/engineComponent_turbocompressor_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/engineComponent_turbocompressor_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/engineComponent_turbocompressor_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "engineComponent_turbocompressor_a01",
+      "triangles": 362825,
+      "sizeMb": 2.06,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-Y6E4U3",
+    "name": "Spark plug",
+    "description": "Model of a spark plug.",
+    "category": "Auto Parts",
+    "tags": ["engine", "ignition"],
+    "estimatedPrice": 36,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/engineComponent_spark_plug_b01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/engineComponent_spark_plug_b01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/engineComponent_spark_plug_b01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "engineComponent_spark_plug_b01",
+      "triangles": 20040,
+      "sizeMb": 0.25,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-17TKM1C",
+    "name": "Flywheel",
+    "description": "Model of an engine flywheel.",
+    "category": "Auto Parts",
+    "tags": ["engine", "drivetrain"],
+    "estimatedPrice": 40,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/engineComponent_flywheel_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/engineComponent_flywheel_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/engineComponent_flywheel_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "engineComponent_flywheel_a01",
+      "triangles": 106160,
+      "sizeMb": 0.7,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1HB9VF6",
+    "name": "Differential",
+    "description": "Model of a differential.",
+    "category": "Auto Parts",
+    "tags": ["drivetrain"],
+    "estimatedPrice": 32,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/drivetrain_differential_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/drivetrain_differential_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/drivetrain_differential_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "drivetrain_differential_a01",
+      "triangles": 408156,
+      "sizeMb": 2.09,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1RPC6GG",
+    "name": "Manual transmission",
+    "description": "Model of a manual transmission.",
+    "category": "Auto Parts",
+    "tags": ["drivetrain"],
+    "estimatedPrice": 44,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/drivetrain_transmission_manual_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/drivetrain_transmission_manual_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/drivetrain_transmission_manual_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "drivetrain_transmission_manual_a01",
+      "triangles": 311326,
+      "sizeMb": 2.59,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-16B5JYB",
+    "name": "Shock absorber",
+    "description": "Model of a shock absorber.",
+    "category": "Auto Parts",
+    "tags": ["suspension"],
+    "estimatedPrice": 40,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/suspension_shock_absorber_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/suspension_shock_absorber_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/suspension_shock_absorber_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "suspension_shock_absorber_a01",
+      "triangles": 156452,
+      "sizeMb": 0.88,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1C2PGJ5",
+    "name": "Strut assembly",
+    "description": "Model of a suspension strut assembly.",
+    "category": "Auto Parts",
+    "tags": ["suspension"],
+    "estimatedPrice": 32,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/suspension_strut_assembly_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/suspension_strut_assembly_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/suspension_strut_assembly_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "suspension_strut_assembly_a01",
+      "triangles": 300356,
+      "sizeMb": 1.71,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-6ZLH86",
+    "name": "Hard hat",
+    "description": "Model of a safety hard hat.",
+    "category": "Safety Gear",
+    "tags": ["ppe", "helmet"],
+    "estimatedPrice": 28,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/ppe_helmet_hardHat_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/ppe_helmet_hardHat_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/ppe_helmet_hardHat_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "ppe_helmet_hardHat_a01",
+      "triangles": 107260,
+      "sizeMb": 1,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-12L851D",
+    "name": "Safety goggles",
+    "description": "Model of a pair of safety goggles.",
+    "category": "Safety Gear",
+    "tags": ["ppe", "eye protection"],
+    "estimatedPrice": 20,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/ppe_eyeProtection_goggles_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/ppe_eyeProtection_goggles_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/ppe_eyeProtection_goggles_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "ppe_eyeProtection_goggles_a01",
+      "triangles": 226088,
+      "sizeMb": 1.35,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-196PS9L",
+    "name": "Ear muffs",
+    "description": "Model of hearing protection ear muffs.",
+    "category": "Safety Gear",
+    "tags": ["ppe", "hearing protection"],
+    "estimatedPrice": 32,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/ppe_hearingProtection_earMuffs_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/ppe_hearingProtection_earMuffs_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/ppe_hearingProtection_earMuffs_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "ppe_hearingProtection_earMuffs_a01",
+      "triangles": 64450,
+      "sizeMb": 0.62,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-3SB0LN",
+    "name": "Face shield",
+    "description": "Model of a protective face shield.",
+    "category": "Safety Gear",
+    "tags": ["ppe", "face protection"],
+    "estimatedPrice": 20,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/ppe_faceProtection_faceShield_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/ppe_faceProtection_faceShield_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/ppe_faceProtection_faceShield_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "ppe_faceProtection_faceShield_a01",
+      "triangles": 73704,
+      "sizeMb": 0.35,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-LKSPN",
+    "name": "Half mask respirator",
+    "description": "Model of a half mask respirator.",
+    "category": "Safety Gear",
+    "tags": ["ppe", "respirator"],
+    "estimatedPrice": 24,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/ppe_respirator_halfMask_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/ppe_respirator_halfMask_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/ppe_respirator_halfMask_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "ppe_respirator_halfMask_a01",
+      "triangles": 217750,
+      "sizeMb": 1.7,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-NE926M",
+    "name": "Table tennis paddle",
+    "description": "Model of a table tennis paddle.",
+    "category": "Games & Toys",
+    "tags": ["sports", "table tennis"],
+    "estimatedPrice": 10,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/misc_toy_pongPaddle_bat_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/misc_toy_pongPaddle_bat_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/misc_toy_pongPaddle_bat_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "misc_toy_pongPaddle_bat_a01",
+      "triangles": 4182,
+      "sizeMb": 0.58,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-6XICZ4",
+    "name": "Golf ball",
+    "description": "Model of a golf ball.",
+    "category": "Games & Toys",
+    "tags": ["sports", "golf"],
+    "estimatedPrice": 18,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/misc_golfBall_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/misc_golfBall_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/misc_golfBall_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "misc_golfBall_a01",
+      "triangles": 12288,
+      "sizeMb": 0.15,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  },
+  {
+    "sku": "NV-1BHRVCU",
+    "name": "Glass marble",
+    "description": "Model of a glass marble.",
+    "category": "Games & Toys",
+    "tags": ["toy", "marble"],
+    "estimatedPrice": 22,
+    "imageUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/toy_marble_a01.webp",
+    "modelUrl": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/toy_marble_a01.glb",
+    "downloadUrls": [
+      "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/glb/toy_marble_a01.glb"
+    ],
+    "formats": ["glb"],
+    "license": "CC-BY-4.0",
+    "credit": "NVIDIA SimReady Assets (CC BY 4.0)",
+    "sourceUrl": "https://huggingface.co/datasets/nvidia/simready-assets",
+    "attributes": {
+      "source": "nvidia",
+      "assetId": "toy_marble_a01",
+      "triangles": 2000,
+      "sizeMb": 0.06,
+      "dataset": "codepawl/simready-glb",
+      "revision": "0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188",
+      "convertedFrom": "nvidia/simready-assets"
+    }
+  }
+]

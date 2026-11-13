@@ -8,6 +8,7 @@ import {
   ORDER_TIMEOUT,
   OrderProcessPaymentStatus,
   type OrderWorkflowData,
+  PRODUCT_UNAVAILABLE,
   paymentProgressSignal,
   paymentWebHookEventSignal,
   UnkownException,
@@ -15,6 +16,7 @@ import {
 import type { OrderStatusResponseDto } from "@projectx/models";
 import { OrderStatus } from "@projectx/models/enums";
 import {
+  ActivityFailure,
   ApplicationFailure,
   allHandlersFinished,
   type ChildWorkflowHandle,
@@ -50,6 +52,18 @@ const initialState: Partial<OrderStatusResponseDto> = {
 
 type PaymentWorkflowHandle = ChildWorkflowHandle<typeof processPayment>;
 
+/** The failure of an order whose products can't be sold, if that's what happened */
+function productRejection(error: unknown): ApplicationFailure | undefined {
+  const failure = error instanceof ActivityFailure ? error.cause : error;
+  if (
+    failure instanceof ApplicationFailure &&
+    failure.type === PRODUCT_UNAVAILABLE
+  ) {
+    return failure;
+  }
+  return undefined;
+}
+
 export async function createOrder(
   data: OrderWorkflowData,
   state = initialState,
@@ -60,6 +74,8 @@ export async function createOrder(
 
   state.referenceId = data.order.referenceId;
   let isCreatingOrder = false;
+  // Its products can't be sold, so the order will never exist
+  let rejection: ApplicationFailure | undefined;
   // Define references to child workflows
   let processPaymentWorkflow: PaymentWorkflowHandle | undefined;
 
@@ -125,17 +141,39 @@ export async function createOrder(
       }
       publishState();
       return state as OrderStatusResponseDto;
+    } catch (error) {
+      rejection = productRejection(error);
+      if (rejection) {
+        state.status = OrderStatus.Failed;
+        publishState();
+        // The caller gets the reason and the product ids, not the activity wrapper
+        throw rejection;
+      }
+      throw error;
     } finally {
       isCreatingOrder = false;
     }
   });
 
   // Wait the order to be ready to be processed
-  const orderCreated = await condition(() => !!state?.orderId, ORDER_TIMEOUT);
+  const orderCreated = await condition(
+    () => !!state?.orderId || !!rejection,
+    ORDER_TIMEOUT,
+  );
 
   // Wait for the update to finish. A subscriber waiting for new items also counts
   // as a running handler, so the stream can't wait for all of them at this point.
   await condition(() => !isCreatingOrder);
+
+  if (rejection) {
+    // Nothing was created: close now instead of waiting for the timeout
+    stream.detachPollers();
+    await condition(allHandlersFinished);
+    throw ApplicationFailure.nonRetryable(
+      rejection.message,
+      PRODUCT_UNAVAILABLE,
+    );
+  }
 
   if (!orderCreated || !state?.orderId) {
     throw ApplicationFailure.nonRetryable(
