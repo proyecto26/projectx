@@ -1,11 +1,15 @@
 import type { ConfigService } from "@nestjs/config";
-import {
-  type BundleOptions,
-  bundleWorkflowCode,
-  NativeConnection,
-  type NativeConnectionOptions,
-  type WorkerOptions,
+import type {
+  BundleOptions,
+  NativeConnectionOptions,
+  WorkerOptions,
 } from "@temporalio/worker";
+
+import {
+  connectWorker,
+  resolveWorkerTarget,
+  resolveWorkflowBundle,
+} from "./worker-setup";
 
 export interface CreateWorkerOptions {
   /** Path to the workflows, bundled when the worker starts. */
@@ -29,6 +33,10 @@ export interface CreateWorkerOptions {
  * definitions, enums and types. Importing a package that loads NestJS from a
  * workflow makes this bundling step fail.
  *
+ * The returned `connection` belongs to the caller, who must close it once the
+ * worker has stopped. `WorkerService` doesn't use this function: it opens and
+ * closes its own connection.
+ *
  * @param config - The NestJS configuration service.
  * @param options - Where to find the workflows and how to reach Temporal.
  * @returns A Promise resolving to the worker options object.
@@ -37,27 +45,11 @@ export async function createWorkerOptions(
   config: ConfigService,
   options: CreateWorkerOptions,
 ): Promise<WorkerOptions> {
-  const { workflowsPath, bundlerOptions } = options;
-  let { workflowBundle } = options;
-  if (!workflowBundle) {
-    if (!workflowsPath) {
-      throw new Error("Either workflowsPath or workflowBundle is required");
-    }
-    workflowBundle = await bundleWorkflowCode({
-      ...bundlerOptions,
-      workflowsPath,
-    });
-  }
-
-  const connection = await NativeConnection.connect(
-    options.connectionOptions ?? { address: config.get("temporal.host") },
-  );
-
+  const workflowBundle = await resolveWorkflowBundle(options);
+  const connection = await connectWorker(config, options);
   return {
     connection,
-    namespace: options.namespace ?? config.get("temporal.namespace"),
-    taskQueue:
-      options.taskQueue ?? (config.get("temporal.taskQueue") as string),
+    ...resolveWorkerTarget(config, options),
     workflowBundle,
   };
 }

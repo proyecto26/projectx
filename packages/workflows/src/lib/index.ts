@@ -1,5 +1,6 @@
 export * from "./client.service";
 export * from "./constants";
+export * from "./lifecycle";
 export * from "./worker";
 export * from "./worker.service";
 export * from "./workflow.utils";

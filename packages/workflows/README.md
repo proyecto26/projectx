@@ -133,8 +133,26 @@ expect(code).not.toContain("@nestjs");
 | `connectionOptions` | `{ address: temporal.host }` | Options for `NativeConnection.connect`, such as TLS |
 | `namespace` | `temporal.namespace` | Temporal namespace |
 | `taskQueue` | `temporal.taskQueue` | Task queue of the worker |
+| `exitOnStartupFailure` | `true` | Call `process.exit(1)` after logging when the worker or the client can't start, or when the running worker stops with an error |
+| `startupRetry` | Worker: `{ attempts: 5, delayMs: 10000 }`, client: `{ attempts: 10, delayMs: 5000 }` | How many times to try to start, and how long to wait in between |
 
-Either `workflowsPath` or `workflowBundle` is required. The defaults are read with `ConfigService`, and `ClientService` reads `temporal.host` and `temporal.namespace` the same way. The worker's log level comes from `app.logLevel`.
+Either `workflowsPath` or `workflowBundle` is required. The defaults are read with `ConfigService`, and `ClientService` reads `temporal.host` and `temporal.namespace` the same way. The worker's log level comes from `app.logLevel`. `exitOnStartupFailure` and `startupRetry` apply to both the worker and `ClientService`.
+
+### Startup and shutdown
+
+The worker and the client start in the background, so the app boots without waiting for Temporal. Both services have:
+
+- `ready(): Promise<void>` resolves once the worker is polling or the client is connected. It rejects with the last error when every attempt fails, or when the app shuts down first.
+- `getStatus()` returns `"starting"`, `"running"`, `"failed"` or `"stopped"`.
+
+```ts
+await app.listen(3000);
+await app.get(WorkerService).ready();
+```
+
+When every attempt fails, the error is logged as fatal and, by default, the process exits with code 1 so your orchestrator can restart it. Set `exitOnStartupFailure: false` to keep the process alive and check `ready()` or `getStatus()` instead, for example from a health check.
+
+On shutdown, for example after [`app.enableShutdownHooks()`](https://docs.nestjs.com/fundamentals/lifecycle-events#application-shutdown), a pending retry stops right away, the worker shuts down and finishes its in-flight tasks, and the connections are closed.
 
 ### Bundling for production
 
