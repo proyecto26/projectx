@@ -31,7 +31,9 @@
     "build": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.json",
     "dev": "tsc -w -p tsconfig.json",
     "lint": "biome check .",
-    "test": "echo 'no tests'",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.spec.json",
     "prepack": "pnpm run build",
     "check:package": "publint --strict && attw --pack . --profile node16"
   },
@@ -39,14 +41,17 @@
     "tslib": "^2.9.1"
   },
   "devDependencies": {
-    "typescript": "^5.9.3",
+    "@arethetypeswrong/cli": "^0.18.5",
     "@nestjs/common": "12.3.3",
     "@nestjs/config": "12.1.0",
     "@temporalio/client": "1.25.0",
     "@temporalio/proto": "1.25.0",
+    "@temporalio/testing": "1.25.0",
     "@temporalio/worker": "1.25.0",
+    "@temporalio/workflow": "1.25.0",
     "publint": "^0.3.25",
-    "@arethetypeswrong/cli": "^0.18.5"
+    "typescript": "^5.9.3",
+    "vitest": "4.1.11"
   },
   "peerDependencies": {
     "@nestjs/common": "^10.0.0 || ^11.0.0 || ^12.0.0",
