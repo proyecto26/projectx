@@ -1,6 +1,6 @@
 {
   "name": "@proyecto26/temporal-workflows",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "NestJS module to run Temporal workers and clients",
   "license": "MIT",
   "author": "Proyecto 26 <https://github.com/proyecto26>",
