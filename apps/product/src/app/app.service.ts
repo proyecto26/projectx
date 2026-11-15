@@ -28,6 +28,8 @@ export class AppService {
   async getProductsFiltered(params: {
     category?: string;
     search?: string;
+    minPrice?: number;
+    maxPrice?: number;
     page?: number;
     limit?: number;
   }): Promise<ProductListResponseDto> {

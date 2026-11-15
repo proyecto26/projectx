@@ -6,6 +6,7 @@ import {
   Inject,
   NotFoundException,
   Param,
+  ParseFloatPipe,
   ParseIntPipe,
   Query,
 } from "@nestjs/common";
@@ -45,6 +46,18 @@ export class AppController {
     description: "Search by name or description",
   })
   @ApiQuery({
+    name: "minPrice",
+    required: false,
+    type: Number,
+    description: "Lowest estimated price",
+  })
+  @ApiQuery({
+    name: "maxPrice",
+    required: false,
+    type: Number,
+    description: "Highest estimated price",
+  })
+  @ApiQuery({
     name: "page",
     required: false,
     type: Number,
@@ -65,12 +78,18 @@ export class AppController {
   getProducts(
     @Query("category") category?: string,
     @Query("search") search?: string,
+    @Query("minPrice", new ParseFloatPipe({ optional: true }))
+    minPrice?: number,
+    @Query("maxPrice", new ParseFloatPipe({ optional: true }))
+    maxPrice?: number,
     @Query("page") page?: string,
     @Query("limit") limit?: string,
   ) {
     return this.appService.getProductsFiltered({
       category,
       search,
+      minPrice,
+      maxPrice,
       page: page ? Number.parseInt(page, 10) : undefined,
       limit: limit ? Number.parseInt(limit, 10) : undefined,
     });

@@ -26,6 +26,7 @@
     "lint": "turbo run lint",
     "lint:fix": "biome check --write .",
     "list": "pnpm list --recursive --only-projects --json --depth -1",
+    "mcp:product": "node apps/product/dist/stdio.js",
     "prepare": "husky",
     "prisma:generate": "pnpm --filter @projectx/db run prisma:generate",
     "prisma:migrate": "pnpm --filter @projectx/db run prisma:migrate",

@@ -20,9 +20,11 @@
     "test:e2e": "node --experimental-vm-modules --disable-warning=ExperimentalWarning node_modules/jest/bin/jest.js --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@modelcontextprotocol/server": "2.4.0",
     "@nestjs/common": "12.3.3",
     "@nestjs/config": "12.1.0",
     "@nestjs/core": "12.3.3",
+    "@nestjs/mcp": "0.0.3",
     "@nestjs/platform-express": "12.3.3",
     "@nestjs/swagger": "12.1.0",
     "@projectx/core": "workspace:*",
@@ -31,11 +33,13 @@
     "class-transformer": "0.5.1",
     "class-validator": "0.14.3",
     "reflect-metadata": "0.2.2",
-    "rxjs": "7.8.2"
+    "rxjs": "7.8.2",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.7",
     "@eslint/js": "^9.39.2",
+    "@modelcontextprotocol/client": "^2.4.0",
     "@nestjs/cli": "^12.0.11",
     "@nestjs/schematics": "^12.0.12",
     "@nestjs/testing": "^12.3.3",
@@ -66,6 +70,9 @@
       "ts"
     ],
     "rootDir": "src",
+    "setupFiles": [
+      "<rootDir>/../test/setup-env.ts"
+    ],
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"

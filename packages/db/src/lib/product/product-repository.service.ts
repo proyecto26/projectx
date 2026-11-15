@@ -87,10 +87,20 @@ export class ProductRepositoryService {
   async findProductsFiltered(params: {
     category?: string;
     search?: string;
+    minPrice?: number;
+    maxPrice?: number;
     page?: number;
     limit?: number;
   }): Promise<ProductListResponseDto> {
-    const { category, search, page = 1, limit = 12 } = params;
+    const {
+      category,
+      search,
+      minPrice,
+      maxPrice,
+      page = 1,
+      limit = 12,
+    } = params;
+    const hasPriceRange = minPrice !== undefined || maxPrice !== undefined;
     const where: Prisma.ProductWhereInput = {
       status: "Available",
       ...(category && { category }),
@@ -99,6 +109,12 @@ export class ProductRepositoryService {
           { name: { contains: search, mode: "insensitive" } },
           { description: { contains: search, mode: "insensitive" } },
         ],
+      }),
+      ...(hasPriceRange && {
+        estimatedPrice: {
+          ...(minPrice !== undefined && { gte: minPrice }),
+          ...(maxPrice !== undefined && { lte: maxPrice }),
+        },
       }),
     };
 
