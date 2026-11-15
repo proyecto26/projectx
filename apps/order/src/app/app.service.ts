@@ -47,12 +47,8 @@ const orderServerActions = defineServerActions(orderActions, {
 
 /** Ids of the products that can't be sold, found anywhere in the failure's causes */
 export function unavailableProductIds(error: unknown): number[] | undefined {
-  for (
-    let current: unknown = error;
-    current instanceof Error;
-    // Temporal errors set cause, the build targets a lib without Error.cause
-    current = (current as { cause?: unknown }).cause
-  ) {
+  let current: unknown = error;
+  while (current instanceof Error) {
     if (
       current instanceof ApplicationFailure &&
       current.type === PRODUCT_UNAVAILABLE
@@ -63,6 +59,8 @@ export function unavailableProductIds(error: unknown): number[] | undefined {
         ? ids.filter((id): id is number => typeof id === "number")
         : [];
     }
+    // Temporal errors chain their causes
+    current = current.cause;
   }
   return undefined;
 }

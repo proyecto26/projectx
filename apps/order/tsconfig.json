@@ -38,7 +38,7 @@
     "resolveJsonModule": true,
     "noUncheckedIndexedAccess": true,
     "types": ["node", "jest"],
-    "lib": ["ES2021"]
+    "lib": ["ES2023"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test"]
