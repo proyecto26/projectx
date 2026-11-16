@@ -93,3 +93,29 @@ jobs:
         run: pnpm --filter @projectx/db test:integration
       - name: Check catalog.json against the pinned datasets
         run: pnpm --filter @projectx/db catalog:check
+      # The same RustFS image and bucket setup docker compose uses, for the
+      # embeddings S3 round trip
+      - name: Start the object store
+        env:
+          S3_ACCESS_KEY_ID: ci-access-key
+          S3_SECRET_ACCESS_KEY: ci-secret-access-key
+        run: |
+          docker run -d --name storage -p 9000:9000 \
+            -e RUSTFS_ACCESS_KEY="$S3_ACCESS_KEY_ID" -e RUSTFS_SECRET_KEY="$S3_SECRET_ACCESS_KEY" \
+            -e RUSTFS_VOLUMES=/data -e RUSTFS_ADDRESS=:9000 \
+            rustfs/rustfs:1.0.5
+          docker run --rm --network host \
+            -e S3_ENDPOINT=http://localhost:9000 -e S3_BUCKET=projectx-assets -e S3_REGION=us-east-1 \
+            -e AWS_ACCESS_KEY_ID="$S3_ACCESS_KEY_ID" -e AWS_SECRET_ACCESS_KEY="$S3_SECRET_ACCESS_KEY" \
+            -v "$PWD/deployment/scripts/storage:/scripts:ro" \
+            --entrypoint /bin/sh amazon/aws-cli:2.40.2 /scripts/setup-bucket.sh
+      - name: Build the packages the embeddings tests import
+        run: pnpm turbo run build --filter=@projectx/embeddings-app^...
+      - name: Embeddings contract tests against the repository and RustFS
+        env:
+          S3_TEST_ENDPOINT: http://localhost:9000
+          S3_REGION: us-east-1
+          S3_BUCKET: projectx-assets
+          S3_ACCESS_KEY_ID: ci-access-key
+          S3_SECRET_ACCESS_KEY: ci-secret-access-key
+        run: pnpm --filter @projectx/embeddings-app test:integration

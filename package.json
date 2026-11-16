@@ -17,6 +17,8 @@
     "cli": "pnpm --filter @projectx/cli start",
     "dev": "turbo run dev --parallel",
     "dev:auth": "turbo run dev --filter=auth",
+    "dev:embed-text": "EMBED_ROLE=text pnpm --filter @projectx/embeddings-app start:dev",
+    "dev:embed-image": "EMBED_ROLE=image pnpm --filter @projectx/embeddings-app start:dev",
     "dev:order": "turbo run dev --filter=order",
     "dev:product": "turbo run dev --filter=product",
     "dev:web": "turbo run dev --filter=web",
