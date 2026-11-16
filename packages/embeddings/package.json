@@ -27,7 +27,8 @@
     "test": "vitest run",
     "models:fetch": "node scripts/models.cjs fetch",
     "models:verify": "node scripts/models.cjs verify",
-    "test:weights": "EMBED_WEIGHTS=1 vitest run --config vitest.weights.config.mts"
+    "test:weights": "EMBED_WEIGHTS=1 vitest run --config vitest.weights.config.mts",
+    "parity:fixtures": "node scripts/parity.cjs"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

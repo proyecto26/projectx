@@ -6,11 +6,14 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { cosine, type ModelLock, TransformersEmbedder } from "../src";
 
 const cacheDir = process.env.MODEL_CACHE_DIR ?? "";
+if (process.env.EMBED_WEIGHTS === "1" && !cacheDir) {
+  throw new Error("test:weights needs MODEL_CACHE_DIR with the model files");
+}
 const lock = JSON.parse(
   readFileSync(path.join(__dirname, "../models.lock.json"), "utf8"),
 ) as ModelLock;
 const docs =
-  "https://huggingface.co/datasets/Xenova/transformers.js-docs/resolve/main";
+  "https://huggingface.co/datasets/Xenova/transformers.js-docs/resolve/542437c29cc5273cfd29e25c77696f2b349badd7";
 const image = async (name: string) =>
   new Uint8Array(await (await fetch(`${docs}/${name}`)).arrayBuffer());
 
