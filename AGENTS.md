@@ -8,7 +8,6 @@ Full-stack event-driven application using Temporal workflows and React Router v7
 - **Backend**: NestJS, PostgreSQL
 - **Orchestration**: Temporal
 - **Monorepo**: Turbo
-- **Spec-Driven Development**: [OpenSpec](https://github.com/Fission-AI/OpenSpec)
 
 ## Documentation
 
@@ -16,34 +15,13 @@ Full-stack event-driven application using Temporal workflows and React Router v7
 - **Architecture Overview**: [docs/architecture/README.md](docs/architecture/README.md) - System design, event flows, and service breakdown.
 - **Database Schema**: [docs/backend/DATABASE.md](docs/backend/DATABASE.md) - Prisma models and relationships.
 - **Payment Integration**: [docs/payment/README.md](docs/payment/README.md) - Stripe integration guide.
-- **AI Search**: [docs/ai/search/IMAGE_SEARCH.md](docs/ai/search/IMAGE_SEARCH.md) - Image search with CLIP + pgvector.
+- **Visual Search**: [docs/ai/search/VISUAL_SEARCH.md](docs/ai/search/VISUAL_SEARCH.md) - Image and text search with EmbeddingGemma 2 + pgvector (in progress).
 
 ### Domain Rules (Detailed Instructions)
 - **Frontend**: [docs/frontend/RULES.md](docs/frontend/RULES.md) (React Router, Components, Styling)
 - **Backend**: [docs/backend/RULES.md](docs/backend/RULES.md) (NestJS, DTOs, Modules)
 - **Workflows**: [docs/backend/TEMPORAL.md](docs/backend/TEMPORAL.md) (Workflow/Activity patterns, Determinism)
 - **Infrastructure**: [docs/architecture/INFRASTRUCTURE.md](docs/architecture/INFRASTRUCTURE.md) (Docker, Deployment)
-
-### OpenSpec Specifications
-- **Active Changes**: `openspec/changes/` - Work-in-progress feature specs and tasks.
-- **Committed Specs**: `openspec/specs/` - Finalized specifications for implemented features.
-
-## Spec-Driven Development (OpenSpec)
-
-Use OpenSpec to structure work around explicit specifications before writing code. This ensures AI agents have clear context and requirements.
-
-### Workflow
-1. **Create** a change: `/opsx:new <feature-name>`
-2. **Plan** artifacts: `/opsx:ff` (fast-forward all) or `/opsx:continue` (step-by-step)
-3. **Implement** tasks: `/opsx:apply`
-4. **Verify** implementation: `/opsx:verify`
-5. **Archive** completed work: `/opsx:archive`
-
-### When to Use OpenSpec
-- Adding new services, workflows, or features
-- Refactoring existing functionality
-- Multi-step changes that span multiple files or services
-- Any change that benefits from a proposal + spec + design + tasks structure
 
 ## ProjectX CLI
 
@@ -72,7 +50,6 @@ The project includes an interactive CLI for scaffolding services and workflows.
 - **Linting**: Use `biome` for linting/formatting. Run `pnpm lint:fix` to resolve issues.
 - **Type Safety**: Strict TypeScript. Avoid `any`. Use `zod` for validation.
 - **Commands**: Run build/dev commands from the root using `pnpm turbo`.
-- **Specs**: Use OpenSpec (`/opsx:new`) for non-trivial changes to maintain structured documentation.
 
 ### Frontend
 - **Routing**: Use **React Router v7** data APIs (`loader`/`action`).

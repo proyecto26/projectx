@@ -341,3 +341,43 @@ describe("ordering products that can't be sold", () => {
     expect(created.referenceId).toBe("fresh-order");
   });
 });
+
+describe("search extensions", () => {
+  it("are created by the migrations, not only by the docker init script", async () => {
+    const rows = await query<{ extname: string }>(
+      testUrl.toString(),
+      `SELECT extname FROM pg_extension WHERE extname IN ('pg_trgm', 'vector') ORDER BY extname`,
+    );
+    expect(rows.map((row) => row.extname)).toEqual(["pg_trgm", "vector"]);
+  });
+
+  it("supports what vector search needs: halfvec, HNSW and iterative scans", async () => {
+    const db = new Client({ connectionString: testUrl.toString() });
+    await db.connect();
+    try {
+      await db.query("BEGIN");
+      await db.query(
+        "CREATE TEMP TABLE probe (id int, embedding halfvec(3)) ON COMMIT DROP",
+      );
+      await db.query(
+        "CREATE INDEX ON probe USING hnsw (embedding halfvec_cosine_ops)",
+      );
+      await db.query(
+        `INSERT INTO probe VALUES (1, '[1,0,0]'), (2, '[0,1,0]'), (3, '[0.9,0.1,0]')`,
+      );
+      // Iterative scans need pgvector >= 0.8.0
+      await db.query("SET LOCAL hnsw.iterative_scan = relaxed_order");
+      const { rows } = await db.query<{ id: number }>(
+        "SELECT id FROM probe ORDER BY embedding <=> '[1,0,0]' LIMIT 2",
+      );
+      expect(rows.map((row) => row.id)).toEqual([1, 3]);
+      const trigram = await db.query<{ score: number }>(
+        "SELECT similarity('drill', 'cordless drill') AS score",
+      );
+      expect(trigram.rows[0].score).toBeGreaterThan(0);
+    } finally {
+      await db.query("ROLLBACK");
+      await db.end();
+    }
+  });
+});

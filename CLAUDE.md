@@ -35,9 +35,6 @@ This is a modern full-stack e-commerce platform built with a microservices archi
 ### Email
 - **SendGrid** with MJML templates
 
-### Spec-Driven Development
-- **[OpenSpec](https://github.com/Fission-AI/OpenSpec)** for structured AI-assisted development
-
 ## Project Structure
 
 ```
@@ -58,9 +55,6 @@ projectx/
 │   ├── ui/             # React component library
 │   ├── workflow-client/ # Connect JS apps to Temporal workflows (store, transports, React, SSE)
 │   └── workflows/      # Temporal workflow definitions
-├── openspec/
-│   ├── changes/        # Active OpenSpec changes (gitignored)
-│   └── specs/          # Committed specifications
 ├── docs/               # Project documentation
 └── docker-compose.yml
 ```
@@ -101,29 +95,7 @@ pnpm cli info              # Display project information
 pnpm gen:service           # Basic NestJS service generator
 pnpm gen:temporal-service  # Temporal NestJS service generator
 pnpm gen:workflow          # Add workflow to existing service
-
-# OpenSpec (Spec-Driven Development)
-openspec new change "<name>"        # Create a new change
-openspec status --change "<name>"   # Check change status
-openspec instructions <id> --change "<name>"  # Get artifact instructions
 ```
-
-## OpenSpec Workflow
-
-Use OpenSpec slash commands for structured AI-assisted development:
-
-| Command | Description |
-|---------|-------------|
-| `/opsx:new` | Start a new change (proposal + spec + design + tasks) |
-| `/opsx:continue` | Create the next artifact step-by-step |
-| `/opsx:ff` | Fast-forward: generate all artifacts at once |
-| `/opsx:apply` | Implement tasks from a change |
-| `/opsx:verify` | Verify implementation matches specs |
-| `/opsx:archive` | Archive a completed change |
-| `/opsx:explore` | Thinking partner for exploring ideas |
-| `/opsx:sync` | Sync delta specs to main specs |
-
-**When to use**: Non-trivial features, multi-file changes, new services/workflows, refactoring.
 
 ## Code Style
 
@@ -167,7 +139,7 @@ docker-compose up -d       # Start all services
 docker-compose down        # Stop all services
 ```
 
-Services include: PostgreSQL + PostGIS, Temporal server + UI, Elasticsearch
+Services include: PostgreSQL + PostGIS + pgvector (`docker/postgres/Dockerfile`), S3-compatible storage (RustFS, bucket set up by `storage-setup`), Temporal server + UI, Elasticsearch
 
 ## Interactive Playgrounds
 
