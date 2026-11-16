@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.1166.0",
-    "@huggingface/transformers": "4.3.2"
+    "@huggingface/transformers": "4.3.2",
+    "sharp": "0.35.5"
   }
 }

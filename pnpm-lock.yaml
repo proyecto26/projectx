@@ -1140,6 +1140,9 @@ importers:
       '@huggingface/transformers':
         specifier: 4.3.2
         version: 4.3.2(@types/node@22.19.7)
+      sharp:
+        specifier: 0.35.5
+        version: 0.35.5(@types/node@22.19.7)
     devDependencies:
       '@types/node':
         specifier: ^22.0.0

@@ -13,6 +13,7 @@ import {
   ImageDecodeError,
   type ImageInput,
 } from "./embedder";
+import { assertDecodableSize } from "./image-guard";
 import { type ModelLock, revisionDir, verifyModelFiles } from "./model-files";
 import { normalize } from "./vector";
 
@@ -93,6 +94,7 @@ export class TransformersEmbedder implements Embedder {
     // One image at a time: CPU inference gains nothing from batching, and
     // the caller holds the priority permit per item
     for (const item of items) {
+      await assertDecodableSize(item.bytes);
       const image = await RawImage.fromBlob(
         new Blob([Buffer.from(item.bytes)]),
       ).catch((error: unknown) => {

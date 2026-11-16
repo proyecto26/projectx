@@ -1,6 +1,7 @@
 export * from "./lib/blob-reader";
 export * from "./lib/embedder";
 export * from "./lib/fake-embedder";
+export * from "./lib/image-guard";
 export * from "./lib/model-files";
 export * from "./lib/model-lock";
 export * from "./lib/priority-permit";
