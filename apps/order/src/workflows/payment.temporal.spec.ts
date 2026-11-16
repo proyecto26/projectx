@@ -4,8 +4,11 @@ import {
   createOrderUpdate,
   getOrderStateQuery,
   type PaymentWebhookEvent,
+  PRODUCT_UNAVAILABLE,
   paymentWebHookEventSignal,
 } from "@projectx/core/workflows";
+import { WorkflowFailedError } from "@temporalio/client";
+import { ApplicationFailure } from "@temporalio/common";
 import { TestWorkflowEnvironment } from "@temporalio/testing";
 import {
   bundleWorkflowCode,
@@ -284,6 +287,48 @@ describe("payments on a Temporal server", () => {
         "Cancelled",
       );
       await replayBoth(handle.workflowId);
+    });
+  }, 60_000);
+
+  it("rejects an order whose products can't be sold, without retrying", async () => {
+    activities.createOrder.mockImplementationOnce(async () => {
+      throw ApplicationFailure.nonRetryable(
+        "These products aren't available: 8",
+        PRODUCT_UNAVAILABLE,
+        { productIds: [8] },
+      );
+    });
+    await withWorker(async () => {
+      const referenceId = `ref-${++nextId}`;
+      const handle = await env.client.workflow.start(createOrder, {
+        taskQueue,
+        workflowId: `order-${referenceId}`,
+        args: [{ user: { id: 1 }, order: { referenceId, items: [] } } as never],
+      });
+
+      const update = await handle.executeUpdate(createOrderUpdate).then(
+        () => undefined,
+        (error: unknown) => error,
+      );
+      expect(update).toBeInstanceOf(Error);
+      expect((update as Error).cause).toMatchObject({
+        type: PRODUCT_UNAVAILABLE,
+      });
+
+      // The workflow closes right away instead of waiting for the order timeout
+      const result = await handle.result().then(
+        () => undefined,
+        (error: unknown) => error,
+      );
+      expect(result).toBeInstanceOf(WorkflowFailedError);
+      expect((result as WorkflowFailedError).cause).toMatchObject({
+        type: PRODUCT_UNAVAILABLE,
+      });
+      expect(activities.createOrder).toHaveBeenCalledTimes(1);
+      expect((await handle.query(getOrderStateQuery)).status).toBe("Failed");
+
+      const history = await handle.fetchHistory();
+      await Worker.runReplayHistory({ workflowBundle }, history);
     });
   }, 60_000);
 });

@@ -22,11 +22,15 @@
     "build": "tsup",
     "dev": "tsc -w -p tsconfig.json",
     "lint": "biome check .",
-    "test": "echo 'no tests'",
+    "test": "vitest run",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "prisma:migrate:dev": "prisma migrate dev",
-    "prisma:seed": "prisma db seed"
+    "prisma:seed": "prisma db seed",
+    "test:integration": "vitest run --config vitest.integration.config.mts",
+    "catalog:build": "tsx prisma/catalog/build.ts",
+    "catalog:check": "tsx prisma/catalog/build.ts --check",
+    "catalog:verify-urls": "tsx prisma/catalog/build.ts --verify-urls"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.1",
@@ -42,9 +46,11 @@
     "@types/node": "^25.0.9",
     "@types/pg": "^8.23.1",
     "dotenv-mono": "^1.5.1",
+    "reflect-metadata": "0.2.2",
     "tsup": "^8.5.1",
     "tsx": "^4.23.15",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "4.1.11"
   },
   "peerDependencies": {
     "@nestjs/common": "12.3.3"

@@ -289,6 +289,39 @@ export function ProductDetailPage({
             )}
           </div>
 
+          {/* Source and license of the model files */}
+          {(product.credit || product.license) && (
+            <p className="text-[var(--muted-foreground)] text-sm">
+              {product.credit}
+              {product.license && (
+                <>
+                  {product.credit ? " · " : ""}
+                  <span className="font-mono">{product.license}</span>
+                </>
+              )}
+              {product.sourceUrl && (
+                <>
+                  {" · "}
+                  <a
+                    href={product.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline underline-offset-2 hover:text-[var(--foreground)]"
+                  >
+                    Source
+                  </a>
+                </>
+              )}
+              {" · "}
+              <Link
+                to="/credits"
+                className="underline underline-offset-2 hover:text-[var(--foreground)]"
+              >
+                Credits
+              </Link>
+            </p>
+          )}
+
           {/* Divider */}
           <hr style={{ borderColor: "var(--border)" }} />
 

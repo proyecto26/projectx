@@ -40,6 +40,7 @@ export default [
     // Legal
     route("terms", "./routes/terms.tsx"),
     route("privacy", "./routes/privacy.tsx"),
+    route("credits", "./routes/credits.tsx"),
   ]),
 
   // Admin

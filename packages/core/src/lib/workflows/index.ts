@@ -18,6 +18,12 @@ export class CancelledException extends Error {
   }
 }
 
+/**
+ * Failure type of an order whose products are missing or not for sale.
+ * It isn't retried. Same value as ProductUnavailableError.type in @projectx/models.
+ */
+export const PRODUCT_UNAVAILABLE = "ProductUnavailable";
+
 // DEFINE SIGNALS
 /**
  * Send a request to cancel the workflow

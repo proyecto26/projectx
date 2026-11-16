@@ -16,6 +16,7 @@
       "!**/.zed",
       "!**/.vscode",
       "!**/routeTree.gen.ts",
+      "!packages/db/prisma/catalog/catalog.json",
       "!**/src-tauri",
       "!**/.nuxt",
       "!bts.jsonc",

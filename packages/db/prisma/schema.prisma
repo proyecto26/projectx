@@ -124,6 +124,18 @@ model Product {
   tags           String[]
   category       String?   @db.VarChar(100)
   status         ProductStatus
+  /// SPDX license identifier of the model files, e.g. CC0-1.0 or CC-BY-4.0
+  license        String?   @db.VarChar(32)
+  /// Attribution line shown with the product, required by CC BY licenses
+  credit         String?   @db.Text
+  /// Page where the original asset is published
+  sourceUrl      String?   @map("source_url") @db.Text
+  /// GLB file used by the 3D preview
+  modelUrl       String?   @map("model_url") @db.Text
+  /// File formats available for download, e.g. glb, stl
+  formats        String[]  @default([])
+  /// Source metadata such as triangle count, dataset and revision
+  attributes     Json?
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at")
 
@@ -133,6 +145,8 @@ model Product {
 
   @@index([sku], map: "ix_product_sku")
   @@index([category], map: "ix_product_category")
+  @@index([license], map: "ix_product_license")
+  @@index([formats], map: "ix_product_formats", type: Gin)
   @@map("product")
 }
 
