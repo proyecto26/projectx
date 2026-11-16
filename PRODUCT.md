@@ -28,8 +28,7 @@ A template that doesn't stop at a toy. It runs a real end-to-end business flow (
 
 - **Evaluation:** found on GitHub (README, star history), then the docs and landing surfaces. Read critically on desktop beside an IDE, occasionally triaged on a phone from Slack. Evaluators expect real code, real architecture, and no filler.
 - **Development:** Storybook, the Temporal playground (`pnpm playground`, :4343), and the admin dashboard are used in long, often late-night, IDE-adjacent sessions.
-- **Local stack:** `docker-compose` (PostgreSQL + PostGIS, Temporal server + UI, Elasticsearch), `pnpm dev`, Ngrok for webhooks, Stripe CLI for payment testing.
-- **Spec-driven work:** OpenSpec changes and slash commands for non-trivial features.
+- **Local stack:** `docker-compose` (PostgreSQL + PostGIS + pgvector, S3-compatible storage, Temporal server + UI, Elasticsearch), `pnpm dev`, Ngrok for webhooks, Stripe CLI for payment testing.
 
 ## Capabilities and Constraints
 

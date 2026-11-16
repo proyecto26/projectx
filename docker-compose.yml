@@ -51,7 +51,10 @@ x-service-common: &service-common
 
 services:
   db:
-    image: postgis/postgis:17-3.6
+    # PostGIS + pgvector, see docker/postgres/Dockerfile
+    build:
+      context: docker/postgres
+    image: ${COMPOSE_PROJECT_NAME:-projectx}-postgres:17-3.6-pgvector
     platform: linux/amd64
     container_name: ${COMPOSE_PROJECT_NAME:-projectx}-db
     restart: always
@@ -68,7 +71,7 @@ services:
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      test: [ "CMD-SHELL", "pg_isready -h 127.0.0.1 -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -81,6 +84,56 @@ services:
       - /tmp
       - /run
       - /run/postgresql
+
+  # S3-compatible object store for product images and 3D assets (RustFS, Apache-2.0).
+  # The app only talks the S3 API, so any S3 store works in other environments.
+  storage:
+    image: rustfs/rustfs:1.0.5
+    container_name: ${COMPOSE_PROJECT_NAME:-projectx}-storage
+    restart: always
+    networks:
+      - default
+    environment:
+      # Required: without them RustFS falls back to its well-known default credentials
+      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY_ID:?Set S3_ACCESS_KEY_ID in .env}
+      RUSTFS_SECRET_KEY: ${S3_SECRET_ACCESS_KEY:?Set S3_SECRET_ACCESS_KEY in .env}
+      RUSTFS_VOLUMES: /data
+      RUSTFS_ADDRESS: ":9000"
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_CONSOLE_ADDRESS: ":9001"
+    volumes:
+      - storage_data:/data
+    ports:
+      - "${S3_PORT:-9000}:9000"
+      - "${S3_CONSOLE_PORT:-9001}:9001"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -sf http://localhost:9000/health || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    labels:
+      - "com.*project-name.service=storage"
+
+  # Creates the bucket, its public prefix and its expiry rules, then exits
+  storage-setup:
+    image: amazon/aws-cli:2.40.2
+    container_name: ${COMPOSE_PROJECT_NAME:-projectx}-storage-setup
+    depends_on:
+      storage:
+        condition: service_healthy
+    networks:
+      - default
+    environment:
+      S3_ENDPOINT: http://storage:9000
+      S3_BUCKET: ${S3_BUCKET:-projectx-assets}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:?Set S3_ACCESS_KEY_ID in .env}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:?Set S3_SECRET_ACCESS_KEY in .env}
+    volumes:
+      - ./deployment/scripts/storage:/scripts:ro
+    entrypoint: [ "/bin/sh" ]
+    command: /scripts/setup-bucket.sh
 
   elasticsearch:
     image: elasticsearch:7.17.28
@@ -294,5 +347,7 @@ networks:
 
 volumes:
   elasticsearch_data:
+  storage_data:
+    name: ${COMPOSE_PROJECT_NAME:-projectx}-storage-data
   postgres_data:
     name: ${COMPOSE_PROJECT_NAME:-projectx}-postgres-data

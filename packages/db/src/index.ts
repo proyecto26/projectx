@@ -4,4 +4,5 @@ export * from "./lib/payment";
 export * from "./lib/prisma.module";
 export * from "./lib/prisma.service";
 export * from "./lib/product";
+export * from "./lib/search";
 export * from "./lib/user";

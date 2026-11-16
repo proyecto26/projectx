@@ -2,40 +2,40 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client"
+  provider        = "prisma-client"
   previewFeatures = ["postgresqlExtensions"]
-  output   = "../generated/prisma"
+  output          = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
-  extensions = [postgis]
+  provider   = "postgresql"
+  extensions = [postgis, pg_trgm, vector]
 }
 
 model User {
-  id            Int           @id @default(autoincrement()) @db.Integer
-  username      String?       @unique @db.VarChar(60)
-  email         String        @unique @db.VarChar(100)
-  firstName     String?       @map("first_name") @db.VarChar(100)
-  lastName      String?       @map("last_name") @db.VarChar(100)
-  addressLine1  String?       @map("address_line1") @db.VarChar(100)
-  addressLine2  String?       @map("address_line2") @db.VarChar(50)
-  city          String?       @db.VarChar(100)
-  state         String?       @db.VarChar(100)
-  postalCode    String?       @map("postal_code") @db.VarChar(10)
-  country       String?       @db.VarChar(100)
-  phoneNumber   String?       @map("phone_number") @db.VarChar(100)
-  location      Unsupported("geometry(Point, 4326)")? @map("location")
-  status        UserStatus
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @updatedAt @map("updated_at")
-  deletedAt     DateTime?     @map("deleted_at") @db.Timestamp()
-  
-  manufacturer  Manufacturer? @relation("UserManufacturer")
-  products      Product[]     @relation("UserProducts")
-  orders        Order[]       @relation("UserOrders")
-  reviews       Review[]      @relation("UserReviews")
-  roles         UserRole[]    @relation("UserRoles")
+  id           Int                                   @id @default(autoincrement()) @db.Integer
+  username     String?                               @unique @db.VarChar(60)
+  email        String                                @unique @db.VarChar(100)
+  firstName    String?                               @map("first_name") @db.VarChar(100)
+  lastName     String?                               @map("last_name") @db.VarChar(100)
+  addressLine1 String?                               @map("address_line1") @db.VarChar(100)
+  addressLine2 String?                               @map("address_line2") @db.VarChar(50)
+  city         String?                               @db.VarChar(100)
+  state        String?                               @db.VarChar(100)
+  postalCode   String?                               @map("postal_code") @db.VarChar(10)
+  country      String?                               @db.VarChar(100)
+  phoneNumber  String?                               @map("phone_number") @db.VarChar(100)
+  location     Unsupported("geometry(Point, 4326)")? @map("location")
+  status       UserStatus
+  createdAt    DateTime                              @default(now()) @map("created_at")
+  updatedAt    DateTime                              @updatedAt @map("updated_at")
+  deletedAt    DateTime?                             @map("deleted_at") @db.Timestamp()
+
+  manufacturer Manufacturer? @relation("UserManufacturer")
+  products     Product[]     @relation("UserProducts")
+  orders       Order[]       @relation("UserOrders")
+  reviews      Review[]      @relation("UserReviews")
+  roles        UserRole[]    @relation("UserRoles")
 
   @@index([email], map: "ix_user_email")
   @@index([username], map: "ix_user_username")
@@ -44,13 +44,13 @@ model User {
 }
 
 model Role {
-  id          Int       @id @default(autoincrement())
-  name        String    @db.VarChar(100)
-  description String?   @db.Text
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
-  userRoles   UserRole[] @relation("RoleUsers")
+  userRoles       UserRole[]       @relation("RoleUsers")
   rolePermissions RolePermission[] @relation("RolePermissions")
 
   @@index([name], map: "ix_role_name")
@@ -62,182 +62,187 @@ model UserRole {
   roleId    Int      @map("role_id") @db.Integer
   createdAt DateTime @default(now()) @map("created_at")
 
-  user      User    @relation("UserRoles", fields: [userId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_user_role_user_id")
-  role      Role    @relation("RoleUsers", fields: [roleId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_user_role_role_id")
+  user User @relation("UserRoles", fields: [userId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_user_role_user_id")
+  role Role @relation("RoleUsers", fields: [roleId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_user_role_role_id")
 
   @@id([userId, roleId])
-  @@map("user_role")
   @@index([userId, roleId], map: "ix_user_role_user_id_role_id")
+  @@map("user_role")
 }
 
 model Permission {
-  id          Int       @id @default(autoincrement())
-  name        String    @db.VarChar(100)
-  description String?   @db.Text
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   rolePermissions RolePermission[] @relation("PermissionRoles")
 
-  @@map("permission")
   @@index([name], map: "ix_permission_name")
+  @@map("permission")
 }
 
 model RolePermission {
-  roleId      Int     @map("role_id")
-  permissionId Int    @map("permission_id")
-  createdAt   DateTime @default(now()) @map("created_at")
+  roleId       Int      @map("role_id")
+  permissionId Int      @map("permission_id")
+  createdAt    DateTime @default(now()) @map("created_at")
 
-  role        Role    @relation("RolePermissions", fields: [roleId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_role_permission_role_id")
-  permission  Permission @relation("PermissionRoles", fields: [permissionId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_role_permission_permission_id")
+  role       Role       @relation("RolePermissions", fields: [roleId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_role_permission_role_id")
+  permission Permission @relation("PermissionRoles", fields: [permissionId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_role_permission_permission_id")
 
   @@id([roleId, permissionId])
   @@map("role_permission")
 }
 
 model Manufacturer {
-  id          Int       @id @default(autoincrement())
-  name        String    @db.VarChar(100)
-  status      ManufacturerStatus
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  userId      Int       @unique
+  id        Int                @id @default(autoincrement())
+  name      String             @db.VarChar(100)
+  status    ManufacturerStatus
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
+  userId    Int                @unique
 
-  user        User      @relation("UserManufacturer", fields: [userId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_manufacturer_user_id")
+  user User @relation("UserManufacturer", fields: [userId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_manufacturer_user_id")
 
-  reviews     Review[]  @relation("ManufacturerReviews")
-  prices      ManufacturerPrice[] @relation("ManufacturerPrices")
-  orderItems  OrderItem[] @relation("ManufacturerOrderItems")
+  reviews    Review[]            @relation("ManufacturerReviews")
+  prices     ManufacturerPrice[] @relation("ManufacturerPrices")
+  orderItems OrderItem[]         @relation("ManufacturerOrderItems")
 
   @@map("manufacturer")
 }
 
 model Product {
-  id             Int       @id @default(autoincrement())
-  createdBy      Int       @map("created_by")
-  name           String    @db.VarChar(100)
-  description    String?   @db.Text
-  sku            String    @unique @db.VarChar(50)
-  imageUrl       String?   @map("image_url") @db.Text
-  estimatedPrice Decimal   @map("estimated_price") @db.Decimal(10, 2)
-  downloadUrls   String[]  @map("download_urls")
+  id             Int           @id @default(autoincrement())
+  createdBy      Int           @map("created_by")
+  name           String        @db.VarChar(100)
+  description    String?       @db.Text
+  sku            String        @unique @db.VarChar(50)
+  imageUrl       String?       @map("image_url") @db.Text
+  estimatedPrice Decimal       @map("estimated_price") @db.Decimal(10, 2)
+  downloadUrls   String[]      @map("download_urls")
   tags           String[]
-  category       String?   @db.VarChar(100)
+  category       String?       @db.VarChar(100)
   status         ProductStatus
   /// SPDX license identifier of the model files, e.g. CC0-1.0 or CC-BY-4.0
-  license        String?   @db.VarChar(32)
+  license        String?       @db.VarChar(32)
   /// Attribution line shown with the product, required by CC BY licenses
-  credit         String?   @db.Text
+  credit         String?       @db.Text
   /// Page where the original asset is published
-  sourceUrl      String?   @map("source_url") @db.Text
+  sourceUrl      String?       @map("source_url") @db.Text
   /// GLB file used by the 3D preview
-  modelUrl       String?   @map("model_url") @db.Text
+  modelUrl       String?       @map("model_url") @db.Text
   /// File formats available for download, e.g. glb, stl
-  formats        String[]  @default([])
+  formats        String[]      @default([])
   /// Source metadata such as triangle count, dataset and revision
   attributes     Json?
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+
+  /// name + description for trigram search, set by a database trigger (writes are overwritten)
+  searchText String? @map("search_text") @db.Text
 
   user               User                @relation("UserProducts", fields: [createdBy], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_product_user_id")
   orderItems         OrderItem[]         @relation("ProductOrderItems")
   manufacturerPrices ManufacturerPrice[] @relation("ProductManufacturerPrices")
+  assets             ProductAsset[]
 
   @@index([sku], map: "ix_product_sku")
   @@index([category], map: "ix_product_category")
   @@index([license], map: "ix_product_license")
   @@index([formats], map: "ix_product_formats", type: Gin)
+  @@index([searchText(ops: raw("gist_trgm_ops"))], map: "ix_product_search_text_trgm", type: Gist)
   @@map("product")
 }
 
 model ManufacturerPrice {
-  manufacturerId Int       @map("manufacturer_id")
-  productId      Int       @map("product_id")
-  price          Decimal   @db.Decimal(10, 2)
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
+  manufacturerId Int      @map("manufacturer_id")
+  productId      Int      @map("product_id")
+  price          Decimal  @db.Decimal(10, 2)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
 
-  manufacturer   Manufacturer @relation("ManufacturerPrices", fields: [manufacturerId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_manufacturer_price_manufacturer_id")
-  product        Product      @relation("ProductManufacturerPrices", fields: [productId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_manufacturer_price_product_id")
+  manufacturer Manufacturer @relation("ManufacturerPrices", fields: [manufacturerId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_manufacturer_price_manufacturer_id")
+  product      Product      @relation("ProductManufacturerPrices", fields: [productId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_manufacturer_price_product_id")
 
   @@id([manufacturerId, productId])
   @@map("manufacturer_price")
 }
 
 model Order {
-  id          Int       @id @default(autoincrement())
-  referenceId String    @unique @map("reference_id") @db.VarChar(36)
-  userId      Int       @map("user_id")
-  totalPrice  Decimal   @map("total_price") @db.Decimal(10, 2)
-  taxAmount   Decimal   @default(0) @map("tax_amount") @db.Decimal(10, 2)
-  shippingCost Decimal   @default(0) @map("shipping_cost") @db.Decimal(10, 2)
-  status      OrderStatus
-  shippingAddress String? @map("shipping_address") @db.Text
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  id              Int         @id @default(autoincrement())
+  referenceId     String      @unique @map("reference_id") @db.VarChar(36)
+  userId          Int         @map("user_id")
+  totalPrice      Decimal     @map("total_price") @db.Decimal(10, 2)
+  taxAmount       Decimal     @default(0) @map("tax_amount") @db.Decimal(10, 2)
+  shippingCost    Decimal     @default(0) @map("shipping_cost") @db.Decimal(10, 2)
+  status          OrderStatus
+  shippingAddress String?     @map("shipping_address") @db.Text
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
 
-  user        User      @relation("UserOrders", fields: [userId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_order_user_id")
-  items       OrderItem[] @relation("OrderItems")
-  payment     Payment?  @relation("OrderPayment")
+  user    User        @relation("UserOrders", fields: [userId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_order_user_id")
+  items   OrderItem[] @relation("OrderItems")
+  payment Payment?    @relation("OrderPayment")
 
-  @@map("order")
   @@index([userId], map: "ix_order_user_id")
   @@index([referenceId], map: "ix_order_reference_id")
+  @@map("order")
 }
 
 model OrderItem {
-  id              Int       @id @default(autoincrement()) @db.Integer
-  orderId         Int       @map("order_id") @db.Integer
-  productId       Int       @map("product_id") @db.Integer
-  manufacturerId  Int?      @map("manufacturer_id") @db.Integer
-  quantity        Int       @db.Integer
-  priceAtPurchase Decimal   @map("price_at_purchase") @db.Decimal(10, 2)
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
+  id              Int      @id @default(autoincrement()) @db.Integer
+  orderId         Int      @map("order_id") @db.Integer
+  productId       Int      @map("product_id") @db.Integer
+  manufacturerId  Int?     @map("manufacturer_id") @db.Integer
+  quantity        Int      @db.Integer
+  priceAtPurchase Decimal  @map("price_at_purchase") @db.Decimal(10, 2)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
-  review          Review?   @relation("OrderItemReview")
-  order           Order     @relation("OrderItems", fields: [orderId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_order_item_order_id")
-  product         Product   @relation("ProductOrderItems", fields: [productId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_order_item_product_id")
-  manufacturer    Manufacturer? @relation("ManufacturerOrderItems", fields: [manufacturerId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_order_item_manufacturer_id")
+  review       Review?       @relation("OrderItemReview")
+  order        Order         @relation("OrderItems", fields: [orderId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_order_item_order_id")
+  product      Product       @relation("ProductOrderItems", fields: [productId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_order_item_product_id")
+  manufacturer Manufacturer? @relation("ManufacturerOrderItems", fields: [manufacturerId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_order_item_manufacturer_id")
 
   @@map("order_item")
 }
 
 model Payment {
-  id            Int       @id @default(autoincrement()) @db.Integer
-  orderId       Int       @unique @map("order_id") @db.Integer
-  provider      String    @db.VarChar(100)
-  status        PaymentStatus
-  transactionId String    @map("transaction_id") @db.VarChar(100)
-  amount        Decimal   @db.Decimal(10, 2)
-  paymentMethod String?   @map("payment_method") @db.VarChar(50)
-  billingAddress  String? @map("billing_address") @db.Text
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+  id             Int           @id @default(autoincrement()) @db.Integer
+  orderId        Int           @unique @map("order_id") @db.Integer
+  provider       String        @db.VarChar(100)
+  status         PaymentStatus
+  transactionId  String        @map("transaction_id") @db.VarChar(100)
+  amount         Decimal       @db.Decimal(10, 2)
+  paymentMethod  String?       @map("payment_method") @db.VarChar(50)
+  billingAddress String?       @map("billing_address") @db.Text
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
 
-  order         Order     @relation("OrderPayment", fields: [orderId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_payment_order_id")
+  order Order @relation("OrderPayment", fields: [orderId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_payment_order_id")
 
-  @@map("payment")
   @@index([orderId], map: "ix_payment_order_id")
+  @@map("payment")
 }
 
 model Review {
-  id                  Int       @id @default(autoincrement())
-  orderItemId         Int       @unique @map("order_item_id") @db.Integer
-  manufacturerId      Int       @map("manufacturer_id") @db.Integer
-  userId              Int       @map("user_id") @db.Integer
-  itemRating          Int       @map("item_rating") @db.Integer
-  communicationRating Int       @map("communication_rating") @db.Integer
-  shippingRating      Int       @map("shipping_rating") @db.Integer
-  comments            String?   @db.Text
-  anonymous           Boolean   @default(false) @db.Boolean
-  shareInFeed         Boolean   @default(false) @map("share_in_feed") @db.Boolean
-  createdAt           DateTime  @default(now()) @map("created_at")
-  updatedAt           DateTime  @updatedAt @map("updated_at")
+  id                  Int      @id @default(autoincrement())
+  orderItemId         Int      @unique @map("order_item_id") @db.Integer
+  manufacturerId      Int      @map("manufacturer_id") @db.Integer
+  userId              Int      @map("user_id") @db.Integer
+  itemRating          Int      @map("item_rating") @db.Integer
+  communicationRating Int      @map("communication_rating") @db.Integer
+  shippingRating      Int      @map("shipping_rating") @db.Integer
+  comments            String?  @db.Text
+  anonymous           Boolean  @default(false) @db.Boolean
+  shareInFeed         Boolean  @default(false) @map("share_in_feed") @db.Boolean
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
 
-  manufacturer        Manufacturer @relation("ManufacturerReviews", fields: [manufacturerId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_review_manufacturer_id")
-  user                User         @relation("UserReviews", fields: [userId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_review_user_id")
-  orderItem           OrderItem    @relation("OrderItemReview", fields: [orderItemId], references: [id], map: "fk_review_order_item_id")
+  manufacturer Manufacturer @relation("ManufacturerReviews", fields: [manufacturerId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_review_manufacturer_id")
+  user         User         @relation("UserReviews", fields: [userId], references: [id], onUpdate: Cascade, onDelete: NoAction, map: "fk_review_user_id")
+  orderItem    OrderItem    @relation("OrderItemReview", fields: [orderItemId], references: [id], map: "fk_review_order_item_id")
 
   @@index([orderItemId], map: "ix_review_order_item_id")
   @@map("review")
@@ -277,4 +282,230 @@ enum PaymentStatus {
   Completed
   Failed
   Refunded
+}
+
+// VISUAL SEARCH (docs/ai/search/VISUAL_SEARCH.md)
+// Writes go through SearchRepositoryService, which locks the asset row and
+// checks its ingest generation first. Some indexes and the vector column are
+// managed in SQL (migration 20261114000000_visual_search) because Prisma can't
+// express them: HNSW, partial unique indexes and halfvec.
+
+enum BlobState {
+  live
+  deleting
+
+  @@map("blob_state")
+}
+
+enum AssetStatus {
+  admitted
+  stored
+  embedded
+  failed
+
+  @@map("asset_status")
+}
+
+enum ProductAssetRole {
+  thumbnail
+  gallery
+
+  @@map("product_asset_role")
+}
+
+enum SearchMode {
+  vector
+  hybrid
+  lexical
+
+  @@map("search_mode")
+}
+
+/// What produced a stored vector. v1 holds a single row.
+model EmbeddingProfile {
+  id               Int      @id @default(autoincrement())
+  model            String   @db.VarChar(200)
+  /// Hugging Face commit of the model
+  modelRevision    String   @map("model_revision") @db.VarChar(64)
+  dims             Int
+  /// Weights variant, e.g. q4 or fp32: different variants give different vectors
+  dtype            String   @db.VarChar(16)
+  /// Inference runtime and version, e.g. transformers.js@4.3.2
+  runtime          String   @db.VarChar(64)
+  /// What a document is made of, `image` in v1
+  documentTemplate String   @map("document_template") @db.VarChar(32)
+  /// Prompt name used for text queries, e.g. SearchQuery
+  queryPrompt      String?  @map("query_prompt") @db.VarChar(64)
+  imageTokenBudget Int?     @map("image_token_budget")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  embeddings AssetEmbedding[]
+  sessions   SearchSession[]
+
+  @@unique([model, modelRevision, dims, dtype, runtime, documentTemplate], map: "uq_embedding_profile")
+  @@map("embedding_profile")
+}
+
+/// Stored bytes, shared by every asset with the same content. The id is the
+/// generation: it is part of the object key, so a late delete can only hit
+/// its own object.
+model Blob {
+  id                Int       @id @default(autoincrement())
+  sha256            String    @db.Char(64)
+  state             BlobState @default(live)
+  /// assets/<sha256>-<id>.<ext>
+  storageKey        String    @unique @map("storage_key") @db.Text
+  contentType       String    @map("content_type") @db.VarChar(100)
+  bytes             Int
+  width             Int?
+  height            Int?
+  /// Dominant color names, used by the color filter
+  colors            String[]  @default([])
+  unreferencedSince DateTime? @map("unreferenced_since")
+  /// Set when garbage collection claims the blob
+  deletingStartedAt DateTime? @map("deleting_started_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  assets Asset[]
+
+  @@index([colors], map: "ix_blob_colors", type: Gin)
+  @@index([state, unreferencedSince], map: "ix_blob_gc")
+  @@map("blob")
+}
+
+/// An image from one source, with its own attribution
+model Asset {
+  id               Int         @id @default(autoincrement())
+  source           String      @db.VarChar(64)
+  externalId       String      @map("external_id") @db.Text
+  blobId           Int?        @map("blob_id")
+  originUrl        String?     @map("origin_url") @db.Text
+  stagingKey       String?     @map("staging_key") @db.Text
+  /// Fences every write: bumped on admission and deletion
+  ingestGeneration Int         @default(0) @map("ingest_generation")
+  /// Fingerprint of the last admission, so a retry reuses its generation
+  admissionKey     String?     @map("admission_key") @db.Text
+  /// Tombstone: only an explicit restore clears it
+  deletedAt        DateTime?   @map("deleted_at")
+  contentRevision  Int         @default(0) @map("content_revision")
+  /// Set when publishing other bytes started the current generation: the
+  /// generation the publisher held, so a retry of that publication can resume
+  replacedFromGeneration Int? @map("replaced_from_generation")
+  /// When the current generation's bytes were stored; a failed status doesn't
+  /// erase it, so failures from before publication can be told apart
+  storedAt DateTime? @map("stored_at")
+  sourceUrl        String?     @map("source_url") @db.Text
+  license          String?     @db.VarChar(32)
+  credit           String?     @db.Text
+  name             String?     @db.Text
+  description      String?     @db.Text
+  tags             String[]    @default([])
+  metadata         Json?
+  status           AssetStatus @default(admitted)
+  error            String?     @db.Text
+  /// Closed set (ErrorCode in the search repository); `error` keeps the detail
+  errorCode        String?     @map("error_code") @db.VarChar(32)
+  /// Dispatches counted for the current generation (see AssetDispatch)
+  attempts         Int         @default(0)
+  nextAttemptAt    DateTime?   @map("next_attempt_at")
+  createdAt        DateTime    @default(now()) @map("created_at")
+  updatedAt        DateTime    @default(now()) @updatedAt @map("updated_at")
+
+  blob         Blob?            @relation(fields: [blobId], references: [id], onDelete: Restrict, map: "fk_asset_blob_id")
+  embeddings   AssetEmbedding[]
+  productLinks ProductAsset[]
+  dispatches   AssetDispatch[]
+
+  @@unique([source, externalId], map: "uq_asset_source_external_id")
+  @@index([blobId], map: "ix_asset_blob_id")
+  @@index([status, nextAttemptAt], map: "ix_asset_repair")
+  @@map("asset")
+}
+
+/// One row per dispatch that counted an attempt, so a retried or replayed
+/// dispatch is counted once; deleted when the generation changes
+model AssetDispatch {
+  assetId          Int      @map("asset_id")
+  ingestGeneration Int      @map("ingest_generation")
+  dispatchId       String   @map("dispatch_id") @db.VarChar(128)
+  /// Order of dispatches per asset: only the latest may give up on an item
+  seq              BigInt   @default(autoincrement())
+  /// This dispatch recorded a failure: a restart of it doesn't retry the item
+  failedAt         DateTime? @map("failed_at")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade, map: "fk_asset_dispatch_asset_id")
+
+  @@id([assetId, ingestGeneration, dispatchId])
+  @@map("asset_dispatch")
+}
+
+model AssetEmbedding {
+  assetId          Int                         @map("asset_id")
+  profileId        Int                         @map("profile_id")
+  inputRevision    Int                         @default(0) @map("input_revision")
+  /// Must equal asset.ingest_generation to be served
+  ingestGeneration Int                         @map("ingest_generation")
+  embedding        Unsupported("halfvec(768)")
+  createdAt        DateTime                    @default(now()) @map("created_at")
+
+  asset   Asset            @relation(fields: [assetId], references: [id], onDelete: Cascade, map: "fk_asset_embedding_asset_id")
+  profile EmbeddingProfile @relation(fields: [profileId], references: [id], onDelete: Restrict, map: "fk_asset_embedding_profile_id")
+
+  @@id([assetId, profileId])
+  @@map("asset_embedding")
+}
+
+model ProductAsset {
+  productId      Int              @map("product_id")
+  assetId        Int              @map("asset_id")
+  role           ProductAssetRole
+  position       Int              @default(0)
+  /// Product image URL this link was ingested from
+  sourceImageUrl String?          @map("source_image_url") @db.Text
+  createdAt      DateTime         @default(now()) @map("created_at")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade, map: "fk_product_asset_product_id")
+  asset   Asset   @relation(fields: [assetId], references: [id], onDelete: Cascade, map: "fk_product_asset_asset_id")
+
+  @@id([productId, assetId, role])
+  @@index([assetId], map: "ix_product_asset_asset_id")
+  @@map("product_asset")
+}
+
+/// A ranked result list, paged without recomputing it
+model SearchSession {
+  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  profileId Int?       @map("profile_id")
+  mode      SearchMode
+  queryHash String     @map("query_hash") @db.Char(64)
+  /// [[productId, assetId, ingestGeneration, score], ...], at most 200
+  results   Json
+  partial   Boolean    @default(false)
+  createdAt DateTime   @default(now()) @map("created_at")
+  expiresAt DateTime   @map("expires_at")
+
+  profile EmbeddingProfile? @relation(fields: [profileId], references: [id], onDelete: SetNull, map: "fk_search_session_profile_id")
+
+  @@index([expiresAt], map: "ix_search_session_expires_at")
+  @@map("search_session")
+}
+
+/// Temporary query images (search by image), never indexed
+model QueryUpload {
+  key       String   @id @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  expiresAt DateTime @map("expires_at")
+
+  @@index([expiresAt], map: "ix_query_upload_expires_at")
+  @@map("query_upload")
+}
+
+/// Small key-value state, e.g. the reconcile watermark
+model SearchState {
+  key       String   @id @db.VarChar(64)
+  value     Json
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("search_state")
 }
