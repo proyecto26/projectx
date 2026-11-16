@@ -1,9 +1,20 @@
 #!/usr/bin/env node
 // pnpm models:fetch | models:verify — model files for MODEL_CACHE_DIR, checked against models.lock.json
+// MODEL_LOCK=reference uses models.reference.lock.json (fp32 graphs for the parity fixtures, never
+// fetched for serving)
 const path = require("node:path");
 const { fetchModelFiles, verifyModelFiles } = require("../dist/index.js");
-const lock = require("../models.lock.json");
 
+const locks = {
+  serving: "../models.lock.json",
+  reference: "../models.reference.lock.json",
+};
+const lockName = process.env.MODEL_LOCK ?? "serving";
+if (!(lockName in locks)) {
+  console.error(`MODEL_LOCK must be one of: ${Object.keys(locks).join(", ")}`);
+  process.exit(2);
+}
+const lock = require(locks[lockName]);
 const command = process.argv[2];
 const cacheDir = process.env.MODEL_CACHE_DIR;
 if (!cacheDir) {

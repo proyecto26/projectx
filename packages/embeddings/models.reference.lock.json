@@ -1,0 +1,56 @@
+{
+  "model": "onnx-community/embeddinggemma-2-ONNX",
+  "revision": "daa72c51243991dfcaf9f9137d2c573d8f7790c0",
+  "files": [
+    {
+      "path": "chat_template.jinja",
+      "size": 1016,
+      "sha256": "4b852efc0b9960283e735363331e6f325b33bc74bdbaa076f595bc4e9b94d85e"
+    },
+    {
+      "path": "config.json",
+      "size": 5031,
+      "sha256": "8d011bfe08b5e345bbe0b81e5c6fd02c381920b345b986047bc2a33ce7b90d1d"
+    },
+    {
+      "path": "onnx/model.onnx",
+      "size": 421421,
+      "sha256": "bc47de15f81208a5c99e5ab10f746d5e33b51ea228b7dc0bef9c133a94f1c1c3"
+    },
+    {
+      "path": "onnx/model.onnx_data",
+      "size": 1084170240,
+      "sha256": "9fd452bfc6916e5a92f080f8dada35598ca4512b21c65897d4c5974d5f9630a2"
+    },
+    {
+      "path": "onnx/vision_encoder.onnx",
+      "size": 121253,
+      "sha256": "a3fb44f8b5b152cfee6afe16e2cd69e774b7e1d3b822d1db1190ddf7b08b575e"
+    },
+    {
+      "path": "onnx/vision_encoder.onnx_data",
+      "size": 671026176,
+      "sha256": "ca8d28c99feb8129618f141978a27adae25090e0dadb68a30c235e191c01e37e"
+    },
+    {
+      "path": "preprocessor_config.json",
+      "size": 560,
+      "sha256": "9344893f8d0573a46ebb2ca54c03f56d044cea194c8dcfb1f4d652240ac21daa"
+    },
+    {
+      "path": "processor_config.json",
+      "size": 1788,
+      "sha256": "168f6a08522f3ce5dea596d94d003af2fd691742d4f41fe1f9d8cce76bfbf69c"
+    },
+    {
+      "path": "tokenizer_config.json",
+      "size": 1599,
+      "sha256": "17bd5d6e9364ca49a534e1502076593317c298d4a663623091ed45388f004874"
+    },
+    {
+      "path": "tokenizer.json",
+      "size": 32170510,
+      "sha256": "4d777ef5bdc1aa36227abdfb77c3e49e7b9c892d16e1b6bda41c393504828be4"
+    }
+  ]
+}

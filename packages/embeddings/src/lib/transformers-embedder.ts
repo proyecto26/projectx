@@ -20,7 +20,9 @@ import { normalize } from "./vector";
 /** Search queries; documents (images) get no prefix */
 export const QUERY_PROMPT = "task: search result | query: ";
 export const DIMS = 768;
+/** Serving weights; `fp32` is only for computing the parity reference */
 export const DTYPE = "q4";
+export type ModelDtype = "q4" | "fp32";
 /**
  * Vision tokens per image (`max_soft_tokens`), part of the profile. 280 is
  * the model default; spike 3.1b (EMBEDDINGS_RUNTIME.md) kept it over 140/70.
@@ -37,6 +39,8 @@ export type TransformersEmbedderOptions = {
   verifyHashes?: boolean;
   /** Vision tokens per image, default IMAGE_TOKEN_BUDGET */
   imageTokenBudget?: number;
+  /** ONNX graphs to load, default DTYPE; the lock must list them */
+  dtype?: ModelDtype;
 };
 
 type Processor = ((
@@ -50,7 +54,7 @@ type Model = (inputs: Record<string, unknown>) => Promise<{
 }>;
 
 /**
- * EmbeddingGemma 2 (ONNX, q4) in process with @huggingface/transformers,
+ * EmbeddingGemma 2 (ONNX, q4 by default) in process with @huggingface/transformers,
  * loaded only from the verified local cache; nothing is downloaded.
  */
 export class TransformersEmbedder implements Embedder {
@@ -71,7 +75,7 @@ export class TransformersEmbedder implements Embedder {
       model: this.options.lock.model,
       modelRevision: this.options.lock.revision,
       dims: DIMS,
-      dtype: DTYPE,
+      dtype: this.dtype,
       runtime: `transformers.js@${env.version}`,
       documentTemplate: "image",
       queryPrompt: QUERY_PROMPT,
@@ -107,6 +111,10 @@ export class TransformersEmbedder implements Embedder {
       vectors.push(vector);
     }
     return vectors;
+  }
+
+  private get dtype(): ModelDtype {
+    return this.options.dtype ?? DTYPE;
   }
 
   private loaded() {
@@ -155,7 +163,7 @@ export class TransformersEmbedder implements Embedder {
     this.model = (await AutoModel.from_pretrained(dir, {
       config,
       device: "cpu",
-      dtype: DTYPE,
+      dtype: this.dtype,
       session_options: { intraOpNumThreads: threads, interOpNumThreads: 1 },
     })) as unknown as Model;
 

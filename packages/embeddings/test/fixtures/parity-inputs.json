@@ -1,0 +1,81 @@
+{
+  "note": "Fixed inputs of the parity fixtures. Images are fetched from commit-pinned URLs and checked by sha256; nothing is redistributed.",
+  "queries": [
+    "cordless drill",
+    "a tiger in the wild",
+    "two cats on a pink blanket",
+    "red ceramic vase",
+    "vintage aircraft",
+    "glass sea sponge",
+    "electric kettle",
+    "martillo de carpintero"
+  ],
+  "images": [
+    {
+      "id": "tiger",
+      "url": "https://huggingface.co/datasets/Xenova/transformers.js-docs/resolve/542437c29cc5273cfd29e25c77696f2b349badd7/tiger.jpg",
+      "sha256": "2ae007fbc16880208ba5fb699e52806cb0eadf41b12fc115cfd92b995b275fd8",
+      "bytes": 62971
+    },
+    {
+      "id": "cats",
+      "url": "https://huggingface.co/datasets/Xenova/transformers.js-docs/resolve/542437c29cc5273cfd29e25c77696f2b349badd7/cats.jpg",
+      "sha256": "5dddd2c5e0788ffbb37d8b8d9a30b41b83dfbc1cf486c0b214d5b3af09b283c3",
+      "bytes": 422547
+    },
+    {
+      "id": "sponge",
+      "url": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/acanthascus-koltuni-9d1b798a.webp",
+      "sha256": "372b4696ba463f7793e3860c31675077b15c8a605b83adbbcc302189a8f7fb84",
+      "bytes": 8258
+    },
+    {
+      "id": "armchair",
+      "url": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/armchair-with-slip-seat-2632d078.webp",
+      "sha256": "391d1b1530089123dc3af0f2f26e720044eeb3b111bff6a65e0e186836c71d0f",
+      "bytes": 2128
+    },
+    {
+      "id": "aircraft",
+      "url": "https://huggingface.co/datasets/cfahlgren1/smithsonian-3d-glb/resolve/18f91b07be69a28eed646eb1e60b5b36d3e70f31/thumbs/bell-x-1-6c69a6bb.webp",
+      "sha256": "e2c00ea4a8ef48584e0665c7b25db0a64af01471e9bea102353c2c2ff3f178fa",
+      "bytes": 4382
+    },
+    {
+      "id": "board",
+      "url": "https://huggingface.co/datasets/atechdev/simready-assets/resolve/3404e3eb601f188a64147f826cecf0ccb921e5c6/01_atech_board_14port/simready_usd/.thumbs/256x256/atech_board_14port.usd_transparent.png",
+      "sha256": "6ca404bfeaa51e1ccc6fc0c5a597cee42ffaac6a6bd1e373d7335370b1970af1",
+      "bytes": 17462
+    },
+    {
+      "id": "hammer",
+      "url": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/handTool_hammer_crossPeen_a01.webp",
+      "sha256": "71a76162916f5f6b46debd7a0318686f483770257c11fe784bcad8e1ea02599c",
+      "bytes": 4976
+    },
+    {
+      "id": "kettle",
+      "url": "https://huggingface.co/datasets/codepawl/simready-glb/resolve/0d89dfd87fb0ae28596f9d94cdb9bd60d44a7188/thumbs/kitchenware_kettle_a01.webp",
+      "sha256": "9b39ba65d0fa30a19335e7388bc9394012c61f4a8dd9e37fc42f93316cac59a9",
+      "bytes": 4954
+    }
+  ],
+  "mixed": [
+    {
+      "image": "aircraft",
+      "text": "<|image|> title: Bell X-1 aircraft | text: rocket-powered research plane"
+    },
+    {
+      "image": "hammer",
+      "text": "<|image|> title: Cross peen hammer | text: hand tool"
+    },
+    {
+      "image": "kettle",
+      "text": "<|image|> title: Kettle | text: kitchenware"
+    },
+    {
+      "image": "tiger",
+      "text": "<|image|> title: Tiger | text: a tiger in the wild"
+    }
+  ]
+}
