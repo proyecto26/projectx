@@ -103,20 +103,18 @@ async function stored(
     assetId: admission.assetId,
     generation: admission.generation,
   };
-  const published = await repo.publishBlob(fence, {
+  const published = await repo.publishObject(fence, {
     sha256: sha(`${counter}-${randomUUID()}`),
     ext: "webp",
     contentType: "image/webp",
     bytes: bytes.length,
   });
   if (!published.ok) throw new Error(published.reason);
-  expect((await repo.markStored(fence, published.value.blobId)).ok).toBe(true);
+  expect((await repo.markStored(fence, published.value.storageKey)).ok).toBe(
+    true,
+  );
   blobs.put(published.value.storageKey, bytes);
-  return {
-    fence,
-    blobId: published.value.blobId,
-    storageKey: published.value.storageKey,
-  };
+  return { fence, storageKey: published.value.storageKey };
 }
 
 function activity(
@@ -217,7 +215,7 @@ describe("embedAssets against the repository", () => {
     const blobs = new MemoryBlobReader({
       onRead: async () => {
         if (replaced) return;
-        const published = await repo.publishBlob(item.fence, {
+        const published = await repo.publishObject(item.fence, {
           sha256: sha(`replacement-${randomUUID()}`),
           ext: "webp",
           contentType: "image/webp",

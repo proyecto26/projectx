@@ -12,7 +12,6 @@ import type { EmbeddingRepository } from "../src/image/embed-assets";
 export type MemoryAsset = {
   generation: number;
   deleted?: boolean;
-  blobId: number | null;
   storageKey: string | null;
   status: "admitted" | "stored" | "embedded" | "failed";
   stored: boolean;
@@ -35,7 +34,6 @@ export class MemoryRepository implements EmbeddingRepository {
   stored(assetId: number, overrides: Partial<MemoryAsset> = {}): Fence {
     const asset: MemoryAsset = {
       generation: 1,
-      blobId: assetId * 10,
       storageKey: `assets/${assetId}`,
       status: "stored",
       stored: true,
@@ -68,7 +66,6 @@ export class MemoryRepository implements EmbeddingRepository {
     return {
       ok: true,
       value: {
-        blobId: asset.blobId,
         storageKey: asset.storageKey,
         status: asset.status,
         storedAt: asset.stored ? new Date() : null,
@@ -82,10 +79,10 @@ export class MemoryRepository implements EmbeddingRepository {
     };
   }
 
-  async markStored(fence: Fence, blobId: number): Promise<Fenced<null>> {
+  async markStored(fence: Fence, storageKey: string): Promise<Fenced<null>> {
     const f = this.fenced(fence);
     if ("reason" in f) return { ok: false, reason: f.reason };
-    if (f.asset.blobId !== blobId)
+    if (f.asset.storageKey !== storageKey)
       return { ok: false, reason: "content_changed" };
     if (f.asset.status === "failed" && !f.asset.deadline)
       return { ok: false, reason: "terminal" };
@@ -96,12 +93,12 @@ export class MemoryRepository implements EmbeddingRepository {
 
   async writeEmbedding(
     fence: Fence,
-    blobId: number,
+    storageKey: string,
     profileId: number,
   ): Promise<Fenced<{ duplicate: boolean }>> {
     const f = this.fenced(fence);
     if ("reason" in f) return { ok: false, reason: f.reason };
-    if (f.asset.blobId !== blobId)
+    if (f.asset.storageKey !== storageKey)
       return { ok: false, reason: "content_changed" };
     this.writes += 1;
     const duplicate = f.asset.embeddedFor === profileId;
@@ -116,7 +113,7 @@ export class MemoryRepository implements EmbeddingRepository {
 
   async markFailed(
     fence: Fence,
-    _blobId: number | null,
+    _storageKey: string | null,
     failure: FailureInput,
     dispatchId?: string,
   ): Promise<Fenced<{ attempts: number; nextAttemptAt: Date | null }>> {

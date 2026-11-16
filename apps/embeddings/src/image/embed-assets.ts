@@ -80,11 +80,11 @@ const RETRYABLE: ReadonlySet<ErrorCode> = new Set([
 /** What the next step needs for one item, or nothing to do */
 type Prepared =
   | { kind: "done" }
-  | { kind: "embed"; fence: Fence; blobId: number; bytes: Uint8Array }
+  | { kind: "embed"; fence: Fence; storageKey: string; bytes: Uint8Array }
   | {
       kind: "failed";
       fence: Fence;
-      blobId: number;
+      storageKey: string;
       code: ErrorCode;
       error: unknown;
     };
@@ -205,11 +205,7 @@ async function prepare(
   if (!read.ok) return { kind: "done" };
   const item = read.value;
   if (item.embedded) return { kind: "done" };
-  if (
-    item.blobId === null ||
-    item.storageKey === null ||
-    item.storedAt === null
-  ) {
+  if (item.storageKey === null || item.storedAt === null) {
     // Not published yet: the ingest workflow's job
     return { kind: "done" };
   }
@@ -219,7 +215,7 @@ async function prepare(
     // it, after its backoff
     if (item.failedInDispatch) return { kind: "done" };
     // The bytes are stored: a retry moves it back to stored, then embeds
-    const stored = await deps.repository.markStored(fence, item.blobId);
+    const stored = await deps.repository.markStored(fence, item.storageKey);
     if (!stored.ok) return { kind: "done" };
   } else if (item.status !== "stored" && item.status !== "embedded") {
     return { kind: "done" };
@@ -229,14 +225,14 @@ async function prepare(
       () => deps.blobs.get(item.storageKey as string, signal),
       signal,
     );
-    return { kind: "embed", fence, blobId: item.blobId, bytes };
+    return { kind: "embed", fence, storageKey: item.storageKey, bytes };
   } catch (error) {
     if (signal.aborted) throw error;
     if (error instanceof BlobReadError) {
       return {
         kind: "failed",
         fence,
-        blobId: item.blobId,
+        storageKey: item.storageKey,
         code: error.kind,
         error,
       };
@@ -259,13 +255,13 @@ async function embedItem(
       deps,
       dispatchId,
       prepared.fence,
-      prepared.blobId,
+      prepared.storageKey,
       prepared.code,
       prepared.error,
     );
     return;
   }
-  const { fence, blobId, bytes } = prepared;
+  const { fence, storageKey, bytes } = prepared;
   let vector: Float32Array | undefined;
   const release = await deps.permit.acquire(lane, signal);
   try {
@@ -275,7 +271,7 @@ async function embedItem(
     if (signal.aborted) throw error;
     const code: ErrorCode =
       error instanceof ImageDecodeError ? "decode_failed" : "inference_failed";
-    await recordFailure(deps, dispatchId, fence, blobId, code, error);
+    await recordFailure(deps, dispatchId, fence, storageKey, code, error);
     return;
   }
   release();
@@ -283,7 +279,7 @@ async function embedItem(
   if (!vector) throw new Error("The embedder returned no vector");
   const written = await deps.repository.writeEmbedding(
     fence,
-    blobId,
+    storageKey,
     profileId,
     Array.from(vector),
   );
@@ -294,7 +290,7 @@ async function recordFailure(
   deps: EmbedAssetsDeps,
   dispatchId: string,
   fence: Fence,
-  blobId: number,
+  storageKey: string,
   code: ErrorCode,
   error: unknown,
 ) {
@@ -302,7 +298,7 @@ async function recordFailure(
     error instanceof Error ? `${error.name}: ${error.message}` : String(error);
   await deps.repository.markFailed(
     fence,
-    blobId,
+    storageKey,
     {
       code,
       message,

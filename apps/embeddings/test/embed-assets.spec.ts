@@ -84,7 +84,6 @@ describe("embedAssets", () => {
     const notReady = t.add(5, {
       status: "admitted",
       stored: false,
-      blobId: null,
       storageKey: null,
     });
     const result = await env().run(t.embedAssets, {
@@ -206,9 +205,14 @@ describe("embedAssets", () => {
     const a = t.add(1);
     // Another attempt embeds the item between this attempt's read and write
     const original = t.repository.writeEmbedding.bind(t.repository);
-    t.repository.writeEmbedding = async (fence, blobId, profileId, vector) => {
-      await original(fence, blobId, profileId, vector);
-      return original(fence, blobId, profileId, vector);
+    t.repository.writeEmbedding = async (
+      fence,
+      storageKey,
+      profileId,
+      vector,
+    ) => {
+      await original(fence, storageKey, profileId, vector);
+      return original(fence, storageKey, profileId, vector);
     };
     await env().run(t.embedAssets, {
       items: [a],
