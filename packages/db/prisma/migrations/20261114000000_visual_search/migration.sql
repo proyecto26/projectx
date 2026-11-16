@@ -1,8 +1,5 @@
--- Visual search: assets, blobs, embeddings, product links and search sessions.
+-- Visual search: assets, embeddings, product links and search sessions.
 -- Design: docs/ai/search/VISUAL_SEARCH.md
-
--- CreateEnum
-CREATE TYPE "blob_state" AS ENUM ('live', 'deleting');
 
 -- CreateEnum
 CREATE TYPE "asset_status" AS ENUM ('admitted', 'stored', 'embedded', 'failed');
@@ -48,29 +45,10 @@ CREATE TABLE "embedding_profile" (
 );
 
 -- CreateTable
-CREATE TABLE "blob" (
-    "id" SERIAL NOT NULL,
-    "sha256" CHAR(64) NOT NULL,
-    "state" "blob_state" NOT NULL DEFAULT 'live',
-    "storage_key" TEXT NOT NULL,
-    "content_type" VARCHAR(100) NOT NULL,
-    "bytes" INTEGER NOT NULL,
-    "width" INTEGER,
-    "height" INTEGER,
-    "colors" TEXT[] DEFAULT ARRAY[]::TEXT[],
-    "unreferenced_since" TIMESTAMP(3),
-    "deleting_started_at" TIMESTAMP(3),
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "blob_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "asset" (
     "id" SERIAL NOT NULL,
     "source" VARCHAR(64) NOT NULL,
     "external_id" TEXT NOT NULL,
-    "blob_id" INTEGER,
     "origin_url" TEXT,
     "staging_key" TEXT,
     "ingest_generation" INTEGER NOT NULL DEFAULT 0,
@@ -79,6 +57,13 @@ CREATE TABLE "asset" (
     "content_revision" INTEGER NOT NULL DEFAULT 0,
     "replaced_from_generation" INTEGER,
     "stored_at" TIMESTAMP(3),
+    "sha256" CHAR(64),
+    "storage_key" TEXT,
+    "content_type" VARCHAR(100),
+    "bytes" INTEGER,
+    "width" INTEGER,
+    "height" INTEGER,
+    "colors" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "source_url" TEXT,
     "license" VARCHAR(32),
     "credit" TEXT,
@@ -169,16 +154,10 @@ CREATE TABLE "search_state" (
 CREATE UNIQUE INDEX "uq_embedding_profile" ON "embedding_profile"("model", "model_revision", "dims", "dtype", "runtime", "document_template");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "blob_storage_key_key" ON "blob"("storage_key");
+CREATE UNIQUE INDEX "asset_storage_key_key" ON "asset"("storage_key");
 
 -- CreateIndex
-CREATE INDEX "ix_blob_colors" ON "blob" USING GIN ("colors");
-
--- CreateIndex
-CREATE INDEX "ix_blob_gc" ON "blob"("state", "unreferenced_since");
-
--- CreateIndex
-CREATE INDEX "ix_asset_blob_id" ON "asset"("blob_id");
+CREATE INDEX "ix_asset_colors" ON "asset" USING GIN ("colors");
 
 -- CreateIndex
 CREATE INDEX "ix_asset_repair" ON "asset"("status", "next_attempt_at");
@@ -200,9 +179,6 @@ CREATE INDEX "ix_product_search_text_trgm" ON "product" USING GIST ("search_text
 CREATE INDEX "ix_query_upload_expires_at" ON "query_upload"("expires_at");
 
 -- AddForeignKey
-ALTER TABLE "asset" ADD CONSTRAINT "fk_asset_blob_id" FOREIGN KEY ("blob_id") REFERENCES "blob"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "asset_dispatch" ADD CONSTRAINT "fk_asset_dispatch_asset_id" FOREIGN KEY ("asset_id") REFERENCES "asset"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE "asset_embedding" ADD CONSTRAINT "fk_asset_embedding_asset_id" FOREIGN KEY ("asset_id") REFERENCES "asset"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -220,9 +196,6 @@ ALTER TABLE "product_asset" ADD CONSTRAINT "fk_product_asset_asset_id" FOREIGN K
 ALTER TABLE "search_session" ADD CONSTRAINT "fk_search_session_profile_id" FOREIGN KEY ("profile_id") REFERENCES "embedding_profile"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- Managed in SQL only: Prisma can't express these indexes.
-
--- One live blob per content hash; a blob being deleted doesn't block a new one
-CREATE UNIQUE INDEX "uq_blob_sha256_live" ON "blob"("sha256") WHERE "state" = 'live';
 
 -- One thumbnail per product
 CREATE UNIQUE INDEX "uq_product_asset_thumbnail" ON "product_asset"("product_id") WHERE "role" = 'thumbnail';

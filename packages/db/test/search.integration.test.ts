@@ -92,12 +92,19 @@ function vector(axis: number, noise = 0, seed = 1): number[] {
 const sha = (text: string) => createHash("sha256").update(text).digest("hex");
 
 let externalCounter = 0;
-async function admit(extra: { source?: string; admissionKey?: string } = {}) {
+async function admit(
+  extra: {
+    source?: string;
+    admissionKey?: string;
+    externalId?: string;
+    originUrl?: string;
+  } = {},
+) {
   const admission = await repo.admitAsset({
     source: extra.source ?? "test",
-    externalId: `asset-${++externalCounter}`,
+    externalId: extra.externalId ?? `asset-${++externalCounter}`,
     admissionKey: extra.admissionKey,
-    originUrl: "https://example.com/image.webp",
+    originUrl: extra.originUrl ?? "https://example.com/image.webp",
     license: "CC0-1.0",
   });
   if (admission.kind !== "admitted") throw new Error("Expected an admission");
@@ -111,7 +118,7 @@ async function embeddedAsset(
   colors: string[] = [],
 ) {
   const fence = await admit();
-  const published = await repo.publishBlob(fence, {
+  const published = await repo.publishObject(fence, {
     sha256: sha(content),
     ext: "webp",
     contentType: "image/webp",
@@ -119,26 +126,28 @@ async function embeddedAsset(
     colors,
   });
   if (!published.ok) throw new Error(published.reason);
-  const { blobId } = published.value;
-  expect((await repo.markStored(fence, blobId)).ok).toBe(true);
+  const { storageKey } = published.value;
+  expect((await repo.markStored(fence, storageKey)).ok).toBe(true);
   expect(
-    (await repo.writeEmbedding(fence, blobId, profileId, embedding)).ok,
+    (await repo.writeEmbedding(fence, storageKey, profileId, embedding)).ok,
   ).toBe(true);
-  return { fence, blobId, storageKey: published.value.storageKey };
+  return { fence, storageKey };
 }
 
 /** An asset with its bytes published and stored, not embedded yet */
 async function storedAsset(content: string) {
   const fence = await admit();
-  const published = await repo.publishBlob(fence, {
+  const published = await repo.publishObject(fence, {
     sha256: sha(content),
     ext: "webp",
     contentType: "image/webp",
     bytes: 1,
   });
   if (!published.ok) throw new Error(published.reason);
-  expect((await repo.markStored(fence, published.value.blobId)).ok).toBe(true);
-  return { fence, blobId: published.value.blobId };
+  expect((await repo.markStored(fence, published.value.storageKey)).ok).toBe(
+    true,
+  );
+  return { fence, storageKey: published.value.storageKey };
 }
 
 let productCounter = 0;
@@ -221,12 +230,11 @@ describe("schema", () => {
         [
           "ix_asset_embedding_hnsw",
           "ix_product_search_text_trgm",
-          "uq_blob_sha256_live",
           "uq_product_asset_thumbnail",
         ],
       ],
     );
-    expect(rows).toHaveLength(4);
+    expect(rows).toHaveLength(3);
   });
 
   it("keeps product.search_text in sync with name and description", async () => {
@@ -373,125 +381,160 @@ describe("admission", () => {
   });
 });
 
-describe("blobs", () => {
-  it("stores the same bytes once for two sources", async () => {
-    const a = await admit({ source: "source-a" });
-    const b = await admit({ source: "source-b" });
-    const input = {
-      sha256: sha("shared"),
-      ext: "webp",
-      contentType: "image/webp",
-      bytes: 10,
-    };
-    const first = await repo.publishBlob(a, input);
-    const second = await repo.publishBlob(b, input);
-    expect(first.ok && second.ok).toBe(true);
-    if (!first.ok || !second.ok) return;
-    expect(second.value.blobId).toBe(first.value.blobId);
-    expect(first.value.storageKey).toBe(
-      `assets/${input.sha256}-${first.value.blobId}.webp`,
-    );
-    const again = await repo.publishBlob(a, input);
-    expect(again).toMatchObject({ ok: true, value: { changed: false } });
+describe("objects", () => {
+  const input = (content: string) => ({
+    sha256: sha(content),
+    ext: "webp",
+    contentType: "image/webp",
+    bytes: 10,
+    width: 64,
+    height: 48,
+    colors: ["red"],
   });
 
-  it("releases the old blob when the content changes", async () => {
-    const fence = await admit();
-    const base = { ext: "webp", contentType: "image/webp", bytes: 1 };
-    const old = await repo.publishBlob(fence, { ...base, sha256: sha("v1") });
-    const next = await repo.publishBlob(fence, { ...base, sha256: sha("v2") });
-    if (!old.ok || !next.ok) throw new Error("publish failed");
-    const [row] = await sql<{ unreferenced_since: Date | null }>(
-      "SELECT unreferenced_since FROM blob WHERE id = $1",
-      [old.value.blobId],
+  it("gives each asset its own key, named by asset, generation and hash", async () => {
+    const a = await admit({ source: "source-a" });
+    const b = await admit({ source: "source-b" });
+    const first = await repo.publishObject(a, input("shared"));
+    const second = await repo.publishObject(b, input("shared"));
+    if (!first.ok || !second.ok) throw new Error("publish failed");
+    expect(first.value.storageKey).toBe(
+      `assets/${a.assetId}-${a.generation}-${sha("shared")}.webp`,
     );
-    expect(row.unreferenced_since).not.toBeNull();
+    expect(second.value.storageKey).not.toBe(first.value.storageKey);
+    const [row] = await sql<{
+      sha256: string;
+      storage_key: string;
+      width: number;
+      colors: string[];
+    }>("SELECT sha256, storage_key, width, colors FROM asset WHERE id = $1", [
+      a.assetId,
+    ]);
+    expect(row).toEqual({
+      sha256: sha("shared"),
+      storage_key: first.value.storageKey,
+      width: 64,
+      colors: ["red"],
+    });
+    const again = await repo.publishObject(a, input("shared"));
+    expect(again).toEqual({
+      ok: true,
+      value: {
+        storageKey: first.value.storageKey,
+        generation: a.generation,
+        changed: false,
+      },
+    });
+  });
+
+  it("new content gets a new key in a new generation, and the old key is never used again", async () => {
+    const fence = await admit();
+    const old = await repo.publishObject(fence, input("v1"));
+    const next = await repo.publishObject(fence, input("v2"));
+    if (!old.ok || !next.ok) throw new Error("publish failed");
+    expect(next.value.generation).toBe(fence.generation + 1);
+    expect(next.value.storageKey).not.toBe(old.value.storageKey);
     const [asset] = await sql<{ content_revision: number }>(
       "SELECT content_revision FROM asset WHERE id = $1",
       [fence.assetId],
     );
     expect(asset.content_revision).toBe(1);
+    // Back to the first bytes: still a fresh key
+    const back = await repo.publishObject(
+      { assetId: fence.assetId, generation: next.value.generation },
+      input("v1"),
+    );
+    if (!back.ok) throw new Error(back.reason);
+    expect(back.value.storageKey).not.toBe(old.value.storageKey);
+    expect(await repo.unreferencedObjects([old.value.storageKey])).toEqual([
+      old.value.storageKey,
+    ]);
   });
 
-  it("collects unreferenced blobs, and a later publish gets a new key", async () => {
-    const fence = await embeddedAsset(vector(2), "gc-bytes");
-    const [{ blob_id }] = await sql<{ blob_id: number }>(
-      "SELECT blob_id FROM asset WHERE id = $1",
-      [fence.fence.assetId],
-    );
-    expect((await repo.deleteAsset(fence.fence)).ok).toBe(true);
-    await sql(
-      "UPDATE blob SET unreferenced_since = now() - interval '25 hours' WHERE id = $1",
-      [blob_id],
-    );
-
-    const claimed = await repo.claimBlobsForDeletion();
-    expect(claimed).toContainEqual({
-      blobId: blob_id,
-      storageKey: fence.storageKey,
-    });
-
-    // The same bytes come back while the object delete is in flight
-    const again = await admit();
-    const published = await repo.publishBlob(again, {
-      sha256: sha("gc-bytes"),
-      ext: "webp",
-      contentType: "image/webp",
-      bytes: 1,
-    });
-    if (!published.ok) throw new Error(published.reason);
-    expect(published.value.blobId).not.toBe(blob_id);
-    expect(published.value.storageKey).not.toBe(fence.storageKey);
-
-    expect(await repo.finishBlobDeletion(blob_id)).toBe(true);
-    expect(await repo.finishBlobDeletion(published.value.blobId)).toBe(false);
-  });
-
-  it("doesn't claim a blob that is referenced again", async () => {
-    const a = await admit();
-    const input = {
-      sha256: sha("revived"),
-      ext: "webp",
-      contentType: "image/webp",
-      bytes: 1,
-    };
-    const first = await repo.publishBlob(a, input);
+  it("an admission keeps the current content, and publishing the same bytes keeps its key", async () => {
+    const fence = await admit({ externalId: "kept-content" });
+    const first = await repo.publishObject(fence, input("kept"));
     if (!first.ok) throw new Error(first.reason);
-    await repo.deleteAsset(a);
-    const b = await admit();
-    await repo.publishBlob(b, input);
-    await sql(
-      "UPDATE blob SET unreferenced_since = now() - interval '25 hours' WHERE id = $1",
-      [first.value.blobId],
-    );
-    const claimed = await repo.claimBlobsForDeletion();
-    expect(claimed.map((c) => c.blobId)).not.toContain(first.value.blobId);
+    const readmitted = await repo.admitAsset({
+      source: "test",
+      externalId: "kept-content",
+      admissionKey: "second-admission",
+    });
+    if (readmitted.kind !== "admitted") throw new Error(readmitted.kind);
+    const next = { assetId: fence.assetId, generation: readmitted.generation };
+    const same = await repo.publishObject(next, input("kept"));
+    expect(same).toEqual({
+      ok: true,
+      value: {
+        storageKey: first.value.storageKey,
+        generation: readmitted.generation,
+        changed: false,
+      },
+    });
+    expect((await repo.markStored(next, first.value.storageKey)).ok).toBe(true);
   });
 
-  it("retries a blob stuck in deleting", async () => {
-    const fence = await admit();
-    const published = await repo.publishBlob(fence, {
-      sha256: sha("stuck"),
-      ext: "webp",
-      contentType: "image/webp",
-      bytes: 1,
-    });
+  it("the orphan sweep only sees keys no asset holds, in any status", async () => {
+    const reserved = await admit();
+    const published = await repo.publishObject(reserved, input("reserved"));
     if (!published.ok) throw new Error(published.reason);
-    await repo.deleteAsset(fence);
-    await sql(
-      `UPDATE blob SET state = 'deleting', deleting_started_at = now() - interval '11 minutes'
-       WHERE id = $1`,
-      [published.value.blobId],
+    // Admitted, not stored yet: the key is reserved
+    expect(
+      await repo.unreferencedObjects([published.value.storageKey]),
+    ).toEqual([]);
+    const failed = await storedAsset("failed-keeps-key");
+    await repo.markFailed(failed.fence, failed.storageKey, {
+      code: "decode_failed",
+      message: "bad",
+      retryable: false,
+    });
+    const deleted = await embeddedAsset(vector(2), "deleted-bytes");
+    expect((await repo.deleteAsset(deleted.fence)).ok).toBe(true);
+    const unknown = "assets/999999-1-unknown.webp";
+    expect(
+      await repo.unreferencedObjects([
+        published.value.storageKey,
+        failed.storageKey,
+        deleted.storageKey,
+        unknown,
+      ]),
+    ).toEqual([deleted.storageKey, unknown].sort());
+    expect(await repo.unreferencedObjects([])).toEqual([]);
+  });
+
+  it("deleting an asset drops its content, and a restore publishes a new key", async () => {
+    const fence = await admit({
+      externalId: "restore-key",
+      originUrl: "https://example.com/restore-key.webp",
+    });
+    const published = await repo.publishObject(fence, input("restore-bytes"));
+    if (!published.ok) throw new Error(published.reason);
+    const deleted = await repo.deleteAsset(fence);
+    if (!deleted.ok) throw new Error(deleted.reason);
+    const [row] = await sql<{
+      sha256: string | null;
+      storage_key: string | null;
+    }>("SELECT sha256, storage_key FROM asset WHERE id = $1", [fence.assetId]);
+    expect(row).toEqual({ sha256: null, storage_key: null });
+    const restored = await repo.restoreAsset(fence.assetId);
+    if (!restored.ok) throw new Error(restored.reason);
+    const again = await repo.publishObject(
+      restored.value,
+      input("restore-bytes"),
     );
-    const claimed = await repo.claimBlobsForDeletion();
-    expect(claimed.map((c) => c.blobId)).toContain(published.value.blobId);
+    if (!again.ok) throw new Error(again.reason);
+    expect(again.value.storageKey).not.toBe(published.value.storageKey);
+    expect(again.value.changed).toBe(true);
   });
 });
 
 describe("fencing", () => {
   it("replacing the bytes starts a new generation and stops serving the old vector", async () => {
-    const { fence, blobId } = await embeddedAsset(vector(12), "first-bytes");
-    const replaced = await repo.publishBlob(fence, {
+    const { fence, storageKey } = await embeddedAsset(
+      vector(12),
+      "first-bytes",
+    );
+    const replaced = await repo.publishObject(fence, {
       sha256: sha("second-bytes"),
       ext: "webp",
       contentType: "image/webp",
@@ -511,25 +554,27 @@ describe("fencing", () => {
     expect(hits.map((h) => h.assetId)).not.toContain(fence.assetId);
 
     // Workers (and search sessions) holding the old generation are fenced out
-    expect(await repo.markStored(fence, blobId)).toEqual({
+    expect(await repo.markStored(fence, storageKey)).toEqual({
       ok: false,
       reason: "stale",
     });
     expect(
-      await repo.writeEmbedding(fence, blobId, profileId, vector(12)),
+      await repo.writeEmbedding(fence, storageKey, profileId, vector(12)),
     ).toEqual({ ok: false, reason: "stale" });
     const next = { ...fence, generation: replaced.value.generation };
     // The new generation still can't store a vector of the old bytes
-    expect(await repo.markStored(next, blobId)).toEqual({
+    expect(await repo.markStored(next, storageKey)).toEqual({
       ok: false,
       reason: "content_changed",
     });
-    expect((await repo.markStored(next, replaced.value.blobId)).ok).toBe(true);
+    expect((await repo.markStored(next, replaced.value.storageKey)).ok).toBe(
+      true,
+    );
     expect(
       (
         await repo.writeEmbedding(
           next,
-          replaced.value.blobId,
+          replaced.value.storageKey,
           profileId,
           vector(13),
         )
@@ -549,15 +594,15 @@ describe("fencing", () => {
   });
 
   it("late completions and failures don't undo an embedded asset", async () => {
-    const { fence, blobId } = await embeddedAsset(vector(15));
+    const { fence, storageKey } = await embeddedAsset(vector(15));
     // A repeated store completion (overlapping repair) is a no-op
-    expect(await repo.markStored(fence, blobId)).toEqual({
+    expect(await repo.markStored(fence, storageKey)).toEqual({
       ok: true,
       value: null,
     });
     // A failure from an attempt that lost the race changes nothing
     expect(
-      await repo.markFailed(fence, blobId, {
+      await repo.markFailed(fence, storageKey, {
         code: "fetch_timeout",
         message: "timeout",
         retryable: true,
@@ -592,7 +637,7 @@ describe("fencing", () => {
       contentType: "image/webp",
       bytes: 1,
     };
-    const first = await repo.publishBlob(fence, input);
+    const first = await repo.publishObject(fence, input);
     if (!first.ok) throw new Error(first.reason);
     // The replacement schedules its own repair, in the same transaction
     const [row] = await sql<{ due: boolean }>(
@@ -601,16 +646,16 @@ describe("fencing", () => {
     );
     expect(row.due).toBe(true);
     // The caller crashed before learning the new generation and retries
-    expect(await repo.publishBlob(fence, input)).toEqual(first);
+    expect(await repo.publishObject(fence, input)).toEqual(first);
     // Other bytes, or an older generation, stay fenced out
     expect(
-      await repo.publishBlob(fence, {
+      await repo.publishObject(fence, {
         ...input,
         sha256: sha("something-else"),
       }),
     ).toEqual({ ok: false, reason: "stale" });
     expect(
-      await repo.publishBlob(
+      await repo.publishObject(
         { ...fence, generation: fence.generation - 1 },
         input,
       ),
@@ -618,8 +663,8 @@ describe("fencing", () => {
   });
 
   it("a delayed pre-publication failure can't cancel the repair of stored bytes", async () => {
-    const { fence, blobId } = await storedAsset("stored-then-failed");
-    const embedding = await repo.markFailed(fence, blobId, {
+    const { fence, storageKey } = await storedAsset("stored-then-failed");
+    const embedding = await repo.markFailed(fence, storageKey, {
       code: "fetch_timeout",
       message: "embedding timeout",
       retryable: true,
@@ -644,15 +689,15 @@ describe("fencing", () => {
     // markFailed records, it doesn't count (beginAttempt counts dispatches)
     expect(row).toEqual({ error: "embedding timeout", due: true, attempts: 0 });
     // The retry embeds the stored bytes as usual
-    expect((await repo.markStored(fence, blobId)).ok).toBe(true);
+    expect((await repo.markStored(fence, storageKey)).ok).toBe(true);
     expect(
-      (await repo.writeEmbedding(fence, blobId, profileId, vector(18))).ok,
+      (await repo.writeEmbedding(fence, storageKey, profileId, vector(18))).ok,
     ).toBe(true);
   });
 
   it("storing after a terminal pre-publication failure reschedules repair", async () => {
     const fence = await admit();
-    const published = await repo.publishBlob(fence, {
+    const published = await repo.publishObject(fence, {
       sha256: sha("published-then-late-failure"),
       ext: "webp",
       contentType: "image/webp",
@@ -668,7 +713,7 @@ describe("fencing", () => {
     if (!failed.ok) throw new Error(failed.reason);
     expect(failed.value.nextAttemptAt).toBeNull();
     // The winning attempt stores the bytes, then crashes before embedding
-    expect((await repo.markStored(fence, published.value.blobId)).ok).toBe(
+    expect((await repo.markStored(fence, published.value.storageKey)).ok).toBe(
       true,
     );
     const [row] = await sql<{ status: string; due: boolean }>(
@@ -706,18 +751,21 @@ describe("fencing", () => {
       ).toBe(true);
       expect(await due(fence.assetId)).toBeNull();
       expect(
-        (await repo.publishBlob(fence, input("first-after-terminal"))).ok,
+        (await repo.publishObject(fence, input("first-after-terminal"))).ok,
       ).toBe(true);
       expect(await due(fence.assetId)).toBe(true);
     });
 
     it("same-content publication", async () => {
       const fence = await admit();
-      const first = await repo.publishBlob(fence, input("same-after-terminal"));
+      const first = await repo.publishObject(
+        fence,
+        input("same-after-terminal"),
+      );
       if (!first.ok) throw new Error(first.reason);
       expect(
         (
-          await repo.markFailed(fence, first.value.blobId, {
+          await repo.markFailed(fence, first.value.storageKey, {
             code: "decode_failed",
             message: "decode failed",
             retryable: false,
@@ -726,19 +774,19 @@ describe("fencing", () => {
       ).toBe(true);
       expect(await due(fence.assetId)).toBeNull();
       expect(
-        (await repo.publishBlob(fence, input("same-after-terminal"))).ok,
+        (await repo.publishObject(fence, input("same-after-terminal"))).ok,
       ).toBe(true);
       expect(await due(fence.assetId)).toBe(true);
     });
 
     it("resumed replacement", async () => {
       const { fence } = await embeddedAsset(vector(19), "resume-before");
-      const replaced = await repo.publishBlob(fence, input("resume-after"));
+      const replaced = await repo.publishObject(fence, input("resume-after"));
       if (!replaced.ok) throw new Error(replaced.reason);
       const next = { ...fence, generation: replaced.value.generation };
       expect(
         (
-          await repo.markFailed(next, replaced.value.blobId, {
+          await repo.markFailed(next, replaced.value.storageKey, {
             code: "decode_failed",
             message: "decode failed",
             retryable: false,
@@ -746,7 +794,7 @@ describe("fencing", () => {
         ).ok,
       ).toBe(true);
       expect(await due(fence.assetId)).toBeNull();
-      expect((await repo.publishBlob(fence, input("resume-after"))).ok).toBe(
+      expect((await repo.publishObject(fence, input("resume-after"))).ok).toBe(
         true,
       );
       expect(await due(fence.assetId)).toBe(true);
@@ -824,12 +872,15 @@ describe("fencing", () => {
       )[0].external_id;
 
     it("two failures of one dispatch count one attempt and keep the last error", async () => {
-      const { fence, blobId } = await storedAsset("fail-fail");
+      const { fence, storageKey } = await storedAsset("fail-fail");
       expect(
         (await repo.beginAttempt([fence], dispatch(), 600)).included,
       ).toEqual([fence]);
-      await repo.markFailed(fence, blobId, retryable);
-      await repo.markFailed(fence, blobId, { ...retryable, message: "again" });
+      await repo.markFailed(fence, storageKey, retryable);
+      await repo.markFailed(fence, storageKey, {
+        ...retryable,
+        message: "again",
+      });
       expect(await state(fence.assetId)).toMatchObject({
         status: "failed",
         attempts: 1,
@@ -840,12 +891,12 @@ describe("fencing", () => {
 
     it("success wins over a failure in either order", async () => {
       const first = await storedAsset("fail-then-success");
-      await repo.markFailed(first.fence, first.blobId, terminal);
+      await repo.markFailed(first.fence, first.storageKey, terminal);
       expect(
         (
           await repo.writeEmbedding(
             first.fence,
-            first.blobId,
+            first.storageKey,
             profileId,
             vector(30),
           )
@@ -863,14 +914,14 @@ describe("fencing", () => {
         (
           await repo.writeEmbedding(
             second.fence,
-            second.blobId,
+            second.storageKey,
             profileId,
             vector(31),
           )
         ).ok,
       ).toBe(true);
       expect(
-        await repo.markFailed(second.fence, second.blobId, retryable),
+        await repo.markFailed(second.fence, second.storageKey, retryable),
       ).toEqual({
         ok: false,
         reason: "stale",
@@ -880,8 +931,8 @@ describe("fencing", () => {
 
     it("a terminal failure after storage stays terminal", async () => {
       const content = "terminal-after-storage";
-      const { fence, blobId } = await storedAsset(content);
-      await repo.markFailed(fence, blobId, terminal);
+      const { fence, storageKey } = await storedAsset(content);
+      await repo.markFailed(fence, storageKey, terminal);
       const before = await state(fence.assetId);
       expect(before).toMatchObject({
         status: "failed",
@@ -889,15 +940,15 @@ describe("fencing", () => {
         due: false,
       });
 
-      expect(await repo.markFailed(fence, blobId, retryable)).toEqual({
+      expect(await repo.markFailed(fence, storageKey, retryable)).toEqual({
         ok: false,
         reason: "terminal",
       });
-      expect(await repo.markStored(fence, blobId)).toEqual({
+      expect(await repo.markStored(fence, storageKey)).toEqual({
         ok: false,
         reason: "terminal",
       });
-      const republished = await repo.publishBlob(fence, {
+      const republished = await repo.publishObject(fence, {
         sha256: sha(content),
         ext: "webp",
         contentType: "image/webp",
@@ -913,12 +964,12 @@ describe("fencing", () => {
     });
 
     it("counts one attempt per dispatch, and the sixth dispatch terminalizes", async () => {
-      const { fence, blobId } = await storedAsset("five-dispatches");
+      const { fence, storageKey } = await storedAsset("five-dispatches");
       for (let i = 1; i <= 5; i++) {
         expect(
           (await repo.beginAttempt([fence], dispatch(), 600)).included,
         ).toEqual([fence]);
-        await repo.markFailed(fence, blobId, retryable);
+        await repo.markFailed(fence, storageKey, retryable);
         expect(await state(fence.assetId)).toMatchObject({
           attempts: i,
           status: "failed",
@@ -1088,17 +1139,17 @@ describe("fencing", () => {
     });
 
     it("a dispatch from before a content replacement can't give up on the new generation", async () => {
-      const { fence, blobId } = await storedAsset("replaced-under-a");
+      const { fence, storageKey } = await storedAsset("replaced-under-a");
       const a = dispatch();
       await repo.beginAttempt([fence], a, 600);
-      const replaced = await repo.publishBlob(fence, {
+      const replaced = await repo.publishObject(fence, {
         sha256: sha("replaced-under-a-2"),
         ext: "webp",
         contentType: "image/webp",
         bytes: 1,
       });
       if (!replaced.ok) throw new Error(replaced.reason);
-      expect(blobId).not.toBe(replaced.value.blobId);
+      expect(storageKey).not.toBe(replaced.value.storageKey);
       const next = { ...fence, generation: replaced.value.generation };
       expect(await repo.exhaustAttempts([next], a, "dispatch_failed")).toEqual(
         [],
@@ -1121,7 +1172,7 @@ describe("fencing", () => {
           )
         )[0].hours;
       expect(await hoursLeft()).toBeGreaterThan(7.9);
-      const published = await repo.publishBlob(fence, {
+      const published = await repo.publishObject(fence, {
         sha256: sha("long-deferral"),
         ext: "webp",
         contentType: "image/webp",
@@ -1129,17 +1180,17 @@ describe("fencing", () => {
       });
       if (!published.ok) throw new Error(published.reason);
       expect(await hoursLeft()).toBeGreaterThan(7.9);
-      expect((await repo.markStored(fence, published.value.blobId)).ok).toBe(
-        true,
-      );
+      expect(
+        (await repo.markStored(fence, published.value.storageKey)).ok,
+      ).toBe(true);
       expect(await hoursLeft()).toBeGreaterThan(7.9);
     });
 
     it("tells a restart of the dispatch that recorded a failure, not other dispatches", async () => {
-      const { fence, blobId } = await storedAsset("failed-in-dispatch");
+      const { fence, storageKey } = await storedAsset("failed-in-dispatch");
       const a = dispatch();
       await repo.beginAttempt([fence], a, 600);
-      await repo.markFailed(fence, blobId, retryable, a);
+      await repo.markFailed(fence, storageKey, retryable, a);
       const read = async (id: string) => {
         const input = await repo.embeddingInput(fence, profileId, id);
         if (!input.ok) throw new Error(input.reason);
@@ -1148,17 +1199,17 @@ describe("fencing", () => {
       expect(await read(a)).toBe(true);
       expect(await read(dispatch())).toBe(false);
       // Back to stored by a later dispatch: no longer failed at all
-      expect((await repo.markStored(fence, blobId)).ok).toBe(true);
+      expect((await repo.markStored(fence, storageKey)).ok).toBe(true);
       expect(await read(a)).toBe(false);
     });
 
     it("reports a write that found the generation already embedded", async () => {
-      const { fence, blobId } = await storedAsset("duplicate-write");
+      const { fence, storageKey } = await storedAsset("duplicate-write");
       expect(
-        await repo.writeEmbedding(fence, blobId, profileId, vector(34)),
+        await repo.writeEmbedding(fence, storageKey, profileId, vector(34)),
       ).toEqual({ ok: true, value: { duplicate: false } });
       expect(
-        await repo.writeEmbedding(fence, blobId, profileId, vector(34)),
+        await repo.writeEmbedding(fence, storageKey, profileId, vector(34)),
       ).toEqual({ ok: true, value: { duplicate: true } });
     });
 
@@ -1215,16 +1266,16 @@ describe("fencing", () => {
     });
 
     it("reads embedding inputs and batch outcomes from the database", async () => {
-      const { fence: done, blobId } = await embeddedAsset(vector(34));
+      const { fence: done, storageKey } = await embeddedAsset(vector(34));
       const stored = await storedAsset("outcome-stored");
       const notReady = await admit();
       const broken = await storedAsset("outcome-broken");
-      await repo.markFailed(broken.fence, broken.blobId, terminal);
+      await repo.markFailed(broken.fence, broken.storageKey, terminal);
 
       const input = await repo.embeddingInput(done, profileId);
       if (!input.ok) throw new Error(input.reason);
       expect(input.value).toMatchObject({
-        blobId,
+        storageKey,
         status: "embedded",
         embedded: true,
         retryable: true,
@@ -1323,7 +1374,7 @@ describe("interleavings", () => {
   }
 
   it("admission wins over an embedding write that was waiting", async () => {
-    const { fence, blobId } = await storedAsset("adm-vs-emb");
+    const { fence, storageKey } = await storedAsset("adm-vs-emb");
     const admission = await holding(fence, (other) =>
       other
         .query(
@@ -1332,7 +1383,7 @@ describe("interleavings", () => {
         )
         .then(() => undefined),
     );
-    const write = repo.writeEmbedding(fence, blobId, profileId, vector(5));
+    const write = repo.writeEmbedding(fence, storageKey, profileId, vector(5));
     await waitForLockWait();
     await admission.commit();
     expect(await write).toEqual({ ok: false, reason: "stale" });
@@ -1344,16 +1395,16 @@ describe("interleavings", () => {
   });
 
   it("deletion wins over an embedding write that was waiting", async () => {
-    const { fence, blobId } = await storedAsset("del-vs-emb");
+    const { fence, storageKey } = await storedAsset("del-vs-emb");
     const deletion = await holding(fence, (other) =>
       other
         .query(
-          "UPDATE asset SET deleted_at = now(), ingest_generation = ingest_generation + 1, blob_id = NULL WHERE id = $1",
+          "UPDATE asset SET deleted_at = now(), ingest_generation = ingest_generation + 1, storage_key = NULL WHERE id = $1",
           [fence.assetId],
         )
         .then(() => undefined),
     );
-    const write = repo.writeEmbedding(fence, blobId, profileId, vector(6));
+    const write = repo.writeEmbedding(fence, storageKey, profileId, vector(6));
     await waitForLockWait();
     await deletion.commit();
     expect(await write).toEqual({ ok: false, reason: "deleted" });
@@ -1395,7 +1446,7 @@ describe("interleavings", () => {
     const deletion = await holding(fence, (other) =>
       other
         .query(
-          "UPDATE asset SET deleted_at = now(), ingest_generation = ingest_generation + 1, blob_id = NULL WHERE id = $1",
+          "UPDATE asset SET deleted_at = now(), ingest_generation = ingest_generation + 1, storage_key = NULL WHERE id = $1",
           [fence.assetId],
         )
         .then(() => undefined),
@@ -1499,13 +1550,8 @@ describe("interleavings", () => {
 
   it("retries after a deadlock", async () => {
     const fence = await admit();
-    const published = await repo.publishBlob(fence, {
-      sha256: sha("deadlock"),
-      ext: "webp",
-      contentType: "image/webp",
-      bytes: 1,
-    });
-    if (!published.ok) throw new Error(published.reason);
+    const url = "https://example.com/deadlock.webp";
+    const productId = await product("Deadlock", { imageUrl: url });
     const [{ deadlocks: before }] = await sql<{ deadlocks: string }>(
       "SELECT deadlocks FROM pg_stat_database WHERE datname = $1",
       [testName],
@@ -1516,18 +1562,19 @@ describe("interleavings", () => {
     const other = await connect();
     await other.query("SET deadlock_timeout = '10s'");
     await other.query("BEGIN");
-    await other.query("SELECT pg_advisory_xact_lock(hashtextextended($1, 0))", [
-      sha("deadlock"),
-    ]);
-    const deletion = repo.deleteAsset(fence);
-    await waitForLockWait();
+    // Asset before product: the reverse of the repository's lock order
     await other.query("SELECT 1 FROM asset WHERE id = $1 FOR UPDATE", [
       fence.assetId,
+    ]);
+    const attach = repo.attachThumbnail(productId, fence, url);
+    await waitForLockWait();
+    await other.query("SELECT 1 FROM product WHERE id = $1 FOR UPDATE", [
+      productId,
     ]);
     await other.query("COMMIT");
     await other.end();
 
-    expect((await deletion).ok).toBe(true);
+    expect((await attach).ok).toBe(true);
     const [{ deadlocks: after }] = await sql<{ deadlocks: string }>(
       "SELECT deadlocks FROM pg_stat_database WHERE datname = $1",
       [testName],
@@ -1542,19 +1589,16 @@ describe("queries", () => {
   beforeAll(async () => {
     // 2,000 embedded assets around 40 directions, a quarter of them red
     await sql(
-      `WITH blobs AS (
-         INSERT INTO blob (sha256, storage_key, content_type, bytes, colors)
-         SELECT encode(sha256(('fixture-' || g)::bytea), 'hex'),
-                'assets/fixture-' || g || '.webp', 'image/webp', 1,
-                CASE WHEN g % 4 = 0 THEN ARRAY['red'] ELSE ARRAY['blue'] END
-         FROM generate_series(1, 2000) g
-         RETURNING id, storage_key
-       )
-       INSERT INTO asset (source, external_id, blob_id, ingest_generation, status, license)
-       SELECT 'fixture', storage_key, id, 1, 'embedded', 'CC0-1.0' FROM blobs`,
+      `INSERT INTO asset (source, external_id, sha256, storage_key, content_type, bytes,
+         colors, ingest_generation, status, license)
+       SELECT 'fixture', 'fixture-' || g, encode(sha256(('fixture-' || g)::bytea), 'hex'),
+         'assets/fixture-' || g || '.webp', 'image/webp', 1,
+         CASE WHEN g % 4 = 0 THEN ARRAY['red'] ELSE ARRAY['blue'] END,
+         1, 'embedded', 'CC0-1.0'
+       FROM generate_series(1, 2000) g`,
     );
     const assets = await sql<{ id: number; colors: string[] }>(
-      `SELECT a.id, b.colors FROM asset a JOIN blob b ON b.id = a.blob_id
+      `SELECT a.id, a.colors FROM asset a
        WHERE a.source = 'fixture' ORDER BY a.id`,
     );
     expect(assets).toHaveLength(2000);
@@ -1579,10 +1623,10 @@ describe("queries", () => {
     try {
       await other.query("SET enable_indexscan = off");
       const { rows } = await other.query<{ id: number }>(
-        `SELECT a.id FROM asset_embedding e JOIN asset a ON a.id = e.asset_id JOIN blob b ON b.id = a.blob_id
+        `SELECT a.id FROM asset_embedding e JOIN asset a ON a.id = e.asset_id
          WHERE e.profile_id = $1 AND e.ingest_generation = a.ingest_generation
            AND a.status = 'embedded' AND a.deleted_at IS NULL
-           AND ($3::text IS NULL OR $3 = ANY(b.colors))
+           AND ($3::text IS NULL OR $3 = ANY(a.colors))
          ORDER BY e.embedding <=> $2::halfvec(768), a.id LIMIT 10`,
         [profileId, `[${query.join(",")}]`, color],
       );
@@ -1716,7 +1760,7 @@ describe("queries", () => {
     });
     expect(hits.map((h) => h.productId)).toEqual([drill, kettle]);
     expect(hits[0].similarity).toBeCloseTo(1, 2);
-    expect(hits[0].storageKey).toMatch(/^assets\/[0-9a-f]{64}-\d+\.webp$/);
+    expect(hits[0].storageKey).toMatch(/^assets\/\d+-\d+-[0-9a-f]{64}\.webp$/);
 
     const red = await repo.searchProductsByVector(vector(100), {
       profileId,
@@ -1763,14 +1807,12 @@ describe.runIf(process.env.SEARCH_BENCH === "1")("benchmark", () => {
     // maintaining it row by row (throwaway database)
     await sql("DROP INDEX IF EXISTS ix_asset_embedding_hnsw");
     await sql(
-      `WITH blobs AS (
-         INSERT INTO blob (sha256, storage_key, content_type, bytes)
-         SELECT encode(sha256(('bench-' || g)::bytea), 'hex'), 'assets/bench-' || g || '.webp', 'image/webp', 1
-         FROM generate_series(1, 100000) g
-         RETURNING id, storage_key
-       ), assets AS (
-         INSERT INTO asset (source, external_id, blob_id, ingest_generation, status)
-         SELECT 'bench', storage_key, id, 1, 'embedded' FROM blobs RETURNING id
+      `WITH assets AS (
+         INSERT INTO asset (source, external_id, sha256, storage_key, content_type, bytes,
+           ingest_generation, status)
+         SELECT 'bench', 'bench-' || g, encode(sha256(('bench-' || g)::bytea), 'hex'),
+           'assets/bench-' || g || '.webp', 'image/webp', 1, 1, 'embedded'
+         FROM generate_series(1, 100000) g RETURNING id
        )
        INSERT INTO asset_embedding (asset_id, profile_id, ingest_generation, embedding)
        SELECT a.id, $1, 1, (SELECT array_agg(random() - 0.5) FROM generate_series(1, 768) WHERE a.id > 0)::halfvec(768)

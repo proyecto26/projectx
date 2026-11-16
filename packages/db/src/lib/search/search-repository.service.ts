@@ -11,9 +11,14 @@ import { PrismaService } from "../prisma.service";
  * Admission and deletion bump the generation under the same lock, so work
  * started for an older generation finds a mismatch and writes nothing.
  *
- * Lock order everywhere: product row, then asset rows by ascending id, then
- * blob hash locks in sorted order. No object store call happens inside a
- * transaction.
+ * Lock order everywhere: product row, then asset rows by ascending id. No
+ * object store call happens inside a transaction.
+ *
+ * Each asset owns its object. The key names the asset, the generation it was
+ * published in and the hash, and is recorded before the object is written.
+ * Generations only grow, so a key the asset leaves (replacement, deletion)
+ * is never referenced again: the orphan sweep deletes its object once it is
+ * old enough (unreferencedObjects).
  */
 
 type Tx = Prisma.TransactionClient;
@@ -24,11 +29,6 @@ export const EMBEDDING_DIMS = 768;
 export const MAX_ATTEMPTS = 5;
 /** When repair picks up an asset whose workflow never finished */
 const REPAIR_AFTER = "15 minutes";
-/** Unreferenced blobs are kept this long before garbage collection */
-const GC_GRACE = "24 hours";
-/** A blob stuck in `deleting` for this long is retried */
-const GC_STUCK = "10 minutes";
-
 /** What a step must hold to write an asset */
 export type Fence = { assetId: number; generation: number };
 
@@ -86,7 +86,7 @@ export type DispatchResult = {
 
 /** What the embedding activity needs to embed one item (read without a lock) */
 export type EmbeddingInput = {
-  blobId: number | null;
+  /** The published object, which also identifies the content (null before publication) */
   storageKey: string | null;
   status: string;
   storedAt: Date | null;
@@ -156,7 +156,7 @@ export type Admission =
   /** The (source, externalId) was deleted: only an explicit restore admits it again */
   | { kind: "suppressed"; assetId: number };
 
-export type BlobInput = {
+export type ObjectInput = {
   sha256: string;
   /** File extension without the dot, e.g. webp */
   ext: string;
@@ -167,8 +167,8 @@ export type BlobInput = {
   colors?: string[];
 };
 
-export type PublishedBlob = {
-  blobId: number;
+export type PublishedObject = {
+  /** Where to write the bytes; pass it to markStored, writeEmbedding and markFailed */
   storageKey: string;
   /**
    * The generation to continue with. Replacing content the asset already had
@@ -179,8 +179,6 @@ export type PublishedBlob = {
   /** False when the asset already pointed at this content */
   changed: boolean;
 };
-
-export type BlobToDelete = { blobId: number; storageKey: string };
 
 export type SearchFilters = {
   /** 0..1, cosine similarity */
@@ -225,7 +223,8 @@ type LockedAsset = {
   id: number;
   ingest_generation: number;
   deleted_at: Date | null;
-  blob_id: number | null;
+  sha256: string | null;
+  storage_key: string | null;
   status: string;
   stored_at: Date | null;
   next_attempt_at: Date | null;
@@ -284,8 +283,13 @@ export const toVector = (values: readonly number[]): string => {
   return `[${values.join(",")}]`;
 };
 
-const storageKeyOf = (sha256: string, blobId: number, ext: string) =>
-  `assets/${sha256}-${blobId}.${ext}`;
+/** One set of bytes of one asset generation: never reused */
+export const storageKeyOf = (
+  assetId: number,
+  generation: number,
+  sha256: string,
+  ext: string,
+) => `assets/${assetId}-${generation}-${sha256}.${ext}`;
 
 @Injectable()
 export class SearchRepositoryService {
@@ -319,7 +323,7 @@ export class SearchRepositoryService {
 
   private async lockAsset(tx: Tx, assetId: number) {
     const [row] = await tx.$queryRaw<LockedAsset[]>`
-      SELECT id, ingest_generation, deleted_at, blob_id, status::text AS status, stored_at,
+      SELECT id, ingest_generation, deleted_at, sha256, storage_key, status::text AS status, stored_at,
         next_attempt_at, attempts
       FROM asset WHERE id = ${assetId} FOR UPDATE`;
     return row;
@@ -331,7 +335,7 @@ export class SearchRepositoryService {
       (a, b) => a - b,
     );
     const rows = await tx.$queryRaw<LockedAsset[]>`
-      SELECT id, ingest_generation, deleted_at, blob_id, status::text AS status, stored_at,
+      SELECT id, ingest_generation, deleted_at, sha256, storage_key, status::text AS status, stored_at,
         next_attempt_at, attempts
       FROM asset WHERE id = ANY(${ids}::int[]) ORDER BY id FOR UPDATE`;
     return new Map(rows.map((row) => [row.id, row]));
@@ -365,29 +369,6 @@ export class SearchRepositoryService {
     if (row.deleted_at) return { reason: "deleted" };
     if (row.ingest_generation !== fence.generation) return { reason: "stale" };
     return { row };
-  }
-
-  private async lockHashes(tx: Tx, hashes: (string | null | undefined)[]) {
-    const sorted = [...new Set(hashes.filter((h): h is string => !!h))].sort();
-    for (const sha256 of sorted) {
-      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${sha256}, 0))`;
-    }
-  }
-
-  private async blobHash(tx: Tx, blobId: number | null) {
-    if (blobId === null) return null;
-    const [row] = await tx.$queryRaw<{ sha256: string }[]>`
-      SELECT sha256 FROM blob WHERE id = ${blobId}`;
-    return row?.sha256 ?? null;
-  }
-
-  /** Marks a blob unreferenced if no asset points at it any more */
-  private async releaseBlob(tx: Tx, blobId: number | null) {
-    if (blobId === null) return;
-    await tx.$executeRaw`
-      UPDATE blob SET unreferenced_since = now()
-      WHERE id = ${blobId} AND unreferenced_since IS NULL
-        AND NOT EXISTS (SELECT 1 FROM asset WHERE blob_id = ${blobId})`;
   }
 
   async ensureProfile(profile: EmbeddingProfileInput): Promise<number> {
@@ -456,7 +437,7 @@ export class SearchRepositoryService {
           error_code: ErrorCode | null;
         })[]
       >`
-        SELECT id, ingest_generation, deleted_at, blob_id, status::text AS status, stored_at,
+        SELECT id, ingest_generation, deleted_at, sha256, storage_key, status::text AS status, stored_at,
           next_attempt_at, attempts, admission_key, error_code
         FROM asset WHERE source = ${input.source} AND external_id = ${input.externalId}
         FOR UPDATE`;
@@ -534,19 +515,17 @@ export class SearchRepositoryService {
     tx: Tx,
     fence: Fence,
     sha256: string,
-  ): Promise<PublishedBlob | null> {
+  ): Promise<PublishedObject | null> {
     const [row] = await tx.$queryRaw<
-      { blob_id: number; storage_key: string; ingest_generation: number }[]
+      { storage_key: string; ingest_generation: number }[]
     >`
-      SELECT a.blob_id, b.storage_key, a.ingest_generation
-      FROM asset a JOIN blob b ON b.id = a.blob_id
-      WHERE a.id = ${fence.assetId} AND a.deleted_at IS NULL
-        AND a.replaced_from_generation = ${fence.generation}
-        AND a.ingest_generation = ${fence.generation} + 1
-        AND b.sha256 = ${sha256}`;
+      SELECT storage_key, ingest_generation FROM asset
+      WHERE id = ${fence.assetId} AND deleted_at IS NULL
+        AND replaced_from_generation = ${fence.generation}
+        AND ingest_generation = ${fence.generation} + 1
+        AND sha256 = ${sha256} AND storage_key IS NOT NULL`;
     if (!row) return null;
     return {
-      blobId: row.blob_id,
       storageKey: row.storage_key,
       generation: row.ingest_generation,
       changed: true,
@@ -554,75 +533,69 @@ export class SearchRepositoryService {
   }
 
   /**
-   * Points the asset at the blob for these bytes, creating the blob if no
-   * live one has this hash. Call before writing the object: once this
-   * commits, garbage collection can't claim the blob. The object is then
-   * written at `storageKey` (idempotent, same bytes).
+   * Records the asset's content and returns the key to write it at. Call
+   * before writing the object, so the key is referenced (and kept by the
+   * orphan sweep) before the object exists; the write is idempotent (same
+   * bytes, same key). Different bytes than the asset already had start a new
+   * generation with a new key; the old object becomes an orphan.
    */
-  async publishBlob(
+  async publishObject(
     fence: Fence,
-    blob: BlobInput,
-  ): Promise<Fenced<PublishedBlob>> {
-    if (!/^[0-9a-f]{64}$/.test(blob.sha256)) throw new Error("Invalid sha256");
-    if (!/^[a-z0-9]{1,8}$/.test(blob.ext)) throw new Error("Invalid extension");
+    object: ObjectInput,
+  ): Promise<Fenced<PublishedObject>> {
+    if (!/^[0-9a-f]{64}$/.test(object.sha256))
+      throw new Error("Invalid sha256");
+    if (!/^[a-z0-9]{1,8}$/.test(object.ext))
+      throw new Error("Invalid extension");
 
-    return this.transaction("publishBlob", async (tx) => {
+    return this.transaction("publishObject", async (tx) => {
       const fenced = await this.checkFence(tx, fence);
       if ("reason" in fenced) {
         // A retry of a replacement that committed but whose caller never
         // learned it: same bytes, from the generation the replacement left
         if (fenced.reason !== "stale")
           return { ok: false, reason: fenced.reason };
-        const resumed = await this.resumeReplacement(tx, fence, blob.sha256);
+        const resumed = await this.resumeReplacement(tx, fence, object.sha256);
         if (!resumed) return { ok: false, reason: "stale" };
         await this.scheduleRepair(tx, fence.assetId);
         return { ok: true, value: resumed };
       }
-      const previousBlobId = fenced.row.blob_id;
-      const previousHash = await this.blobHash(tx, previousBlobId);
-      await this.lockHashes(tx, [blob.sha256, previousHash]);
+      const previousKey = fenced.row.storage_key;
 
-      if (previousHash === blob.sha256 && previousBlobId !== null) {
-        const [current] = await tx.$queryRaw<{ storage_key: string }[]>`
-          SELECT storage_key FROM blob WHERE id = ${previousBlobId}`;
+      // Same bytes as the current content (a retry, or an admission that
+      // fetched the same image again): keep its key
+      if (previousKey !== null && fenced.row.sha256 === object.sha256) {
         await this.scheduleRepair(tx, fence.assetId);
         return {
           ok: true,
           value: {
-            blobId: previousBlobId,
-            storageKey: current.storage_key,
+            storageKey: previousKey,
             generation: fence.generation,
             changed: false,
           },
         };
       }
 
-      let [live] = await tx.$queryRaw<{ id: number; storage_key: string }[]>`
-        SELECT id, storage_key FROM blob WHERE sha256 = ${blob.sha256} AND state = 'live'`;
-      if (live) {
-        await tx.$executeRaw`UPDATE blob SET unreferenced_since = NULL WHERE id = ${live.id}`;
-      } else {
-        const [{ id }] = await tx.$queryRaw<{ id: number }[]>`
-          SELECT nextval(pg_get_serial_sequence('blob', 'id'))::int AS id`;
-        const storageKey = storageKeyOf(blob.sha256, id, blob.ext);
-        [live] = await tx.$queryRaw<{ id: number; storage_key: string }[]>`
-          INSERT INTO blob (id, sha256, storage_key, content_type, bytes, width, height, colors)
-          VALUES (${id}, ${blob.sha256}, ${storageKey}, ${blob.contentType}, ${blob.bytes},
-            ${blob.width ?? null}, ${blob.height ?? null}, ${blob.colors ?? []})
-          RETURNING id, storage_key`;
-      }
-
       // Different bytes: whatever was embedded or stored before no longer
       // applies, and replacing content is a new generation
-      const replacing = previousBlobId === null ? 0 : 1;
+      const replacing = previousKey === null ? 0 : 1;
+      const generation = fence.generation + replacing;
+      const storageKey = storageKeyOf(
+        fence.assetId,
+        generation,
+        object.sha256,
+        object.ext,
+      );
       await tx.$executeRaw`DELETE FROM asset_embedding WHERE asset_id = ${fence.assetId}`;
       if (replacing) await this.resetDispatches(tx, fence.assetId);
-      const [{ ingest_generation }] = await tx.$queryRaw<
-        { ingest_generation: number }[]
-      >`
-        UPDATE asset SET blob_id = ${live.id}, status = 'admitted', stored_at = NULL,
+      await tx.$executeRaw`
+        UPDATE asset SET sha256 = ${object.sha256}, storage_key = ${storageKey},
+          content_type = ${object.contentType}, bytes = ${object.bytes},
+          width = ${object.width ?? null}, height = ${object.height ?? null},
+          colors = ${object.colors ?? []},
+          status = 'admitted', stored_at = NULL,
           content_revision = content_revision + ${replacing},
-          ingest_generation = ingest_generation + ${replacing},
+          ingest_generation = ${generation},
           replaced_from_generation = CASE WHEN ${replacing} = 1
             THEN ${fence.generation} ELSE replaced_from_generation END,
           attempts = CASE WHEN ${replacing} = 1 THEN 0 ELSE attempts END,
@@ -633,32 +606,22 @@ export class SearchRepositoryService {
             THEN now() + ${REPAIR_AFTER}::interval
             ELSE GREATEST(next_attempt_at, now() + ${REPAIR_AFTER}::interval) END,
           updated_at = now()
-        WHERE id = ${fence.assetId}
-        RETURNING ingest_generation`;
-      await this.releaseBlob(tx, previousBlobId);
-      return {
-        ok: true,
-        value: {
-          blobId: live.id,
-          storageKey: live.storage_key,
-          generation: ingest_generation,
-          changed: true,
-        },
-      };
+        WHERE id = ${fence.assetId}`;
+      return { ok: true, value: { storageKey, generation, changed: true } };
     });
   }
 
   /**
-   * The object for `blobId` is written: the staging copy can go. Fails with
-   * `content_changed` if the asset was pointed at other bytes meanwhile.
+   * The object at `storageKey` is written: the staging copy can go. Fails
+   * with `content_changed` if the asset was pointed at other bytes meanwhile.
    */
-  async markStored(fence: Fence, blobId: number): Promise<Fenced<null>> {
+  async markStored(fence: Fence, storageKey: string): Promise<Fenced<null>> {
     return this.transaction("markStored", async (tx) => {
       const fenced = await this.checkFence(tx, fence);
       if ("reason" in fenced) return { ok: false, reason: fenced.reason };
-      if (fenced.row.blob_id === null)
+      if (fenced.row.storage_key === null)
         return { ok: false, reason: "not_ready" };
-      if (fenced.row.blob_id !== blobId) {
+      if (fenced.row.storage_key !== storageKey) {
         return { ok: false, reason: "content_changed" };
       }
       // A repeated completion must not move an embedded asset back
@@ -683,14 +646,14 @@ export class SearchRepositoryService {
   }
 
   /**
-   * Stores the vector computed from `blobId`'s bytes. A vector for bytes the
+   * Stores the vector computed from the bytes at `storageKey`. A vector for bytes the
    * asset no longer points at is rejected with `content_changed`.
    * `duplicate`: this generation already had a vector for the profile (another
    * attempt embedded the same item), counted as `duplicate_inference`.
    */
   async writeEmbedding(
     fence: Fence,
-    blobId: number,
+    storageKey: string,
     profileId: number,
     embedding: readonly number[],
   ): Promise<Fenced<{ duplicate: boolean }>> {
@@ -705,10 +668,10 @@ export class SearchRepositoryService {
         row.status === "stored" ||
         row.status === "embedded" ||
         (row.status === "failed" && row.stored_at !== null);
-      if (row.blob_id === null || !storedBytes) {
+      if (row.storage_key === null || !storedBytes) {
         return { ok: false, reason: "not_ready" };
       }
-      if (row.blob_id !== blobId)
+      if (row.storage_key !== storageKey)
         return { ok: false, reason: "content_changed" };
       const [existing] = await tx.$queryRaw<{ duplicate: boolean }[]>`
         SELECT EXISTS (SELECT 1 FROM asset_embedding
@@ -732,8 +695,9 @@ export class SearchRepositoryService {
   }
 
   /**
-   * Records a failure on the content it was about: `blobId`, or null for a
-   * failure before publication (download, validation). A late failure for
+   * Records a failure on the content it was about: the `storageKey` the
+   * attempt worked on, or null for a failure before publication (download,
+   * validation). A late failure for
    * other bytes, a pre-publication failure after the bytes were stored, or
    * any failure after the asset was embedded changes nothing; a terminal
    * failure stays as it is (`terminal`).
@@ -748,7 +712,7 @@ export class SearchRepositoryService {
    */
   async markFailed(
     fence: Fence,
-    blobId: number | null,
+    storageKey: string | null,
     failure: FailureInput,
     dispatchId?: string,
   ): Promise<Fenced<{ attempts: number; nextAttemptAt: Date | null }>> {
@@ -762,11 +726,11 @@ export class SearchRepositoryService {
       // Stored or embedded content can't have failed before publication
       if (
         current.status === "embedded" ||
-        (blobId === null && current.stored_at !== null)
+        (storageKey === null && current.stored_at !== null)
       ) {
         return { ok: false, reason: "stale" };
       }
-      if (blobId !== null && current.blob_id !== blobId) {
+      if (storageKey !== null && current.storage_key !== storageKey) {
         return { ok: false, reason: "content_changed" };
       }
       if (isTerminal(current)) return { ok: false, reason: "terminal" };
@@ -966,7 +930,6 @@ export class SearchRepositoryService {
       {
         ingest_generation: number;
         deleted_at: Date | null;
-        blob_id: number | null;
         storage_key: string | null;
         status: string;
         stored_at: Date | null;
@@ -975,7 +938,7 @@ export class SearchRepositoryService {
         failed_in_dispatch: boolean;
       }[]
     >`
-      SELECT a.ingest_generation, a.deleted_at, a.blob_id, b.storage_key,
+      SELECT a.ingest_generation, a.deleted_at, a.storage_key,
         a.status::text AS status, a.stored_at, a.next_attempt_at,
         EXISTS (SELECT 1 FROM asset_embedding e
           WHERE e.asset_id = a.id AND e.profile_id = ${profileId}
@@ -984,7 +947,7 @@ export class SearchRepositoryService {
           WHERE d.asset_id = a.id AND d.ingest_generation = a.ingest_generation
             AND d.dispatch_id = ${dispatchId ?? null} AND d.failed_at IS NOT NULL))
           AS failed_in_dispatch
-      FROM asset a LEFT JOIN blob b ON b.id = a.blob_id
+      FROM asset a
       WHERE a.id = ${fence.assetId}`;
     if (!row) return { ok: false, reason: "missing" };
     if (row.deleted_at) return { ok: false, reason: "deleted" };
@@ -993,7 +956,6 @@ export class SearchRepositoryService {
     return {
       ok: true,
       value: {
-        blobId: row.blob_id,
         storageKey: row.storage_key,
         status: row.status,
         storedAt: row.stored_at,
@@ -1057,8 +1019,8 @@ export class SearchRepositoryService {
   }
 
   /**
-   * Tombstones the asset: removes its links and embeddings and detaches the
-   * blob, which garbage collection deletes later if nothing else uses it.
+   * Tombstones the asset: removes its links and embeddings and drops its
+   * object reference, so the orphan sweep deletes the object later.
    * Takes the expected generation, so a delayed delete can't remove content
    * that was re-admitted after it was requested.
    */
@@ -1066,25 +1028,24 @@ export class SearchRepositoryService {
     return this.transaction("deleteAsset", async (tx) => {
       const fenced = await this.checkFence(tx, fence);
       if ("reason" in fenced) return { ok: false, reason: fenced.reason };
-      const blobId = fenced.row.blob_id;
-      await this.lockHashes(tx, [await this.blobHash(tx, blobId)]);
       await tx.$executeRaw`DELETE FROM product_asset WHERE asset_id = ${fence.assetId}`;
       await tx.$executeRaw`DELETE FROM asset_embedding WHERE asset_id = ${fence.assetId}`;
       await this.resetDispatches(tx, fence.assetId);
       const [row] = await tx.$queryRaw<{ ingest_generation: number }[]>`
         UPDATE asset SET deleted_at = now(), stored_at = NULL, ingest_generation = ingest_generation + 1,
-          blob_id = NULL, next_attempt_at = NULL, updated_at = now()
+          sha256 = NULL, storage_key = NULL, content_type = NULL, bytes = NULL,
+          width = NULL, height = NULL, colors = '{}',
+          next_attempt_at = NULL, updated_at = now()
         WHERE id = ${fence.assetId}
         RETURNING ingest_generation`;
-      await this.releaseBlob(tx, blobId);
       return { ok: true, value: { generation: row.ingest_generation } };
     });
   }
 
   /**
    * Clears a tombstone and admits a new generation, which re-fetches the
-   * bytes from `origin_url`. Deletion dropped the staging copy and the blob
-   * reference, so an asset without an origin (an upload) can't be restored:
+   * bytes from `origin_url`. Deletion dropped the staging copy and the
+   * object reference, so an asset without an origin (an upload) can't be restored:
    * it has to be uploaded again (`no_source`).
    */
   async restoreAsset(assetId: number): Promise<Fenced<Fence>> {
@@ -1171,43 +1132,19 @@ export class SearchRepositoryService {
   }
 
   /**
-   * Claims blobs for deletion: unreferenced past the grace period, or stuck
-   * in `deleting` from an earlier run. Delete each object at `storageKey`
-   * ("not found" counts as done), then call `finishBlobDeletion`.
+   * For the orphan sweep: which of these keys (objects listed under
+   * `assets/`) no asset holds, in any status. Read after listing, and delete
+   * only objects older than the publish timeout bound (1 day): publication
+   * records the key before writing, and a key an asset left is never
+   * referenced again, so an unreferenced old object can't become live.
+   * On a database error, delete nothing.
    */
-  async claimBlobsForDeletion(requested = 100): Promise<BlobToDelete[]> {
-    const limit = clampInt(requested, 1, 1000, 100);
-    const candidates = await this.prisma.$queryRaw<
-      { id: number; sha256: string }[]
-    >`
-      SELECT id, sha256 FROM blob
-      WHERE (state = 'live' AND unreferenced_since < now() - ${GC_GRACE}::interval)
-         OR (state = 'deleting' AND deleting_started_at < now() - ${GC_STUCK}::interval)
-      ORDER BY id LIMIT ${limit}`;
-    const claimed: BlobToDelete[] = [];
-    for (const candidate of candidates) {
-      const blob = await this.transaction("claimBlob", async (tx) => {
-        await this.lockHashes(tx, [candidate.sha256]);
-        const [row] = await tx.$queryRaw<{ id: number; storage_key: string }[]>`
-          UPDATE blob SET state = 'deleting', deleting_started_at = now()
-          WHERE id = ${candidate.id}
-            AND NOT EXISTS (SELECT 1 FROM asset WHERE blob_id = ${candidate.id})
-            AND ((state = 'live' AND unreferenced_since < now() - ${GC_GRACE}::interval)
-              OR (state = 'deleting' AND deleting_started_at < now() - ${GC_STUCK}::interval))
-          RETURNING id, storage_key`;
-        return row;
-      });
-      if (blob) claimed.push({ blobId: blob.id, storageKey: blob.storage_key });
-    }
-    return claimed;
-  }
-
-  /** The object is gone: drop the row */
-  async finishBlobDeletion(blobId: number): Promise<boolean> {
-    const deleted = await this.prisma.$executeRaw`
-      DELETE FROM blob WHERE id = ${blobId} AND state = 'deleting'
-        AND NOT EXISTS (SELECT 1 FROM asset WHERE blob_id = ${blobId})`;
-    return deleted > 0;
+  async unreferencedObjects(storageKeys: readonly string[]): Promise<string[]> {
+    if (storageKeys.length === 0) return [];
+    const rows = await this.prisma.$queryRaw<{ storage_key: string }[]>`
+      SELECT k.storage_key FROM unnest(${[...storageKeys]}::text[]) AS k(storage_key)
+      WHERE NOT EXISTS (SELECT 1 FROM asset a WHERE a.storage_key = k.storage_key)`;
+    return rows.map((row) => row.storage_key).sort();
   }
 
   /** The asset search query, shared by searchAssets and explainAssetSearch */
@@ -1244,14 +1181,13 @@ export class SearchRepositoryService {
       SELECT asset_id, generation, similarity, storage_key FROM (
         SELECT a.id AS asset_id, e.ingest_generation AS generation,
           1 - (e.embedding <=> ${vector}::halfvec(768)) AS similarity,
-          b.storage_key
+          a.storage_key
         FROM asset_embedding e
         JOIN asset a ON a.id = e.asset_id
-        JOIN blob b ON b.id = a.blob_id
         WHERE e.profile_id = ${options.profileId}
           AND e.ingest_generation = a.ingest_generation
           AND a.status = 'embedded' AND a.deleted_at IS NULL
-          AND (${colors}::text[] IS NULL OR b.colors && ${colors}::text[])
+          AND (${colors}::text[] IS NULL OR a.colors && ${colors}::text[])
           AND (${licenses}::text[] IS NULL OR a.license = ANY(${licenses}::text[]))
         ORDER BY e.embedding <=> ${vector}::halfvec(768)
         LIMIT ${limit}
@@ -1347,19 +1283,18 @@ export class SearchRepositoryService {
         SELECT DISTINCT ON (p.id) p.id AS product_id, a.id AS asset_id,
           e.ingest_generation AS generation,
           1 - (e.embedding <=> ${vector}::halfvec(768)) AS similarity,
-          b.storage_key
+          a.storage_key
         FROM product p
         JOIN product_asset pa ON pa.product_id = p.id
         JOIN asset a ON a.id = pa.asset_id
         JOIN asset_embedding e ON e.asset_id = a.id AND e.profile_id = ${options.profileId}
-        JOIN blob b ON b.id = a.blob_id
         WHERE p.status = 'Available'
           AND pa.role = 'thumbnail' AND pa.source_image_url = p.image_url
           AND e.ingest_generation = a.ingest_generation
           AND a.status = 'embedded' AND a.deleted_at IS NULL
           AND (${categories}::text[] IS NULL OR p.category = ANY(${categories}::text[]))
           AND (${licenses}::text[] IS NULL OR p.license = ANY(${licenses}::text[]))
-          AND (${colors}::text[] IS NULL OR b.colors && ${colors}::text[])
+          AND (${colors}::text[] IS NULL OR a.colors && ${colors}::text[])
         ORDER BY p.id, e.embedding <=> ${vector}::halfvec(768)
       ) best
       WHERE similarity >= ${minSimilarity}
@@ -1396,10 +1331,9 @@ export class SearchRepositoryService {
         AND (${colors}::text[] IS NULL OR EXISTS (
           SELECT 1 FROM product_asset pa
           JOIN asset a ON a.id = pa.asset_id
-          JOIN blob b ON b.id = a.blob_id
           WHERE pa.product_id = p.id AND pa.role = 'thumbnail'
             AND pa.source_image_url = p.image_url
-            AND a.deleted_at IS NULL AND b.colors && ${colors}::text[]))
+            AND a.deleted_at IS NULL AND a.colors && ${colors}::text[]))
       ORDER BY p.search_text <-> ${text}, p.id
       LIMIT ${limit}`;
 

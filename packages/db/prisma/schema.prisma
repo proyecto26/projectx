@@ -290,13 +290,6 @@ enum PaymentStatus {
 // managed in SQL (migration 20261114000000_visual_search) because Prisma can't
 // express them: HNSW, partial unique indexes and halfvec.
 
-enum BlobState {
-  live
-  deleting
-
-  @@map("blob_state")
-}
-
 enum AssetStatus {
   admitted
   stored
@@ -346,39 +339,11 @@ model EmbeddingProfile {
   @@map("embedding_profile")
 }
 
-/// Stored bytes, shared by every asset with the same content. The id is the
-/// generation: it is part of the object key, so a late delete can only hit
-/// its own object.
-model Blob {
-  id                Int       @id @default(autoincrement())
-  sha256            String    @db.Char(64)
-  state             BlobState @default(live)
-  /// assets/<sha256>-<id>.<ext>
-  storageKey        String    @unique @map("storage_key") @db.Text
-  contentType       String    @map("content_type") @db.VarChar(100)
-  bytes             Int
-  width             Int?
-  height            Int?
-  /// Dominant color names, used by the color filter
-  colors            String[]  @default([])
-  unreferencedSince DateTime? @map("unreferenced_since")
-  /// Set when garbage collection claims the blob
-  deletingStartedAt DateTime? @map("deleting_started_at")
-  createdAt         DateTime  @default(now()) @map("created_at")
-
-  assets Asset[]
-
-  @@index([colors], map: "ix_blob_colors", type: Gin)
-  @@index([state, unreferencedSince], map: "ix_blob_gc")
-  @@map("blob")
-}
-
 /// An image from one source, with its own attribution
 model Asset {
   id               Int         @id @default(autoincrement())
   source           String      @db.VarChar(64)
   externalId       String      @map("external_id") @db.Text
-  blobId           Int?        @map("blob_id")
   originUrl        String?     @map("origin_url") @db.Text
   stagingKey       String?     @map("staging_key") @db.Text
   /// Fences every write: bumped on admission and deletion
@@ -394,6 +359,17 @@ model Asset {
   /// When the current generation's bytes were stored; a failed status doesn't
   /// erase it, so failures from before publication can be told apart
   storedAt DateTime? @map("stored_at")
+  /// The stored content, set by publication. The key is
+  /// assets/<asset id>-<generation>-<sha256>.<ext>: it names one set of bytes
+  /// and is never reused, so it also identifies what a step worked on.
+  sha256           String?     @db.Char(64)
+  storageKey       String?     @unique @map("storage_key") @db.Text
+  contentType      String?     @map("content_type") @db.VarChar(100)
+  bytes            Int?
+  width            Int?
+  height           Int?
+  /// Dominant color names, used by the color filter
+  colors           String[]    @default([])
   sourceUrl        String?     @map("source_url") @db.Text
   license          String?     @db.VarChar(32)
   credit           String?     @db.Text
@@ -411,13 +387,12 @@ model Asset {
   createdAt        DateTime    @default(now()) @map("created_at")
   updatedAt        DateTime    @default(now()) @updatedAt @map("updated_at")
 
-  blob         Blob?            @relation(fields: [blobId], references: [id], onDelete: Restrict, map: "fk_asset_blob_id")
   embeddings   AssetEmbedding[]
   productLinks ProductAsset[]
   dispatches   AssetDispatch[]
 
   @@unique([source, externalId], map: "uq_asset_source_external_id")
-  @@index([blobId], map: "ix_asset_blob_id")
+  @@index([colors], map: "ix_asset_colors", type: Gin)
   @@index([status, nextAttemptAt], map: "ix_asset_repair")
   @@map("asset")
 }
