@@ -1175,7 +1175,8 @@ export class SearchRepositoryService {
    * in `deleting` from an earlier run. Delete each object at `storageKey`
    * ("not found" counts as done), then call `finishBlobDeletion`.
    */
-  async claimBlobsForDeletion(limit = 100): Promise<BlobToDelete[]> {
+  async claimBlobsForDeletion(requested = 100): Promise<BlobToDelete[]> {
+    const limit = clampInt(requested, 1, 1000, 100);
     const candidates = await this.prisma.$queryRaw<
       { id: number; sha256: string }[]
     >`
@@ -1215,9 +1216,15 @@ export class SearchRepositoryService {
     options: AssetSearchOptions,
   ) {
     const vector = toVector(embedding);
-    const limit = Math.max(1, Math.min(options.limit, 200));
-    const efSearch = Math.max(limit, Math.min(options.efSearch ?? 200, 1000));
-    const maxScanTuples = Math.max(1000, options.maxScanTuples ?? 20_000);
+    // Integers within fixed bounds: two of them go into SET LOCAL as text
+    const limit = clampInt(options.limit, 1, 200, 200);
+    const efSearch = clampInt(options.efSearch, limit, 1000, 200);
+    const maxScanTuples = clampInt(
+      options.maxScanTuples,
+      1000,
+      MAX_SCAN_TUPLES,
+      20_000,
+    );
     const colors = options.colors?.length ? options.colors : null;
     const licenses = options.licenses?.length ? options.licenses : null;
     // SET LOCAL can't take parameters; the values are clamped integers
@@ -1225,6 +1232,8 @@ export class SearchRepositoryService {
       `SET LOCAL hnsw.ef_search = ${efSearch}`,
       `SET LOCAL hnsw.max_scan_tuples = ${maxScanTuples}`,
       "SET LOCAL hnsw.iterative_scan = relaxed_order",
+      // A search past this is no longer useful to anyone waiting for it
+      `SET LOCAL statement_timeout = '${SEARCH_STATEMENT_TIMEOUT}'`,
       ...(options.preferIndex
         ? ["seqscan", "bitmapscan", "sort"].map(
             (plan) => `SET LOCAL enable_${plan} = off`,
@@ -1319,7 +1328,7 @@ export class SearchRepositoryService {
     options: SearchFilters & { profileId: number; limit?: number },
   ): Promise<ProductVectorHit[]> {
     const vector = toVector(embedding);
-    const limit = Math.max(1, Math.min(options.limit ?? 200, 200));
+    const limit = clampInt(options.limit, 1, 200, 200);
     const colors = options.colors?.length ? options.colors : null;
     const licenses = options.licenses?.length ? options.licenses : null;
     const categories = options.categories?.length ? options.categories : null;
@@ -1371,7 +1380,7 @@ export class SearchRepositoryService {
     text: string,
     options: Omit<SearchFilters, "minSimilarity"> & { limit?: number } = {},
   ): Promise<ProductLexicalHit[]> {
-    const limit = Math.max(1, Math.min(options.limit ?? 200, 200));
+    const limit = clampInt(options.limit, 1, 200, 200);
     const colors = options.colors?.length ? options.colors : null;
     const licenses = options.licenses?.length ? options.licenses : null;
     const categories = options.categories?.length ? options.categories : null;
@@ -1399,4 +1408,27 @@ export class SearchRepositoryService {
       trigram: row.trigram,
     }));
   }
+}
+
+/** statement_timeout of a vector search transaction */
+export const SEARCH_STATEMENT_TIMEOUT = "5s";
+
+/** Upper bound for hnsw.max_scan_tuples: the scan cost cap a caller can't raise */
+export const MAX_SCAN_TUPLES = 100_000;
+
+/**
+ * `value` as an integer within [min, max]; `fallback` (also clamped) when it
+ * is missing or not a finite number
+ */
+export function clampInt(
+  value: number | undefined,
+  min: number,
+  max: number,
+  fallback: number,
+): number {
+  const n =
+    typeof value === "number" && Number.isFinite(value)
+      ? Math.trunc(value)
+      : fallback;
+  return Math.min(max, Math.max(min, n));
 }

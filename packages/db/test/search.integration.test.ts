@@ -23,8 +23,10 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PrismaClient } from "../generated/prisma/client";
 import type { PrismaService } from "../src/lib/prisma.service";
 import {
+  clampInt,
   EMBEDDING_DIMS,
   type Fence,
+  MAX_SCAN_TUPLES,
   SearchRepositoryService,
 } from "../src/lib/search/search-repository.service";
 
@@ -1620,6 +1622,20 @@ describe("queries", () => {
     });
     expect(plan).toContain("Index Scan using ix_asset_embedding_hnsw");
     expect(plan).toMatch(/Order By: \(embedding <=>/);
+  });
+
+  it("caps the scan settings a caller passes, and still answers", async () => {
+    const results = await repo.searchAssets(vector(5, 0.8, 99), {
+      profileId,
+      limit: 1e9,
+      efSearch: Number.NaN,
+      maxScanTuples: Number.POSITIVE_INFINITY,
+    });
+    expect(results.hits.length).toBeLessThanOrEqual(200);
+    expect(clampInt(1e12, 1000, MAX_SCAN_TUPLES, 20_000)).toBe(MAX_SCAN_TUPLES);
+    expect(clampInt(Number.NaN, 1, 200, 200)).toBe(200);
+    expect(clampInt(12.9, 1, 200, 200)).toBe(12);
+    expect(clampInt(-5, 1, 200, 200)).toBe(1);
   });
 
   it("keeps filtered recall@10 at 0.95 or more against exact search", async () => {
