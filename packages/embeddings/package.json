@@ -1,0 +1,42 @@
+{
+  "name": "@projectx/embeddings",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "models.lock.json",
+    "scripts"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsc -w -p tsconfig.json",
+    "lint": "biome check .",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "models:fetch": "node scripts/models.cjs fetch",
+    "models:verify": "node scripts/models.cjs verify",
+    "test:weights": "EMBED_WEIGHTS=1 vitest run --config vitest.weights.config.mts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "4.1.11"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "3.1166.0",
+    "@huggingface/transformers": "4.3.2"
+  }
+}

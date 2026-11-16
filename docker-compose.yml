@@ -33,6 +33,7 @@ x-service-common: &service-common
     - /app/node_modules
     # Apps node_modules
     - /app/apps/auth/node_modules
+    - /app/apps/embeddings/node_modules
     - /app/apps/order/node_modules
     - /app/apps/product/node_modules
     - /app/apps/web/node_modules
@@ -40,6 +41,7 @@ x-service-common: &service-common
     - /app/packages/core/node_modules
     - /app/packages/db/node_modules
     - /app/packages/email/node_modules
+    - /app/packages/embeddings/node_modules
     - /app/packages/models/node_modules
     - /app/packages/payment/node_modules
     - /app/packages/ui/node_modules
@@ -264,12 +266,16 @@ services:
   builder:
     <<: *service-common
     container_name: ${COMPOSE_PROJECT_NAME:-projectx}-builder
+    # Only the database: Temporal is a dependency of the services that use it, not of the build
+    depends_on:
+      db:
+        condition: service_healthy
     command:
       - /bin/sh
       - -c
       - |
         pnpm install --frozen-lockfile && \
-        pnpm turbo run build --filter=auth^... --filter=order^... --filter=product^... && \
+        pnpm turbo run build --filter=auth^... --filter=order^... --filter=product^... --filter=@projectx/embeddings-app... && \
         pnpm --filter @projectx/db run prisma:migrate && \
         pnpm --filter @projectx/db run prisma:seed && \
         echo "Build complete!"
@@ -282,6 +288,8 @@ services:
     depends_on:
       builder:
         condition: service_completed_successfully
+      temporal:
+        condition: service_healthy
     command:
       - /bin/sh
       - -c
@@ -299,6 +307,8 @@ services:
     depends_on:
       builder:
         condition: service_completed_successfully
+      temporal:
+        condition: service_healthy
     command:
       - /bin/sh
       - -c
@@ -326,6 +336,177 @@ services:
       - "${PRODUCT_PORT:-8083}:${PRODUCT_PORT:-8083}"
       - "9231:9231"
 
+  # Downloads the pinned model files into the model_cache volume and checks
+  # them against models.lock.json, then exits (runs the compiled package,
+  # hence after builder)
+  model-fetch:
+    <<: *service-common
+    container_name: ${COMPOSE_PROJECT_NAME:-projectx}-model-fetch
+    depends_on:
+      builder:
+        condition: service_completed_successfully
+    environment:
+      - MODEL_CACHE_DIR=/models
+    command:
+      - /bin/sh
+      - -c
+      - exec pnpm --filter @projectx/embeddings models:fetch
+    volumes:
+      # Mount the entire project directory to ensure all files are visible in the container
+      - .:/app:delegated
+      # These are anonymous volumes to prevent node_modules from being overwritten by host
+      - /app/node_modules
+      # Apps node_modules
+      - /app/apps/auth/node_modules
+      - /app/apps/embeddings/node_modules
+      - /app/apps/order/node_modules
+      - /app/apps/product/node_modules
+      - /app/apps/web/node_modules
+      # Packages node_modules
+      - /app/packages/core/node_modules
+      - /app/packages/db/node_modules
+      - /app/packages/email/node_modules
+      - /app/packages/embeddings/node_modules
+      - /app/packages/models/node_modules
+      - /app/packages/payment/node_modules
+      - /app/packages/ui/node_modules
+      - /app/packages/workflow-client/node_modules
+      - /app/packages/workflows/node_modules
+      # Frontend files that should not be watched (speeds up the container)
+      - /app/apps/web/.vite
+      - /app/apps/web/dist
+      # The only writer of the pinned model files
+      - model_cache:/models
+
+  # Query embeddings (text-only session). No Temporal or storage dependency:
+  # text search keeps working through either outage. Internal network only.
+  embed-text:
+    <<: *service-common
+    container_name: ${COMPOSE_PROJECT_NAME:-projectx}-embed-text
+    init: true
+    depends_on:
+      db:
+        condition: service_healthy
+      builder:
+        condition: service_completed_successfully
+      model-fetch:
+        condition: service_completed_successfully
+    environment:
+      - NODE_ENV=development
+      - FORCE_COLOR=1
+      - NODE_OPTIONS=--max-old-space-size=512
+      - EMBED_ROLE=text
+      - MODEL_CACHE_DIR=/models
+    command:
+      - /bin/sh
+      - -c
+      - |
+        cd /app/apps/embeddings && \
+        exec node dist/main
+    volumes:
+      # Mount the entire project directory to ensure all files are visible in the container
+      - .:/app:delegated
+      # These are anonymous volumes to prevent node_modules from being overwritten by host
+      - /app/node_modules
+      # Apps node_modules
+      - /app/apps/auth/node_modules
+      - /app/apps/embeddings/node_modules
+      - /app/apps/order/node_modules
+      - /app/apps/product/node_modules
+      - /app/apps/web/node_modules
+      # Packages node_modules
+      - /app/packages/core/node_modules
+      - /app/packages/db/node_modules
+      - /app/packages/email/node_modules
+      - /app/packages/embeddings/node_modules
+      - /app/packages/models/node_modules
+      - /app/packages/payment/node_modules
+      - /app/packages/ui/node_modules
+      - /app/packages/workflow-client/node_modules
+      - /app/packages/workflows/node_modules
+      # Frontend files that should not be watched (speeds up the container)
+      - /app/apps/web/.vite
+      - /app/apps/web/dist
+      # Pinned model files, read-only (written by model-fetch)
+      - model_cache:/models:ro
+    # RSS of the text-only session is ~880 MB (measured), so 1 GB leaves too little room
+    mem_limit: 1536m
+    cpus: 2
+    expose:
+      - "${EMBED_TEXT_PORT:-8085}"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -sf http://localhost:${EMBED_TEXT_PORT:-8085}/health || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 2m
+
+  # Image queries and the embedAssets activity workers (embeddings-interactive,
+  # embeddings-bulk). Internal network only.
+  embed-image:
+    <<: *service-common
+    container_name: ${COMPOSE_PROJECT_NAME:-projectx}-embed-image
+    init: true
+    depends_on:
+      db:
+        condition: service_healthy
+      builder:
+        condition: service_completed_successfully
+      model-fetch:
+        condition: service_completed_successfully
+      storage-setup:
+        condition: service_completed_successfully
+      temporal:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=development
+      - FORCE_COLOR=1
+      - NODE_OPTIONS=--max-old-space-size=1024
+      - EMBED_ROLE=image
+      - MODEL_CACHE_DIR=/models
+    command:
+      - /bin/sh
+      - -c
+      - |
+        cd /app/apps/embeddings && \
+        exec node dist/main
+    volumes:
+      # Mount the entire project directory to ensure all files are visible in the container
+      - .:/app:delegated
+      # These are anonymous volumes to prevent node_modules from being overwritten by host
+      - /app/node_modules
+      # Apps node_modules
+      - /app/apps/auth/node_modules
+      - /app/apps/embeddings/node_modules
+      - /app/apps/order/node_modules
+      - /app/apps/product/node_modules
+      - /app/apps/web/node_modules
+      # Packages node_modules
+      - /app/packages/core/node_modules
+      - /app/packages/db/node_modules
+      - /app/packages/email/node_modules
+      - /app/packages/embeddings/node_modules
+      - /app/packages/models/node_modules
+      - /app/packages/payment/node_modules
+      - /app/packages/ui/node_modules
+      - /app/packages/workflow-client/node_modules
+      - /app/packages/workflows/node_modules
+      # Frontend files that should not be watched (speeds up the container)
+      - /app/apps/web/.vite
+      - /app/apps/web/dist
+      # Pinned model files, read-only (written by model-fetch)
+      - model_cache:/models:ro
+    mem_limit: 2560m
+    cpus: 4
+    expose:
+      - "${EMBED_IMAGE_PORT:-8086}"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -sf http://localhost:${EMBED_IMAGE_PORT:-8086}/health || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 2m
+
   # Public tunnel to the order service, opt in with `docker compose --profile ngrok up -d`
   ngrok-order:
     image: ngrok/ngrok:latest
@@ -351,3 +532,5 @@ volumes:
     name: ${COMPOSE_PROJECT_NAME:-projectx}-storage-data
   postgres_data:
     name: ${COMPOSE_PROJECT_NAME:-projectx}-postgres-data
+  model_cache:
+    name: ${COMPOSE_PROJECT_NAME:-projectx}-model-cache

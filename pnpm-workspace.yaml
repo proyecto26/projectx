@@ -16,6 +16,8 @@ allowBuilds:
   "@swc/core": true
   bcrypt: true
   esbuild: true
+  # CPU binaries ship in the package; the script only fetches CUDA providers
+  onnxruntime-node: false
   prisma: true
   protobufjs: false
 minimumReleaseAgeExclude:

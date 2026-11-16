@@ -1,0 +1,51 @@
+{
+  "name": "@projectx/embeddings-app",
+  "version": "0.0.1",
+  "description": "EmbeddingGemma 2 service: query embeddings (text role) and the embedAssets activity workers (image role)",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "nest build",
+    "start": "nest start",
+    "start:dev": "nest start --watch --exec \"node --watch\"",
+    "start:debug": "nest start --watch --exec \"node --watch --inspect=0.0.0.0:9232\"",
+    "start:prod": "node dist/main",
+    "dev": "nest start --watch",
+    "lint": "biome check .",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.mts"
+  },
+  "dependencies": {
+    "@nestjs/common": "12.3.3",
+    "@nestjs/config": "12.1.0",
+    "@nestjs/core": "12.3.3",
+    "@nestjs/platform-express": "12.3.3",
+    "@nestjs/swagger": "12.1.0",
+    "@projectx/core": "workspace:*",
+    "@projectx/db": "workspace:*",
+    "@projectx/embeddings": "workspace:*",
+    "@projectx/models": "workspace:*",
+    "@temporalio/activity": "1.25.0",
+    "@temporalio/common": "1.25.0",
+    "@temporalio/worker": "1.25.0",
+    "dotenv-mono": "^1.5.1",
+    "nestjs-pino": "5.3.1",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-s3": "3.1166.0",
+    "@nestjs/cli": "^12.0.11",
+    "@nestjs/schematics": "^12.0.12",
+    "@temporalio/testing": "1.25.0",
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^25.0.9",
+    "@types/pg": "^8.23.1",
+    "pg": "^8.23.1",
+    "pino-pretty": "13.2.0",
+    "typescript": "^5.9.3",
+    "vitest": "4.1.11"
+  }
+}
